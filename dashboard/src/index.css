@@ -1,0 +1,59 @@
+/* Global Reset & Tailwind Base setup handling (note: Tailwind adds its own preflight, we'll just keep the custom scrollbar and fonts) */
+
+:root {
+  /* Basic variables left if needed by existing UI components temporarily */
+  --font-display: 'Inter', sans-serif;
+  --sidebar-width: 16rem;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, .font-manrope { 
+  font-family: 'Manrope', sans-serif; 
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+}
+
+/* Material Symbols config */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f7f9ff;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 88, 190, 0.25); /* secondary with opacity */
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 88, 190, 0.3);
+  border-radius: 4px;
+}
+
+/* Overriding old app-container layout as we transition */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.page-container {
+  flex: 1;
+}
+
