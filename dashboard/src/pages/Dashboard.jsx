@@ -97,7 +97,10 @@ export default function Dashboard() {
 </div>
 <div className="space-y-1">
 <label className="text-[10px] uppercase tracking-wider text-on-primary-container font-bold">Overnight Price</label>
-<input className="w-full bg-white/10 border-transparent rounded-lg text-sm focus:ring-secondary focus:border-secondary placeholder:text-white/40" placeholder="$25.00" type="text"/>
+<div className="relative flex items-center">
+<span className="absolute left-3.5 text-white/50 text-sm pointer-events-none">$</span>
+<input className="w-full bg-white/10 border-transparent rounded-lg text-sm pl-7 focus:ring-secondary focus:border-secondary placeholder:text-white/40" placeholder="25.00" type="text" inputMode="decimal"/>
+</div>
 </div>
 <div className="space-y-1">
 <label className="text-[10px] uppercase tracking-wider text-on-primary-container font-bold">Available Spaces</label>
