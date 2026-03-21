@@ -36,22 +36,22 @@ export default function Dashboard() {
 </div>
 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 <div className="space-y-4">
-<label className="flex items-center justify-between p-3 bg-white/10 rounded-lg cursor-pointer hover:bg-white/15 transition-colors">
-<span className="text-sm">After-hours parking?</span>
-<input checked="" className="rounded text-secondary focus:ring-secondary bg-white/20 border-transparent" type="checkbox"/>
-</label>
-<label className="flex items-center justify-between p-3 bg-white/10 rounded-lg cursor-pointer hover:bg-white/15 transition-colors">
-<span className="text-sm">Gated Access?</span>
-<input checked="" className="rounded text-secondary focus:ring-secondary bg-white/20 border-transparent" type="checkbox"/>
-</label>
-<label className="flex items-center justify-between p-3 bg-white/10 rounded-lg cursor-pointer hover:bg-white/15 transition-colors">
-<span className="text-sm">Security Cameras?</span>
-<input checked="" className="rounded text-secondary focus:ring-secondary bg-white/20 border-transparent" type="checkbox"/>
-</label>
-<label className="flex items-center justify-between p-3 bg-white/10 rounded-lg cursor-pointer hover:bg-white/15 transition-colors">
-<span className="text-sm">53ft Trailer Friendly?</span>
-<input checked="" className="rounded text-secondary focus:ring-secondary bg-white/20 border-transparent" type="checkbox"/>
-</label>
+{[
+  'After-hours parking?',
+  'Gated Access?',
+  'Security Cameras?',
+  '53ft Trailer Friendly?'
+].map((question, idx) => (
+  <label key={idx} className="flex items-center justify-between p-3.5 bg-white/[0.06] rounded-[14px] cursor-pointer hover:bg-white/[0.12] transition-colors border border-transparent hover:border-white/5 group shadow-sm">
+    <span className="text-sm text-slate-200 group-hover:text-white transition-colors font-medium">{question}</span>
+    <div className="relative flex items-center justify-center w-[22px] h-[22px] rounded-full bg-white/10 group-hover:bg-white/20 transition-all">
+      <input defaultChecked={idx === 0} className="peer absolute inset-0 opacity-0 cursor-pointer" type="checkbox"/>
+      <div className="absolute inset-0 rounded-full bg-[#2563eb] scale-0 peer-checked:scale-100 transition-transform duration-200 ease-out flex items-center justify-center shadow-[0_2px_8px_rgba(37,99,235,0.5)]">
+        <span className="material-symbols-outlined text-white text-[14px] font-bold">check</span>
+      </div>
+    </div>
+  </label>
+))}
 </div>
 <div className="grid grid-cols-2 gap-4">
 <div className="space-y-1.5 relative z-50">
