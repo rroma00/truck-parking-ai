@@ -665,11 +665,22 @@ export default function Dashboard() {
 <input className="w-full bg-transparent border-none text-2xl font-bold text-primary p-0 focus:ring-0" type="number" value="45"/>
 </div>
 </div>
-<div className="flex items-center justify-between p-4 bg-surface-container-low rounded-xl">
-<div>
-<p className="text-sm font-bold text-primary">Enable Real-time Tracking</p>
-<p className="text-xs text-on-surface-variant">Update availability automatically via AI logs.</p>
-</div>
+<div className="flex items-center justify-between p-4 bg-surface-container-low rounded-xl relative group transition-colors hover:bg-surface-container-high cursor-help">
+  <div>
+    <p className="text-sm font-bold text-primary">Enable Real-time Tracking</p>
+    <p className="text-xs text-on-surface-variant">Update availability automatically via AI logs.</p>
+  </div>
+  {/* Tooltip Disclaimer */}
+  <div className="absolute bottom-[calc(100%+12px)] left-1/2 -translate-x-1/2 w-[280px] p-3.5 bg-surface-container-highest border border-white/5 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.4)] z-50 opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 translate-y-2 group-hover:translate-y-0">
+    <div className="flex gap-2.5">
+      <span className="material-symbols-outlined text-secondary text-[18px] shrink-0">info</span>
+      <p className="text-[11px] leading-[1.6] text-on-surface font-medium">
+        Enabling live tracking requires all lot management activities to be handled within the system.
+      </p>
+    </div>
+    {/* Tooltip Arrow */}
+    <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-surface-container-highest rotate-45 border-r border-b border-white/5"></div>
+  </div>
 <div className="relative inline-flex items-center cursor-pointer">
 <input checked="" className="sr-only peer" type="checkbox"/>
 <div className="w-11 h-6 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
