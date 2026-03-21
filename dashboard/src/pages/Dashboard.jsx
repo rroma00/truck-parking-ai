@@ -8,17 +8,29 @@ const WheelTimePicker = ({ initialTime }) => {
   const [m, setM] = useState(initialTime.split(':')[1].split(' ')[0]);
   const [p, setP] = useState(initialTime.split(' ')[1]);
 
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (containerRef.current && !containerRef.current.contains(e.target)) setIsOpen(false);
-    };
-    if (isOpen) document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen]);
+  const hRef = useRef(null);
+  const mRef = useRef(null);
+  const pRef = useRef(null);
 
   const hours = ['01','02','03','04','05','06','07','08','09','10','11','12'];
   const minutes = ['00','05','10','15','20','25','30','35','40','45','50','55'];
   const periods = ['AM', 'PM'];
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) setIsOpen(false);
+    };
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      // Precision Snap-Scroll to active values on open
+      setTimeout(() => {
+        if (hRef.current) hRef.current.scrollTop = hours.indexOf(h) * 32;
+        if (mRef.current) mRef.current.scrollTop = minutes.indexOf(m) * 32;
+        if (pRef.current) pRef.current.scrollTop = periods.indexOf(p) * 32;
+      }, 10);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen, h, m, p]);
 
   return (
     <div className="relative w-full" ref={containerRef}>
@@ -39,20 +51,20 @@ const WheelTimePicker = ({ initialTime }) => {
             <div className="text-center text-[10px] font-bold text-on-surface-variant/80 tracking-widest uppercase">Mode</div>
           </div>
           
-          <div className="flex relative h-[106px] bg-white/[0.01]">
+          <div className="flex relative h-[96px] bg-white/[0.01]">
             <style>{`.no-sc::-webkit-scrollbar { display: none; }`}</style>
             
-            {/* Soft Focus Band behind lists to simulate scroll wheel center */}
-            <div className="absolute top-1/2 left-2 right-2 -translate-y-1/2 h-8 bg-white/[0.03] rounded-lg pointer-events-none"></div>
+            {/* Soft Focus Band behind lists - perfectly aligned to 32px height */}
+            <div className="absolute top-[32px] left-2 right-2 h-8 bg-[#5468ff]/10 rounded-lg pointer-events-none border border-[#5468ff]/20"></div>
 
-            <div className="flex-1 overflow-y-auto no-sc scroll-smooth relative z-10" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-               <div className="flex flex-col items-center gap-1 py-[37px] px-1">
+            <div ref={hRef} className="flex-1 overflow-y-auto no-sc scroll-smooth relative z-10" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+               <div className="flex flex-col items-center py-[32px] px-1">
                  {hours.map(hr => (
                    <button 
                      key={`h-${hr}`} 
                      onClick={() => setH(hr)}
-                     className={`w-full py-1.5 text-center rounded-lg text-[14px] transition-all font-semibold ${
-                       h === hr ? 'bg-[#5468ff] text-white shadow-md' : 'text-on-surface hover:bg-white/5 opacity-50'
+                     className={`w-full h-8 flex items-center justify-center rounded-lg text-[14px] transition-all font-semibold ${
+                       h === hr ? 'bg-[#5468ff] text-white shadow-md' : 'text-on-surface hover:bg-white/5 opacity-40 hover:opacity-100'
                      }`}
                    >
                      {hr}
@@ -61,16 +73,16 @@ const WheelTimePicker = ({ initialTime }) => {
                </div>
             </div>
             
-            <div className="w-[1px] bg-white/5 my-4 z-10"></div>
+            <div className="w-[1px] bg-white/5 my-2 z-10"></div>
             
-            <div className="flex-1 overflow-y-auto no-sc scroll-smooth relative z-10" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-               <div className="flex flex-col items-center gap-1 py-[37px] px-1">
+            <div ref={mRef} className="flex-1 overflow-y-auto no-sc scroll-smooth relative z-10" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+               <div className="flex flex-col items-center py-[32px] px-1">
                  {minutes.map(mn => (
                    <button 
                      key={`m-${mn}`} 
                      onClick={() => setM(mn)}
-                     className={`w-full py-1.5 text-center rounded-lg text-[14px] transition-all font-semibold ${
-                       m === mn ? 'bg-[#5468ff] text-white shadow-md' : 'text-on-surface hover:bg-white/5 opacity-50'
+                     className={`w-full h-8 flex items-center justify-center rounded-lg text-[14px] transition-all font-semibold ${
+                       m === mn ? 'bg-[#5468ff] text-white shadow-md' : 'text-on-surface hover:bg-white/5 opacity-40 hover:opacity-100'
                      }`}
                    >
                      {mn}
@@ -79,16 +91,16 @@ const WheelTimePicker = ({ initialTime }) => {
                </div>
             </div>
             
-            <div className="w-[1px] bg-white/5 my-4 z-10"></div>
+            <div className="w-[1px] bg-white/5 my-2 z-10"></div>
             
-            <div className="flex-1 overflow-y-auto no-sc scroll-smooth relative z-10" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-               <div className="flex flex-col items-center gap-1 py-[37px] px-1">
+            <div ref={pRef} className="flex-1 overflow-y-auto no-sc scroll-smooth relative z-10" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+               <div className="flex flex-col items-center py-[32px] px-1">
                  {periods.map(pr => (
                    <button 
                      key={`p-${pr}`} 
                      onClick={() => setP(pr)}
-                     className={`w-full py-1.5 text-center rounded-lg text-[13px] transition-all font-bold tracking-wide ${
-                       p === pr ? 'bg-[#5468ff] text-white shadow-md' : 'text-on-surface hover:bg-white/5 opacity-50'
+                     className={`w-full h-8 flex items-center justify-center rounded-lg text-[13px] transition-all font-bold tracking-wide ${
+                       p === pr ? 'bg-[#5468ff] text-white shadow-md' : 'text-on-surface hover:bg-white/5 opacity-40 hover:opacity-100'
                      }`}
                    >
                      {pr}
