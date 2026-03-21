@@ -101,7 +101,7 @@ export default function Dashboard() {
 </div>
 <div className="space-y-1">
 <label className="text-[10px] uppercase tracking-wider text-on-primary-container font-bold">Available Spaces</label>
-<input className="w-full bg-white/10 border-transparent rounded-lg text-sm focus:ring-secondary focus:border-secondary" placeholder="45" type="number"/>
+<input className="w-full bg-white/10 border-transparent rounded-lg text-sm focus:ring-secondary focus:border-secondary placeholder:text-white/40" placeholder="45" type="text" inputMode="numeric" pattern="[0-9]*"/>
 </div>
 <div className="space-y-1">
 <label className="text-[10px] uppercase tracking-wider text-on-primary-container font-bold">Late Arrival Info</label>
