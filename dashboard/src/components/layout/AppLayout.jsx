@@ -8,7 +8,7 @@ export default function AppLayout() {
           <div className="flex items-center gap-8">
             <span className="text-2xl font-extrabold tracking-tight text-[#050F36] dark:text-white font-manrope">ParkLog AI</span>
             <div className="hidden md:flex gap-6 items-center">
-              <Link to="/" className="text-[#0058BE] dark:text-[#3b82f6] border-b-2 border-[#0058BE] dark:border-[#3b82f6] pb-1 font-bold">Locations</Link>
+              <Link to="/dashboard" className="text-[#0058BE] dark:text-[#3b82f6] border-b-2 border-[#0058BE] dark:border-[#3b82f6] pb-1 font-bold">Locations</Link>
               <Link to="/drivers" className="text-[#45464E] dark:text-slate-400 hover:text-[#050F36] dark:hover:text-white transition-colors">Drivers</Link>
               <Link to="/analytics" className="text-[#45464E] dark:text-slate-400 hover:text-[#050F36] dark:hover:text-white transition-colors">Analytics</Link>
               <Link to="/settings" className="text-[#45464E] dark:text-slate-400 hover:text-[#050F36] dark:hover:text-white transition-colors">Settings</Link>

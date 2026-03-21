@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ParkLog AI | Automate Your Truck Parking Operations</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "error": "#ba1a1a",
+              "on-tertiary-fixed-variant": "#61401a",
+              "surface-dim": "#d7dae1",
+              "tertiary": "#1f0f00",
+              "on-tertiary-fixed": "#2c1700",
+              "on-secondary-container": "#fefcff",
+              "primary-container": "#1b254b",
+              "on-error-container": "#93000a",
+              "surface-container": "#ebeef5",
+              "tertiary-fixed-dim": "#eebe8d",
+              "surface-container-high": "#e5e8ef",
+              "on-background": "#181c21",
+              "on-secondary-fixed": "#001a42",
+              "background": "#f7f9ff",
+              "primary": "#050f36",
+              "surface-tint": "#535c86",
+              "on-tertiary-container": "#b0865a",
+              "on-primary-fixed": "#0e193e",
+              "on-surface": "#181c21",
+              "inverse-on-surface": "#eef1f8",
+              "on-primary": "#ffffff",
+              "on-primary-fixed-variant": "#3b456c",
+              "primary-fixed": "#dde1ff",
+              "surface-container-lowest": "#ffffff",
+              "surface-bright": "#f7f9ff",
+              "secondary": "#0058be",
+              "inverse-primary": "#bbc4f4",
+              "inverse-surface": "#2d3136",
+              "surface-variant": "#dfe2e9",
+              "outline-variant": "#c6c5cf",
+              "secondary-fixed": "#d8e2ff",
+              "on-primary-container": "#838db9",
+              "surface-container-low": "#f1f4fb",
+              "on-surface-variant": "#45464e",
+              "secondary-fixed-dim": "#adc6ff",
+              "surface": "#f7f9ff",
+              "on-secondary": "#ffffff",
+              "on-secondary-fixed-variant": "#004395",
+              "surface-container-highest": "#dfe2e9",
+              "secondary-container": "#2170e4",
+              "on-tertiary": "#ffffff",
+              "error-container": "#ffdad6",
+              "on-error": "#ffffff",
+              "tertiary-fixed": "#ffdcbc",
+              "outline": "#76767f",
+              "tertiary-container": "#3c2100",
+              "primary-fixed-dim": "#bbc4f4"
+            },
+            fontFamily: {
+              "headline": ["Manrope", "sans-serif"],
+              "body": ["Inter", "sans-serif"],
+              "label": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-white/85 dark:bg-[#050F36]/85 backdrop-blur-xl shadow-[0_12px_40px_rgba(24,28,33,0.06)]">
+<nav class="flex items-center justify-between px-8 py-4 max-w-7xl mx-auto">
+<div class="font-['Manrope'] text-2xl font-extrabold tracking-tighter text-[#050F36] dark:text-white">ParkLog AI</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="font-['Inter'] text-sm font-semibold tracking-tight text-[#0058BE] border-b-2 border-[#0058BE] pb-1" href="#">Product</a>
+<a class="font-['Inter'] text-sm font-medium tracking-tight text-[#45464E] dark:text-slate-300 hover:text-[#0058BE] transition-colors" href="#">Features</a>
+<a class="font-['Inter'] text-sm font-medium tracking-tight text-[#45464E] dark:text-slate-300 hover:text-[#0058BE] transition-colors" href="#">How it Works</a>
+<a class="font-['Inter'] text-sm font-medium tracking-tight text-[#45464E] dark:text-slate-300 hover:text-[#0058BE] transition-colors" href="#">Pricing</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="font-['Inter'] text-sm font-medium tracking-tight text-[#45464E] dark:text-slate-300 hover:opacity-90 transition-all duration-200">Login</button>
+<button class="bg-gradient-to-r from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-lg font-semibold text-sm hover:opacity-90 transition-all active:scale-95 duration-150">Get Started</button>
+</div>
+</nav>
+</header>
+<main class="pt-24">
+<!-- Hero Section -->
+<section class="relative px-8 py-24 md:py-32 overflow-hidden">
+<div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+<div class="z-10">
+<span class="inline-block py-1 px-3 mb-6 rounded-full bg-secondary-fixed text-on-secondary-fixed text-xs font-bold tracking-widest uppercase">Precision Logistics</span>
+<h1 class="font-headline text-5xl md:text-7xl font-extrabold text-primary leading-[1.1] mb-8 tracking-tight">
+                        Automate Your Truck Parking Operations with AI
+                    </h1>
+<p class="text-xl text-on-surface-variant mb-10 max-w-xl leading-relaxed">
+                        Reduce calls by 80% and handle driver questions 24/7 with an AI assistant that knows your lot inside and out.
+                    </p>
+<div class="flex flex-wrap gap-4">
+<button class="bg-gradient-to-r from-primary to-primary-container text-on-primary px-8 py-4 rounded-xl font-bold text-lg hover:shadow-xl transition-all active:scale-95">Get Started</button>
+<button class="bg-surface-container-lowest text-primary px-8 py-4 rounded-xl font-bold text-lg flex items-center gap-2 hover:bg-surface-container transition-all active:scale-95">
+<span class="material-symbols-outlined">play_circle</span>
+                            Watch Demo
+                        </button>
+</div>
+</div>
+<div class="relative">
+<div class="relative z-10 rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
+<img alt="Aerial view of a organized truck parking facility" class="w-full aspect-video object-cover" data-alt="Aerial view of organized semi truck parking lot" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCti1UsvDM0FfO3qFoeYw7_ecAXV9VgFlS5XmcVfidJdNpy7O5K4PR612kpeI8h47N6_xmkrJYz_yC3cVRztPmO57SvFfcteYqOUUqPU1a6GgN_4KxFFRimHIUsfKT_JzMsfh8db4zswIW9DnHO82e1sbrwzZnUQlKPl4QpUByTxJupX8YVS_30U3BbcVO61OrM4PnOebmitFPKIDV4ZKMLgNyVe-l91onBOyQ9d8QaYDe_AIVL3YA4E5sGDbrkRLXOpdb1fZmxfdw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent"></div>
+</div>
+<!-- Floating Stat Card -->
+<div class="absolute -bottom-6 -left-6 z-20 glass-panel p-6 rounded-xl shadow-xl max-w-xs">
+<div class="flex items-center gap-4 mb-2">
+<div class="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-sm">call_missed</span>
+</div>
+<div>
+<div class="text-2xl font-extrabold text-primary">80%</div>
+<div class="text-xs font-bold text-on-surface-variant uppercase tracking-tighter">Call Reduction</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Background Decorative Element -->
+<div class="absolute top-0 right-0 -z-10 w-1/2 h-full bg-primary-fixed/30 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2"></div>
+</section>
+<!-- The Problem & Solution (Editorial Asymmetry) -->
+<section class="py-24 px-8 bg-surface-container-low">
+<div class="max-w-7xl mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-12">
+<div class="md:col-span-5">
+<h2 class="font-headline text-4xl font-extrabold text-primary mb-6">The Operations Logjam</h2>
+<p class="text-lg text-on-surface-variant mb-8">Managing a lot used to mean being on-call 24/7. Late-night arrivals, lost gate codes, and constant routine questions keep owners chained to their phones.</p>
+<div class="space-y-4">
+<div class="flex items-start gap-4 p-4 rounded-lg bg-error-container/30">
+<span class="material-symbols-outlined text-error">phone_disabled</span>
+<p class="text-sm font-medium">3 AM phone calls for gate code recovery</p>
+</div>
+<div class="flex items-start gap-4 p-4 rounded-lg bg-error-container/30">
+<span class="material-symbols-outlined text-error">history</span>
+<p class="text-sm font-medium">Manual tracking of arrival delays</p>
+</div>
+</div>
+</div>
+<div class="md:col-span-7">
+<div class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-outline-variant/10">
+<div class="flex items-center justify-between mb-8">
+<h3 class="font-headline text-xl font-bold">Live Fleet Overview</h3>
+<span class="text-xs font-bold text-secondary uppercase tracking-widest">System Active</span>
+</div>
+<div class="space-y-3">
+<div class="p-4 rounded-lg bg-surface flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-2 h-10 bg-secondary rounded-full"></div>
+<div>
+<div class="text-sm font-bold tracking-tight">Arrival: Unit #4492</div>
+<div class="text-xs text-on-surface-variant">Gate Code Issued Automatically</div>
+</div>
+</div>
+<span class="text-xs font-mono text-outline">14:22:01</span>
+</div>
+<div class="p-4 rounded-lg bg-surface flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-2 h-10 bg-secondary-fixed-dim rounded-full"></div>
+<div>
+<div class="text-sm font-bold tracking-tight">AI Query: Lot Access Rules</div>
+<div class="text-xs text-on-surface-variant">Handled by Assistant</div>
+</div>
+</div>
+<span class="text-xs font-mono text-outline">14:18:45</span>
+</div>
+<div class="p-4 rounded-lg bg-surface flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-2 h-10 bg-secondary rounded-full"></div>
+<div>
+<div class="text-sm font-bold tracking-tight">Arrival: Unit #9021</div>
+<div class="text-xs text-on-surface-variant">Space A14 Assigned</div>
+</div>
+</div>
+<span class="text-xs font-mono text-outline">14:05:12</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Key Benefits Bento Grid -->
+<section class="py-32 px-8 max-w-7xl mx-auto">
+<div class="text-center mb-20">
+<h2 class="font-headline text-4xl md:text-5xl font-extrabold text-primary mb-6">Designed for Peak Efficiency</h2>
+<p class="text-on-surface-variant max-w-2xl mx-auto text-lg">Modernize your logistics hub with tools built for the realities of the road.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<!-- Card 1 -->
+<div class="md:col-span-2 bg-surface-container-lowest p-10 rounded-2xl hover:shadow-xl transition-all border border-outline-variant/10">
+<div class="w-14 h-14 bg-primary-fixed flex items-center justify-center rounded-xl mb-6">
+<span class="material-symbols-outlined text-primary text-3xl">nights_stay</span>
+</div>
+<h3 class="font-headline text-2xl font-bold mb-4">24/7 Driver Support</h3>
+<p class="text-on-surface-variant leading-relaxed">AI answers every question, even at 3 AM. No more missed calls or frustrated drivers waiting for a response.</p>
+</div>
+<!-- Card 2 -->
+<div class="md:col-span-2 bg-primary text-on-primary p-10 rounded-2xl hover:shadow-xl transition-all">
+<div class="w-14 h-14 bg-secondary flex items-center justify-center rounded-xl mb-6">
+<span class="material-symbols-outlined text-white text-3xl">sensor_door</span>
+</div>
+<h3 class="font-headline text-2xl font-bold mb-4">Automated Arrival</h3>
+<p class="text-primary-fixed/80 leading-relaxed">Drivers get gate codes and parking instructions instantly via SMS or app, ensuring a smooth, touchless entry every time.</p>
+</div>
+<!-- Card 3 -->
+<div class="md:col-span-2 bg-secondary-fixed text-on-secondary-fixed p-10 rounded-2xl hover:shadow-xl transition-all">
+<div class="w-14 h-14 bg-on-secondary-fixed flex items-center justify-center rounded-xl mb-6">
+<span class="material-symbols-outlined text-white text-3xl">phone_callback</span>
+</div>
+<h3 class="font-headline text-2xl font-bold mb-4">Call Reduction</h3>
+<p class="on-secondary-fixed-variant leading-relaxed">Owners save hours every week by deflecting routine inquiries to the AI. Focus on scaling your business, not repeating your gate code.</p>
+</div>
+<!-- Card 4 -->
+<div class="md:col-span-2 bg-surface-container-lowest p-10 rounded-2xl hover:shadow-xl transition-all border border-outline-variant/10">
+<div class="w-14 h-14 bg-tertiary-fixed flex items-center justify-center rounded-xl mb-6">
+<span class="material-symbols-outlined text-on-tertiary-fixed-variant text-3xl">verified_user</span>
+</div>
+<h3 class="font-headline text-2xl font-bold mb-4">Professional Experience</h3>
+<p class="text-on-surface-variant leading-relaxed">Give your lot a modern, high-tech edge that drivers love. Build loyalty through reliability and tech-forward convenience.</p>
+</div>
+</div>
+</section>
+<!-- AI in Action Section (Glassmorphism Chat) -->
+<section class="py-24 px-8 bg-primary">
+<div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16">
+<div class="lg:w-1/2">
+<h2 class="font-headline text-4xl md:text-5xl font-extrabold text-on-primary mb-8 leading-tight">Intelligence on Autopilot</h2>
+<p class="text-xl text-on-primary-container mb-12">Watch how ParkLog AI handles driver communications with precision and speed, 24 hours a day.</p>
+<ul class="space-y-6">
+<li class="flex items-center gap-4 text-on-primary">
+<span class="material-symbols-outlined text-secondary-fixed">check_circle</span>
+<span class="font-medium">Instant natural language responses</span>
+</li>
+<li class="flex items-center gap-4 text-on-primary">
+<span class="material-symbols-outlined text-secondary-fixed">check_circle</span>
+<span class="font-medium">Context-aware lot knowledge</span>
+</li>
+<li class="flex items-center gap-4 text-on-primary">
+<span class="material-symbols-outlined text-secondary-fixed">check_circle</span>
+<span class="font-medium">Seamless escalation to human if needed</span>
+</li>
+</ul>
+</div>
+<div class="lg:w-1/2 w-full max-w-md">
+<div class="bg-surface-container-low rounded-[2.5rem] p-4 shadow-2xl border-8 border-primary-container">
+<div class="bg-white rounded-[1.8rem] overflow-hidden flex flex-col h-[500px]">
+<!-- Chat Header -->
+<div class="p-4 border-b border-surface-variant flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xs">AI</div>
+<div>
+<div class="text-sm font-bold">ParkLog Assistant</div>
+<div class="text-[10px] text-green-600 font-bold uppercase tracking-widest">Active Now</div>
+</div>
+</div>
+<!-- Chat Body -->
+<div class="flex-1 p-6 space-y-4 overflow-y-auto">
+<div class="flex justify-end">
+<div class="bg-secondary-fixed text-on-secondary-fixed p-3 rounded-2xl rounded-tr-none max-w-[80%] text-sm font-medium">
+                                        Can I park there tonight after 11 PM?
+                                    </div>
+</div>
+<div class="flex justify-start">
+<div class="bg-surface-container-high p-3 rounded-2xl rounded-tl-none max-w-[80%] text-sm leading-relaxed">
+                                        Yes, Mike! Your reservation at <span class="font-bold text-primary">A14</span> is valid for 24-hour access. Your gate code <span class="font-mono bg-white px-1 rounded">5529#</span> will be active starting at 10:45 PM. Safe travels!
+                                    </div>
+</div>
+<div class="flex justify-end">
+<div class="bg-secondary-fixed text-on-secondary-fixed p-3 rounded-2xl rounded-tr-none max-w-[80%] text-sm font-medium">
+                                        Thanks! Where is the shower located?
+                                    </div>
+</div>
+<div class="flex justify-start">
+<div class="bg-surface-container-high p-3 rounded-2xl rounded-tl-none max-w-[80%] text-sm leading-relaxed">
+                                        The showers are located in the Main Office building on the east side of the lot, right next to the driver lounge.
+                                    </div>
+</div>
+</div>
+<!-- Chat Input Mock -->
+<div class="p-4 bg-surface-container">
+<div class="bg-white rounded-full px-4 py-2 flex items-center justify-between">
+<span class="text-xs text-outline">Type a message...</span>
+<span class="material-symbols-outlined text-secondary">send</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- How It Works Section -->
+<section class="py-32 px-8">
+<div class="max-w-7xl mx-auto">
+<div class="text-center mb-20">
+<h2 class="font-headline text-4xl md:text-5xl font-extrabold text-primary mb-6">Simple Onboarding, Powerful Results</h2>
+<p class="text-on-surface-variant max-w-2xl mx-auto text-lg">Go from chaos to complete automation in three easy steps.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+<!-- Connector Line (Desktop) -->
+<div class="hidden md:block absolute top-16 left-0 w-full h-0.5 bg-outline-variant/30 -z-10"></div>
+<!-- Step 1 -->
+<div class="text-center">
+<div class="w-16 h-16 bg-white border-2 border-primary rounded-full flex items-center justify-center font-headline text-2xl font-black text-primary mx-auto mb-8 shadow-sm">1</div>
+<h3 class="text-xl font-bold mb-4">Setup Your Lot</h3>
+<p class="text-on-surface-variant px-4">Enter basic lot details, location, and amenity information into our intuitive dashboard.</p>
+</div>
+<!-- Step 2 -->
+<div class="text-center">
+<div class="w-16 h-16 bg-white border-2 border-primary rounded-full flex items-center justify-center font-headline text-2xl font-black text-primary mx-auto mb-8 shadow-sm">2</div>
+<h3 class="text-xl font-bold mb-4">Train the AI</h3>
+<p class="text-on-surface-variant px-4">Toggle safety, access rules, and parking protocols. Our AI learns your specific operational style.</p>
+</div>
+<!-- Step 3 -->
+<div class="text-center">
+<div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center font-headline text-2xl font-black text-white mx-auto mb-8 shadow-lg">3</div>
+<h3 class="text-xl font-bold mb-4">Go Live</h3>
+<p class="text-on-surface-variant px-4">The AI handles your drivers automatically via SMS and web chat. Enjoy your reclaimed time.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA -->
+<section class="py-24 px-8">
+<div class="max-w-5xl mx-auto bg-primary rounded-[2rem] p-12 md:p-20 text-center relative overflow-hidden">
+<div class="relative z-10">
+<h2 class="font-headline text-4xl md:text-6xl font-extrabold text-on-primary mb-8 leading-tight">Ready to Automate?</h2>
+<p class="text-on-primary-container text-xl mb-12 max-w-2xl mx-auto">Join the future of truck parking management and start saving hours today.</p>
+<div class="flex flex-wrap justify-center gap-6">
+<button class="bg-secondary text-on-secondary px-10 py-5 rounded-xl font-bold text-xl hover:bg-secondary/90 transition-all active:scale-95">Get Started Now</button>
+<button class="bg-primary-container border border-outline-variant/30 text-on-primary px-10 py-5 rounded-xl font-bold text-xl hover:bg-white/10 transition-all">Schedule a Demo</button>
+</div>
+</div>
+<!-- Background Pattern -->
+<div class="absolute inset-0 opacity-10 pointer-events-none">
+<svg height="100%" width="100%" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<pattern height="40" id="grid" patternunits="userSpaceOnUse" width="40">
+<path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" stroke-width="1"></path>
+</pattern>
+</defs>
+<rect fill="url(#grid)" height="100%" width="100%"></rect>
+</svg>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-[#DFE2E9]/30 bg-[#F1F4FB] dark:bg-[#1B254B] mt-24">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 px-12 py-16 max-w-7xl mx-auto">
+<div>
+<div class="font-['Manrope'] font-bold text-[#050F36] dark:text-white text-2xl mb-4">ParkLog AI</div>
+<p class="font-['Inter'] text-xs uppercase tracking-widest text-[#45464E] dark:text-slate-400 mb-8 max-w-sm">© 2024 ParkLog AI. All rights reserved. Precision logistics automation.</p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-8">
+<div class="flex flex-col gap-4">
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-[#45464E] dark:text-slate-400 hover:text-[#0058BE] transition-colors" href="#">Privacy Policy</a>
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-[#45464E] dark:text-slate-400 hover:text-[#0058BE] transition-colors" href="#">Terms of Service</a>
+</div>
+<div class="flex flex-col gap-4">
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-[#45464E] dark:text-slate-400 hover:text-[#0058BE] transition-colors" href="#">Documentation</a>
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-[#45464E] dark:text-slate-400 hover:text-[#0058BE] transition-colors" href="#">Support</a>
+</div>
+<div class="flex flex-col gap-4">
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-[#45464E] dark:text-slate-400 hover:text-[#0058BE] transition-colors" href="#">Contact Sales</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>
