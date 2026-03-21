@@ -188,8 +188,8 @@ export default function Dashboard() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [afterHoursPhone, setAfterHoursPhone] = useState('');
 
-  const availableVehicleTypes = ['Tractor', 'Trailer Only', 'Tractor-Trailer', 'Bobtail', 'Box Truck'];
-  const [vehicleTypes, setVehicleTypes] = useState(['Tractor', 'Trailer Only', 'Tractor-Trailer']);
+  const availableVehicleTypes = ['Tractor-Trailer', 'Trailer Only', 'Bobtail', 'Box Truck', 'Regular Vehicle / RV'];
+  const [vehicleTypes, setVehicleTypes] = useState(['Tractor-Trailer', 'Trailer Only']);
 
   const toggleVehicleType = (type) => {
     setVehicleTypes(prev => prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]);
