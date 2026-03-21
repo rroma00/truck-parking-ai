@@ -1,4 +1,9 @@
+import { useState } from 'react';
+
 export default function Dashboard() {
+  const [isSurfaceMenuOpen, setIsSurfaceMenuOpen] = useState(false);
+  const [selectedSurface, setSelectedSurface] = useState('Dirt');
+  
   return (
     <>
 
@@ -52,27 +57,42 @@ export default function Dashboard() {
 <div className="space-y-1.5 relative z-50">
 <label className="text-[10px] uppercase tracking-wider text-on-primary-container font-bold px-1">Surface Type</label>
 <div className="relative">
-<div className="w-full bg-white/10 border border-transparent rounded-[14px] text-sm flex items-center justify-between px-3.5 py-2.5 cursor-pointer text-slate-200 hover:bg-white/[0.12] transition-colors shadow-sm relative z-50">
-<span>Dirt</span>
-<span className="material-symbols-outlined text-[18px] text-white/50">expand_more</span>
+<div 
+  onClick={() => setIsSurfaceMenuOpen(!isSurfaceMenuOpen)}
+  className="w-full bg-white/10 border border-transparent rounded-[14px] text-sm flex items-center justify-between px-3.5 py-2.5 cursor-pointer text-slate-200 hover:bg-white/[0.12] transition-colors shadow-sm relative z-50"
+>
+<span>{selectedSurface}</span>
+<span className="material-symbols-outlined text-[18px] text-white/50">
+  {isSurfaceMenuOpen ? 'expand_less' : 'expand_more'}
+</span>
 </div>
-<div className="absolute top-[calc(100%+6px)] left-0 w-full bg-[#0a1020]/40 backdrop-blur-2xl border border-white/10 rounded-[16px] shadow-[0_12px_40px_rgba(0,0,0,0.6)] overflow-hidden p-1.5 z-[60]">
-<div className="absolute top-0 left-1/2 -translate-x-1/2 w-[60%] h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-<div className="flex flex-col gap-0.5 mt-1">
-<div className="px-3 py-2 bg-[#2563eb] text-white text-sm font-medium rounded-[10px] cursor-pointer shadow-md mb-0.5">
-Asphalt
-</div>
-<div className="px-3 py-2 text-slate-300 text-sm hover:bg-white/10 hover:text-white rounded-[10px] cursor-pointer transition-colors">
-Concrete
-</div>
-<div className="px-3 py-2 text-slate-300 text-sm hover:bg-white/10 hover:text-white rounded-[10px] cursor-pointer transition-colors">
-Gravel
-</div>
-<div className="px-3 py-2 text-slate-300 text-sm hover:bg-white/10 hover:text-white rounded-[10px] cursor-pointer transition-colors">
-Dirt
-</div>
-</div>
-</div>
+
+{isSurfaceMenuOpen && (
+  <>
+    <div className="fixed inset-0 z-40" onClick={() => setIsSurfaceMenuOpen(false)}></div>
+    <div className="absolute top-[calc(100%+6px)] left-0 w-full bg-[#0a1020]/40 backdrop-blur-2xl border border-white/10 rounded-[16px] shadow-[0_12px_40px_rgba(0,0,0,0.6)] overflow-hidden p-1.5 z-[60]">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[60%] h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+      <div className="flex flex-col gap-0.5 mt-1 relative z-10">
+        {['Asphalt', 'Concrete', 'Gravel', 'Dirt'].map((option) => (
+          <div 
+            key={option}
+            onClick={() => {
+              setSelectedSurface(option);
+              setIsSurfaceMenuOpen(false);
+            }}
+            className={`px-3 py-2 text-sm rounded-[10px] cursor-pointer transition-colors ${
+              selectedSurface === option 
+                ? 'bg-[#2563eb] text-white font-medium shadow-md' 
+                : 'text-slate-300 hover:bg-white/10 hover:text-white'
+            }`}
+          >
+            {option}
+          </div>
+        ))}
+      </div>
+    </div>
+  </>
+)}
 </div>
 </div>
 <div className="space-y-1">
