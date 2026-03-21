@@ -49,17 +49,29 @@ export default function Dashboard() {
 </label>
 </div>
 <div className="grid grid-cols-2 gap-4">
-<div className="space-y-1.5 relative group">
+<div className="space-y-1.5 relative z-50">
 <label className="text-[10px] uppercase tracking-wider text-on-primary-container font-bold px-1">Surface Type</label>
 <div className="relative">
-<select className="w-full bg-white/10 border border-white/5 rounded-xl text-sm text-white/95 focus:ring-2 focus:ring-secondary/30 focus:border-secondary/50 appearance-none bg-none px-4 py-2.5 pr-10 cursor-pointer hover:bg-white/[0.12] transition-colors [&>option]:bg-[#1a2436] [&>option]:text-white/95 shadow-sm">
-<option value="Asphalt">Asphalt</option>
-<option value="Concrete">Concrete</option>
-<option value="Gravel">Gravel</option>
-<option value="Dirt">Dirt</option>
-</select>
-<div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center text-white/40 group-hover:text-white/60 transition-colors">
-<span className="material-symbols-outlined text-[18px]">expand_more</span>
+<div className="w-full bg-white/10 border border-transparent rounded-[14px] text-sm flex items-center justify-between px-3.5 py-2.5 cursor-pointer text-slate-200 hover:bg-white/[0.12] transition-colors shadow-sm relative z-50">
+<span>Dirt</span>
+<span className="material-symbols-outlined text-[18px] text-white/50">expand_more</span>
+</div>
+<div className="absolute top-[calc(100%+6px)] left-0 w-full bg-[#0a1020]/40 backdrop-blur-2xl border border-white/10 rounded-[16px] shadow-[0_12px_40px_rgba(0,0,0,0.6)] overflow-hidden p-1.5 z-[60]">
+<div className="absolute top-0 left-1/2 -translate-x-1/2 w-[60%] h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+<div className="flex flex-col gap-0.5 mt-1">
+<div className="px-3 py-2 bg-[#2563eb] text-white text-sm font-medium rounded-[10px] cursor-pointer shadow-md mb-0.5">
+Asphalt
+</div>
+<div className="px-3 py-2 text-slate-300 text-sm hover:bg-white/10 hover:text-white rounded-[10px] cursor-pointer transition-colors">
+Concrete
+</div>
+<div className="px-3 py-2 text-slate-300 text-sm hover:bg-white/10 hover:text-white rounded-[10px] cursor-pointer transition-colors">
+Gravel
+</div>
+<div className="px-3 py-2 text-slate-300 text-sm hover:bg-white/10 hover:text-white rounded-[10px] cursor-pointer transition-colors">
+Dirt
+</div>
+</div>
 </div>
 </div>
 </div>
