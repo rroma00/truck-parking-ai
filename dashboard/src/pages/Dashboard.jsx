@@ -1,4 +1,107 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+
+const WheelTimePicker = ({ initialTime }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef(null);
+
+  const [h, setH] = useState(initialTime.split(':')[0]);
+  const [m, setM] = useState(initialTime.split(':')[1].split(' ')[0]);
+  const [p, setP] = useState(initialTime.split(' ')[1]);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) setIsOpen(false);
+    };
+    if (isOpen) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen]);
+
+  const hours = ['01','02','03','04','05','06','07','08','09','10','11','12'];
+  const minutes = ['00','05','10','15','20','25','30','35','40','45','50','55'];
+  const periods = ['AM', 'PM'];
+
+  return (
+    <div className="relative w-full" ref={containerRef}>
+      <button 
+        type="button" 
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between border-none bg-surface-container-low hover:bg-surface-container-high rounded-xl p-3 focus:ring-2 focus:ring-secondary/20 transition-all font-medium text-[15px] shadow-sm tracking-wide text-on-surface"
+      >
+        <span>{h}:{m} {p}</span>
+        <span className="material-symbols-outlined text-on-surface-variant text-[18px]">schedule</span>
+      </button>
+
+      {isOpen && (
+        <div className="absolute top-[110%] left-0 w-[240px] bg-surface-container-lowest border border-white/5 rounded-[14px] shadow-[0_12px_40px_rgba(0,0,0,0.6)] z-50 overflow-hidden transform transition-all duration-200">
+          <div className="grid grid-cols-3 pt-3 pb-2 px-1 border-b border-white/5 flex-shrink-0 bg-white/[0.02]">
+            <div className="text-center text-[11px] font-bold text-on-surface-variant tracking-wider">H</div>
+            <div className="text-center text-[11px] font-bold text-on-surface-variant tracking-wider">M</div>
+            <div className="text-center text-[11px] font-bold text-on-surface-variant tracking-wider">A/P</div>
+          </div>
+          
+          <div className="flex relative h-[200px] bg-white/[0.01]">
+            <style>{`.no-sc::-webkit-scrollbar { display: none; }`}</style>
+            
+            {/* Soft Focus Band behind lists to simulate scroll wheel center */}
+            <div className="absolute top-1/2 left-2 right-2 -translate-y-1/2 h-8 bg-white/[0.03] rounded-lg pointer-events-none"></div>
+
+            <div className="flex-1 overflow-y-auto no-sc scroll-smooth relative z-10" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+               <div className="flex flex-col items-center gap-1 py-20 px-1">
+                 {hours.map(hr => (
+                   <button 
+                     key={`h-${hr}`} 
+                     onClick={() => setH(hr)}
+                     className={`w-full py-1.5 text-center rounded-lg text-[14px] transition-all font-semibold ${
+                       h === hr ? 'bg-[#5468ff] text-white shadow-md' : 'text-on-surface hover:bg-white/5 opacity-50'
+                     }`}
+                   >
+                     {hr}
+                   </button>
+                 ))}
+               </div>
+            </div>
+            
+            <div className="w-[1px] bg-white/5 my-4 z-10"></div>
+            
+            <div className="flex-1 overflow-y-auto no-sc scroll-smooth relative z-10" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+               <div className="flex flex-col items-center gap-1 py-20 px-1">
+                 {minutes.map(mn => (
+                   <button 
+                     key={`m-${mn}`} 
+                     onClick={() => setM(mn)}
+                     className={`w-full py-1.5 text-center rounded-lg text-[14px] transition-all font-semibold ${
+                       m === mn ? 'bg-[#5468ff] text-white shadow-md' : 'text-on-surface hover:bg-white/5 opacity-50'
+                     }`}
+                   >
+                     {mn}
+                   </button>
+                 ))}
+               </div>
+            </div>
+            
+            <div className="w-[1px] bg-white/5 my-4 z-10"></div>
+            
+            <div className="flex-1 overflow-y-auto no-sc scroll-smooth relative z-10" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+               <div className="flex flex-col items-center gap-1 py-20 px-1">
+                 {periods.map(pr => (
+                   <button 
+                     key={`p-${pr}`} 
+                     onClick={() => setP(pr)}
+                     className={`w-full py-1.5 text-center rounded-lg text-[13px] transition-all font-bold tracking-wide ${
+                       p === pr ? 'bg-[#5468ff] text-white shadow-md' : 'text-on-surface hover:bg-white/5 opacity-50'
+                     }`}
+                   >
+                     {pr}
+                   </button>
+                 ))}
+               </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default function Dashboard() {
   const [isSurfaceMenuOpen, setIsSurfaceMenuOpen] = useState(false);
@@ -221,9 +324,9 @@ export default function Dashboard() {
 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 <div className="space-y-4">
 <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wide">Office Hours</label>
-<div className="grid grid-cols-2 gap-3">
-<input className="border-none bg-surface-container-low rounded-lg p-3 focus:ring-2 focus:ring-secondary/20" type="time" value="08:00"/>
-<input className="border-none bg-surface-container-low rounded-lg p-3 focus:ring-2 focus:ring-secondary/20" type="time" value="18:00"/>
+<div className="grid grid-cols-2 gap-3 relative z-40">
+<WheelTimePicker initialTime="08:00 AM" />
+<WheelTimePicker initialTime="06:00 PM" />
 </div>
 <div className="pt-4 space-y-3">
 <p className="text-sm font-semibold text-primary">After-hours capabilities:</p>
