@@ -188,6 +188,16 @@ export default function Dashboard() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [afterHoursPhone, setAfterHoursPhone] = useState('');
 
+  const availableVehicleTypes = ['Tractor', 'Trailer Only', 'Tractor-Trailer', 'Bobtail', 'Box Truck'];
+  const [vehicleTypes, setVehicleTypes] = useState(['Tractor', 'Trailer Only', 'Tractor-Trailer']);
+
+  const toggleVehicleType = (type) => {
+    setVehicleTypes(prev => prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]);
+  };
+
+  const [is53ftFriendly, setIs53ftFriendly] = useState(true);
+  const [isDropTrailerAllowed, setIsDropTrailerAllowed] = useState(false);
+
   const handlePhoneFormat = (val, setter) => {
     let coreVal = val;
     if (coreVal.startsWith('+1 ')) coreVal = coreVal.substring(3);
@@ -470,19 +480,37 @@ export default function Dashboard() {
 <div className="space-y-4">
 <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wide">Permitted Vehicle Types</label>
 <div className="flex flex-wrap gap-2">
-<button className="px-4 py-2 bg-secondary text-white rounded-full text-xs font-semibold">Tractor</button>
-<button className="px-4 py-2 bg-secondary text-white rounded-full text-xs font-semibold">Trailer Only</button>
-<button className="px-4 py-2 bg-secondary text-white rounded-full text-xs font-semibold">Tractor-Trailer</button>
-<button className="px-4 py-2 bg-surface-container-low text-on-surface-variant rounded-full text-xs font-semibold hover:bg-surface-container-high transition-colors">Bobtail</button>
-<button className="px-4 py-2 bg-surface-container-low text-on-surface-variant rounded-full text-xs font-semibold hover:bg-surface-container-high transition-colors">Box Truck</button>
+  {availableVehicleTypes.map(type => (
+    <button
+      key={type}
+      onClick={() => toggleVehicleType(type)}
+      className={`px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 ${
+        vehicleTypes.includes(type)
+          ? 'bg-secondary text-white shadow-md scale-100 hover:bg-secondary/90'
+          : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'
+      }`}
+    >
+      {type}
+    </button>
+  ))}
 </div>
-<div className="pt-4 flex items-center justify-between">
-<span className="text-sm font-medium text-primary">53ft Trailer Friendly?</span>
-<input checked="" className="w-5 h-5 rounded text-secondary border-outline-variant" type="checkbox"/>
-</div>
-<div className="flex items-center justify-between">
-<span className="text-sm font-medium text-primary">Drop Trailer Allowed?</span>
-<input className="w-5 h-5 rounded text-secondary border-outline-variant" type="checkbox"/>
+<div className="pt-4 flex flex-col gap-3">
+  <label className="flex items-center justify-between cursor-pointer group p-2 -mx-2 rounded-lg hover:bg-surface-container-low transition-colors">
+    <span className="text-sm font-medium text-primary group-hover:text-on-surface transition-colors">53ft Trailer Friendly?</span>
+    <div className="relative flex items-center justify-center w-5 h-5 rounded-full bg-surface-container-low border border-outline-variant/50 group-hover:border-secondary/70 transition-colors flex-shrink-0">
+      <input checked={is53ftFriendly} onChange={() => setIs53ftFriendly(!is53ftFriendly)} className="peer absolute inset-0 opacity-0 cursor-pointer" type="checkbox"/>
+      <div className="absolute inset-0 rounded-full bg-secondary scale-0 peer-checked:scale-100 transition-transform"></div>
+      <span className="material-symbols-outlined absolute text-[12px] text-white opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
+    </div>
+  </label>
+  <label className="flex items-center justify-between cursor-pointer group p-2 -mx-2 rounded-lg hover:bg-surface-container-low transition-colors">
+    <span className="text-sm font-medium text-primary group-hover:text-on-surface transition-colors">Drop Trailer Allowed?</span>
+    <div className="relative flex items-center justify-center w-5 h-5 rounded-full bg-surface-container-low border border-outline-variant/50 group-hover:border-secondary/70 transition-colors flex-shrink-0">
+      <input checked={isDropTrailerAllowed} onChange={() => setIsDropTrailerAllowed(!isDropTrailerAllowed)} className="peer absolute inset-0 opacity-0 cursor-pointer" type="checkbox"/>
+      <div className="absolute inset-0 rounded-full bg-secondary scale-0 peer-checked:scale-100 transition-transform"></div>
+      <span className="material-symbols-outlined absolute text-[12px] text-white opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
+    </div>
+  </label>
 </div>
 </div>
 <div className="grid grid-cols-1 gap-4">
