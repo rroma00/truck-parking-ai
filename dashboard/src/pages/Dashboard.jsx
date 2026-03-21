@@ -1,66 +1,144 @@
 import { useState, useRef, useEffect } from 'react';
 
+const WheelColumn = ({ list, value, onChange }) => {
+  const [activeIdx, setActiveIdx] = useState(list.indexOf(value));
+  const trackRef = useRef(null);
+  const accumTimer = useRef(null);
+
+  useEffect(() => {
+    const idx = list.indexOf(value);
+    if (idx !== -1) setActiveIdx(idx);
+  }, [value, list]);
+
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    
+    const handleWheel = (e) => {
+      e.preventDefault();
+      
+      if (accumTimer.current) return;
+      accumTimer.current = setTimeout(() => {
+        accumTimer.current = null;
+      }, 60);
+
+      const dir = Math.sign(e.deltaY);
+      if (dir === 0) return;
+      
+      setActiveIdx(prev => {
+        const next = Math.max(0, Math.min(list.length - 1, prev + dir));
+        if (next !== prev) onChange(list[next]);
+        return next;
+      });
+    };
+
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    return () => el.removeEventListener('wheel', handleWheel);
+  }, [list, onChange]);
+
+  return (
+    <div className="flex-1 relative z-10 overflow-hidden h-[90px]" ref={trackRef}>
+      <div 
+        className="flex flex-col items-center w-full transition-transform duration-200 ease-out absolute top-0 left-0"
+        style={{ transform: `translateY(calc(30px - ${activeIdx * 30}px))` }}
+      >
+        {list.map(item => (
+          <button 
+            key={item}
+            onClick={() => onChange(item)}
+            className={`w-full h-[30px] flex-shrink-0 flex items-center justify-center rounded-md text-[13px] font-bold transition-colors ${
+              value === item ? 'text-white' : 'text-on-surface/50 hover:text-on-surface'
+            }`}
+          >
+            {item}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const WheelTimePicker = ({ initialTime }) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
-
+  
   const [h, setH] = useState(initialTime.split(':')[0]);
   const [m, setM] = useState(initialTime.split(':')[1].split(' ')[0]);
   const [p, setP] = useState(initialTime.split(' ')[1]);
   const [typed, setTyped] = useState(`${h}:${m} ${p}`);
-
-  const hRef = useRef(null);
-  const mRef = useRef(null);
-  const pRef = useRef(null);
 
   const hours = ['01','02','03','04','05','06','07','08','09','10','11','12'];
   const minutes = ['00','05','10','15','20','25','30','35','40','45','50','55'];
   const periods = ['AM', 'PM'];
 
   useEffect(() => {
+    // Only automatically sync changes backwards to the text box
+    // while the component is open or updated internally.
     setTyped(`${h}:${m} ${p}`);
   }, [h, m, p]);
 
-  const handleType = (e) => {
-    const v = e.target.value;
-    setTyped(v);
-    const mch = v.match(/^(\d{1,2})[:\s]*(\d{0,2})\s*(a|p|am|pm)?$/i);
+  const commitInput = (inputStr) => {
+    // Basic catch for formats like "8:00 am", "615pm", "12 00 P"
+    const mch = inputStr.match(/^(\d{1,2})[:\s]*(\d{0,2})\s*(a|p|am|pm)?$/i);
     if (mch) {
-      const hh = mch[1].padStart(2, '0');
-      const mm = (mch[2] || '00').padEnd(2, '0');
+      let hh = mch[1].padStart(2, '0');
+      let mmRaw = mch[2] || '00';
+      
+      // Round minutes strictly to nearest 5
+      let mmNum = parseInt(mmRaw.padEnd(2, '0'), 10);
+      if (isNaN(mmNum)) mmNum = 0;
+      mmNum = Math.round(mmNum / 5) * 5;
+      if (mmNum === 60) mmNum = 55;
+      const mm = mmNum.toString().padStart(2, '0');
+      
       let pp = (mch[3] || 'AM').toUpperCase();
-      if (pp === 'A' || pp === 'AM') pp = 'AM';
-      if (pp === 'P' || pp === 'PM') pp = 'PM';
-      if (hours.includes(hh) && minutes.includes(mm) && periods.includes(pp)) {
-        setH(hh); setM(mm); setP(pp);
-      }
+      if (pp.startsWith('A')) pp = 'AM';
+      else if (pp.startsWith('P')) pp = 'PM';
+      else pp = 'AM'; // default fallback
+      
+      // Validate hour against array
+      if (!hours.includes(hh)) hh = '12'; 
+      
+      setH(hh); setM(mm); setP(pp);
+      setTyped(`${hh}:${mm} ${pp}`);
+    } else {
+      // Revert if entirely unparseable
+      setTyped(`${h}:${m} ${p}`);
     }
   };
 
-  const handleStepScroll = (e, list, current, setter, ref) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const dir = e.deltaY > 0 ? 1 : -1;
-    const cid = list.indexOf(current);
-    const nid = Math.max(0, Math.min(list.length - 1, cid + dir));
-    setter(list[nid]);
-    if (ref.current) ref.current.scrollTop = nid * 30; // 30px is new item height
+  const handleType = (e) => setTyped(e.target.value);
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      commitInput(typed);
+      setIsOpen(false);
+    }
   };
+
+  const handleBlur = () => commitInput(typed);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (containerRef.current && !containerRef.current.contains(e.target)) setIsOpen(false);
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
     };
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
-      setTimeout(() => {
-        if (hRef.current) hRef.current.scrollTop = hours.indexOf(h) * 30;
-        if (mRef.current) mRef.current.scrollTop = minutes.indexOf(m) * 30;
-        if (pRef.current) pRef.current.scrollTop = periods.indexOf(p) * 30;
-      }, 50);
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen, h, m, p]);
+  }, [isOpen]);
+
+  const dropdownRef = useRef(null);
+  useEffect(() => {
+    const el = dropdownRef.current;
+    if (!el) return;
+    const preventWheel = (e) => e.preventDefault();
+    // Aggressive catch-all to ensure page never scrolls while interacting with the picker body
+    el.addEventListener('wheel', preventWheel, { passive: false });
+    return () => el.removeEventListener('wheel', preventWheel);
+  }, [isOpen]);
 
   return (
     <div className="relative w-full" ref={containerRef}>
@@ -69,90 +147,34 @@ const WheelTimePicker = ({ initialTime }) => {
           type="text" 
           value={typed}
           onChange={handleType}
+          onKeyDown={handleKeyDown}
           onFocus={() => setIsOpen(true)}
-          onBlur={() => setTyped(`${h}:${m} ${p}`)}
+          onBlur={handleBlur}
           className="w-full border-none bg-surface-container-low hover:bg-surface-container-high rounded-xl p-3 pr-10 focus:ring-2 focus:ring-secondary/20 transition-all font-medium text-[15px] shadow-sm tracking-wide text-on-surface"
         />
         <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px] pointer-events-none">schedule</span>
       </div>
 
       {isOpen && (
-        <div className="absolute top-[105%] left-0 w-[220px] bg-surface-container-lowest border border-white/5 rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.7)] z-50 overflow-hidden outline-none">
+        <div 
+          ref={dropdownRef}
+          className="time-picker-dropdown absolute top-[105%] left-0 w-[220px] bg-surface-container-lowest border border-white/5 rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.7)] z-50 outline-none overflow-hidden"
+        >
           <div className="grid grid-cols-3 pt-2 pb-0.5 px-0.5 border-b border-white/5 bg-white/[0.02]">
             <div className="text-center text-[9px] font-bold text-on-surface-variant/70 tracking-tighter uppercase">Hr</div>
             <div className="text-center text-[9px] font-bold text-on-surface-variant/70 tracking-tighter uppercase">Min</div>
             <div className="text-center text-[9px] font-bold text-on-surface-variant/70 tracking-tighter uppercase">Per</div>
           </div>
           
-          <div className="flex relative h-[90px] bg-white/[0.01] overscroll-contain" onWheel={(e) => e.stopPropagation()}>
-            <style>{`.no-sc::-webkit-scrollbar { display: none; }`}</style>
-            
-            {/* Ultra-tight selection zone */}
-            <div className="absolute top-[30px] left-1 right-1 h-[30px] bg-[#5468ff]/15 rounded-lg pointer-events-none border border-[#5468ff]/30"></div>
+          <div className="flex relative h-[90px] bg-white/[0.01]">
+            {/* Embedded Active Focus Band directly intercepting the center */}
+            <div className="absolute top-[30px] left-1 right-1 h-[30px] bg-[#5468ff] rounded-md pointer-events-none border border-white/10 shadow-inner z-0"></div>
 
-            <div 
-              ref={hRef} 
-              onWheel={(e) => handleStepScroll(e, hours, h, setH, hRef)}
-              className="flex-1 overflow-y-auto no-sc scroll-smooth relative z-10 snap-y snap-mandatory overscroll-contain" 
-            >
-               <div className="flex flex-col items-center py-[30px]">
-                 {hours.map(hr => (
-                   <button 
-                     key={`h-${hr}`} 
-                     onClick={() => setH(hr)}
-                     className={`w-full h-[30px] flex-shrink-0 flex items-center justify-center rounded-md text-[13px] transition-all snap-center font-bold ${
-                       h === hr ? 'bg-[#5468ff] text-white' : 'text-on-surface/50 hover:text-on-surface'
-                     }`}
-                   >
-                     {hr}
-                   </button>
-                 ))}
-               </div>
-            </div>
-            
-            <div className="w-[1px] bg-white/5 my-2"></div>
-            
-            <div 
-              ref={mRef} 
-              onWheel={(e) => handleStepScroll(e, minutes, m, setM, mRef)}
-              className="flex-1 overflow-y-auto no-sc scroll-smooth relative z-10 snap-y snap-mandatory overscroll-contain"
-            >
-               <div className="flex flex-col items-center py-[30px]">
-                 {minutes.map(mn => (
-                   <button 
-                     key={`m-${mn}`} 
-                     onClick={() => setM(mn)}
-                     className={`w-full h-[30px] flex-shrink-0 flex items-center justify-center rounded-md text-[13px] transition-all snap-center font-bold ${
-                       m === mn ? 'bg-[#5468ff] text-white' : 'text-on-surface/50 hover:text-on-surface'
-                     }`}
-                   >
-                     {mn}
-                   </button>
-                 ))}
-               </div>
-            </div>
-            
-            <div className="w-[1px] bg-white/5 my-2"></div>
-            
-            <div 
-              ref={pRef} 
-              onWheel={(e) => handleStepScroll(e, periods, p, setP, pRef)}
-              className="flex-1 overflow-y-auto no-sc scroll-smooth relative z-10 snap-y snap-mandatory overscroll-contain"
-            >
-               <div className="flex flex-col items-center py-[30px]">
-                 {periods.map(pr => (
-                   <button 
-                     key={`p-${pr}`} 
-                     onClick={() => setP(pr)}
-                     className={`w-full h-[30px] flex-shrink-0 flex items-center justify-center rounded-md text-[12px] transition-all snap-center font-black ${
-                       p === pr ? 'bg-[#5468ff] text-white' : 'text-on-surface/50 hover:text-on-surface'
-                     }`}
-                   >
-                     {pr}
-                   </button>
-                 ))}
-               </div>
-            </div>
+            <WheelColumn list={hours} value={h} onChange={setH} />
+            <div className="w-[1px] bg-white/5 my-2 z-10"></div>
+            <WheelColumn list={minutes} value={m} onChange={setM} />
+            <div className="w-[1px] bg-white/5 my-2 z-10"></div>
+            <WheelColumn list={periods} value={p} onChange={setP} />
           </div>
         </div>
       )}
