@@ -141,15 +141,23 @@ export default function Dashboard() {
 <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wide">After-Hours Support</label>
 <input className="w-full border-none bg-surface-container-low rounded-lg p-3 focus:ring-2 focus:ring-secondary/20" placeholder="+1 (555) 000-0000" type="tel"/>
 </div>
-<div className="col-span-2 flex items-center gap-6 p-4 bg-surface-container-low rounded-xl">
+<div className="col-span-2 flex flex-wrap items-center gap-6 p-4 bg-surface-container-low rounded-xl">
 <span className="text-sm font-medium text-primary">Booking Type:</span>
-<label className="flex items-center gap-2 cursor-pointer">
-<input checked="" className="text-secondary focus:ring-secondary" name="booking" type="radio"/>
-<span className="text-sm text-on-surface-variant">Reservation Required</span>
+<label className="flex items-center gap-2.5 cursor-pointer group">
+<div className="relative flex items-center justify-center w-5 h-5">
+<input defaultChecked={true} className="peer absolute inset-0 opacity-0 cursor-pointer z-10" name="booking" type="radio"/>
+<div className="absolute inset-0 rounded-full border-2 border-on-surface-variant/30 peer-checked:border-secondary peer-checked:bg-secondary/10 transition-colors group-hover:border-secondary/60"></div>
+<div className="absolute inset-[4px] rounded-full bg-secondary scale-0 peer-checked:scale-100 transition-transform duration-200"></div>
+</div>
+<span className="text-sm font-medium text-on-surface-variant group-hover:text-primary transition-colors">Reservation Required</span>
 </label>
-<label className="flex items-center gap-2 cursor-pointer">
-<input className="text-secondary focus:ring-secondary" name="booking" type="radio"/>
-<span className="text-sm text-on-surface-variant">First Come, First Served (FCFS)</span>
+<label className="flex items-center gap-2.5 cursor-pointer group">
+<div className="relative flex items-center justify-center w-5 h-5">
+<input className="peer absolute inset-0 opacity-0 cursor-pointer z-10" name="booking" type="radio"/>
+<div className="absolute inset-0 rounded-full border-2 border-on-surface-variant/30 peer-checked:border-secondary peer-checked:bg-secondary/10 transition-colors group-hover:border-secondary/60"></div>
+<div className="absolute inset-[4px] rounded-full bg-secondary scale-0 peer-checked:scale-100 transition-transform duration-200"></div>
+</div>
+<span className="text-sm font-medium text-on-surface-variant group-hover:text-primary transition-colors">First Come, First Served (FCFS)</span>
 </label>
 </div>
 </div>
