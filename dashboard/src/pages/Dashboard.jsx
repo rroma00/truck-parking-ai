@@ -33,20 +33,20 @@ const WheelTimePicker = ({ initialTime }) => {
 
       {isOpen && (
         <div className="absolute top-[110%] left-0 w-[240px] bg-surface-container-lowest border border-white/5 rounded-[14px] shadow-[0_12px_40px_rgba(0,0,0,0.6)] z-50 overflow-hidden transform transition-all duration-200">
-          <div className="grid grid-cols-3 pt-3 pb-2 px-1 border-b border-white/5 flex-shrink-0 bg-white/[0.02]">
-            <div className="text-center text-[11px] font-bold text-on-surface-variant tracking-wider">H</div>
-            <div className="text-center text-[11px] font-bold text-on-surface-variant tracking-wider">M</div>
-            <div className="text-center text-[11px] font-bold text-on-surface-variant tracking-wider">A/P</div>
+          <div className="grid grid-cols-3 pt-2.5 pb-1 px-1 border-b border-white/5 flex-shrink-0 bg-white/[0.02]">
+            <div className="text-center text-[10px] font-bold text-on-surface-variant/80 tracking-widest uppercase">Hours</div>
+            <div className="text-center text-[10px] font-bold text-on-surface-variant/80 tracking-widest uppercase">Mins</div>
+            <div className="text-center text-[10px] font-bold text-on-surface-variant/80 tracking-widest uppercase">Mode</div>
           </div>
           
-          <div className="flex relative h-[200px] bg-white/[0.01]">
+          <div className="flex relative h-[155px] bg-white/[0.01]">
             <style>{`.no-sc::-webkit-scrollbar { display: none; }`}</style>
             
             {/* Soft Focus Band behind lists to simulate scroll wheel center */}
             <div className="absolute top-1/2 left-2 right-2 -translate-y-1/2 h-8 bg-white/[0.03] rounded-lg pointer-events-none"></div>
 
             <div className="flex-1 overflow-y-auto no-sc scroll-smooth relative z-10" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-               <div className="flex flex-col items-center gap-1 py-20 px-1">
+               <div className="flex flex-col items-center gap-1 py-[62px] px-1">
                  {hours.map(hr => (
                    <button 
                      key={`h-${hr}`} 
@@ -64,7 +64,7 @@ const WheelTimePicker = ({ initialTime }) => {
             <div className="w-[1px] bg-white/5 my-4 z-10"></div>
             
             <div className="flex-1 overflow-y-auto no-sc scroll-smooth relative z-10" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-               <div className="flex flex-col items-center gap-1 py-20 px-1">
+               <div className="flex flex-col items-center gap-1 py-[62px] px-1">
                  {minutes.map(mn => (
                    <button 
                      key={`m-${mn}`} 
@@ -82,7 +82,7 @@ const WheelTimePicker = ({ initialTime }) => {
             <div className="w-[1px] bg-white/5 my-4 z-10"></div>
             
             <div className="flex-1 overflow-y-auto no-sc scroll-smooth relative z-10" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-               <div className="flex flex-col items-center gap-1 py-20 px-1">
+               <div className="flex flex-col items-center gap-1 py-[62px] px-1">
                  {periods.map(pr => (
                    <button 
                      key={`p-${pr}`} 
