@@ -9,6 +9,7 @@ export default function Dashboard() {
   const handlePhoneFormat = (val, setter) => {
     let coreVal = val;
     if (coreVal.startsWith('+1 ')) coreVal = coreVal.substring(3);
+    else if (coreVal.startsWith('+1')) coreVal = coreVal.substring(2);
     
     let nums = coreVal.replace(/\D/g, '');
     
@@ -20,9 +21,9 @@ export default function Dashboard() {
       return;
     }
     
-    if (nums.length <= 3) setter(`+1 (${nums}`);
-    else if (nums.length <= 6) setter(`+1 (${nums.slice(0, 3)}) ${nums.slice(3)}`);
-    else setter(`+1 (${nums.slice(0, 3)}) ${nums.slice(3, 6)}-${nums.slice(6, 10)}`);
+    if (nums.length <= 3) setter(`(${nums}`);
+    else if (nums.length <= 6) setter(`(${nums.slice(0, 3)}) ${nums.slice(3)}`);
+    else setter(`(${nums.slice(0, 3)}) ${nums.slice(3, 6)}-${nums.slice(6, 10)}`);
   };
   
   return (
@@ -156,23 +157,29 @@ export default function Dashboard() {
 </div>
 <div className="space-y-2">
 <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wide">Phone Number</label>
+<div className="relative flex items-center">
+<span className="absolute left-3 text-white/50 text-[15px] pointer-events-none">+1</span>
 <input 
   value={phoneNumber}
   onChange={(e) => handlePhoneFormat(e.target.value, setPhoneNumber)}
-  className="w-full border-none bg-surface-container-low rounded-lg p-3 focus:ring-2 focus:ring-secondary/20" 
-  placeholder="+1 (555) 000-0000" 
+  className="w-full border-none bg-surface-container-low rounded-lg py-3 pr-3 pl-[34px] focus:ring-2 focus:ring-secondary/20" 
+  placeholder="(555) 000-0000" 
   type="tel"
 />
 </div>
+</div>
 <div className="space-y-2">
 <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wide">After-Hours Support</label>
+<div className="relative flex items-center">
+<span className="absolute left-3 text-white/50 text-[15px] pointer-events-none">+1</span>
 <input 
   value={afterHoursPhone}
   onChange={(e) => handlePhoneFormat(e.target.value, setAfterHoursPhone)}
-  className="w-full border-none bg-surface-container-low rounded-lg p-3 focus:ring-2 focus:ring-secondary/20" 
-  placeholder="+1 (555) 000-0000" 
+  className="w-full border-none bg-surface-container-low rounded-lg py-3 pr-3 pl-[34px] focus:ring-2 focus:ring-secondary/20" 
+  placeholder="(555) 000-0000" 
   type="tel"
 />
+</div>
 </div>
 <div className="col-span-2 flex flex-wrap items-center gap-6 p-4 bg-surface-container-low rounded-xl">
 <span className="text-sm font-medium text-primary">Booking Type:</span>
