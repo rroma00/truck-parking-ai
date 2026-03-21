@@ -209,11 +209,12 @@ export default function Dashboard() {
 <span className="w-8 h-8 rounded-lg bg-surface-container-low flex items-center justify-center text-secondary font-bold text-sm">02</span>
                             HOURS &amp; ACCESS
                         </h3>
-<label className="flex items-center gap-3 cursor-pointer">
+<label className="flex items-center gap-3 cursor-pointer group">
 <span className="text-sm font-semibold text-primary">Open 24/7</span>
-<div className="relative inline-flex items-center cursor-pointer">
-<input checked="" className="sr-only peer" type="checkbox"/>
-<div className="w-11 h-6 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+<div className="relative inline-flex items-center">
+<input defaultChecked={true} className="sr-only peer" type="checkbox"/>
+<div className="w-11 h-6 bg-surface-container-high border border-outline-variant/30 rounded-full peer peer-checked:bg-secondary peer-checked:border-secondary transition-all duration-200 ease-in-out"></div>
+<div className="absolute left-[2px] top-[2px] bg-white border border-gray-300 rounded-full h-[20px] w-[20px] transition-transform duration-200 ease-in-out peer-checked:translate-x-full peer-checked:border-transparent shadow-sm"></div>
 </div>
 </label>
 </div>
@@ -242,9 +243,15 @@ export default function Dashboard() {
 <span className="material-symbols-outlined text-secondary text-lg">door_front</span>
 <span className="text-sm font-bold text-primary">Gate Controls</span>
 </div>
-<label className="flex items-center gap-3 text-sm text-on-surface-variant">
-<input checked="" className="rounded text-secondary" type="checkbox"/> Automatic Gate
-                            </label>
+<label className="flex items-center gap-3 text-sm text-on-surface-variant font-medium cursor-pointer group w-fit">
+<div className="relative flex items-center justify-center w-5 h-5 rounded bg-surface-container-low border border-outline-variant/50 group-hover:border-secondary/70 transition-colors">
+<input defaultChecked={true} className="peer absolute inset-0 opacity-0 cursor-pointer" type="checkbox"/>
+<div className="absolute inset-0 rounded bg-secondary scale-0 peer-checked:scale-100 transition-transform duration-200 flex items-center justify-center shadow-[0_2px_8px_rgba(37,99,235,0.4)]">
+<span className="material-symbols-outlined text-white text-[14px] font-bold">check</span>
+</div>
+</div>
+<span className="group-hover:text-primary transition-colors">Automatic Gate</span>
+</label>
 <div className="space-y-2">
 <label className="text-[10px] font-bold text-on-surface-variant uppercase">Default Gate Code</label>
 <input className="w-full border-none bg-white rounded-lg p-3 focus:ring-2 focus:ring-secondary/20" placeholder="1234#" type="text"/>
