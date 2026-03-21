@@ -409,15 +409,30 @@ export default function Dashboard() {
 </div>
 <div className="pt-4 space-y-3">
 <p className="text-sm font-semibold text-primary">After-hours capabilities:</p>
-<label className="flex items-center gap-3 text-sm text-on-surface-variant">
-<input checked="" className="rounded text-secondary" type="checkbox"/> After-hours Parking Allowed
-                                </label>
-<label className="flex items-center gap-3 text-sm text-on-surface-variant">
-<input checked="" className="rounded text-secondary" type="checkbox"/> After-hours Entry
-                                </label>
-<label className="flex items-center gap-3 text-sm text-on-surface-variant">
-<input checked="" className="rounded text-secondary" type="checkbox"/> After-hours Exit
-                                </label>
+<label className="flex items-center gap-3 text-sm text-on-surface-variant cursor-pointer group w-fit transition-colors hover:text-on-surface">
+  <div className="relative flex items-center justify-center w-5 h-5 rounded-full bg-surface-container-low border border-outline-variant/50 group-hover:border-secondary/70 transition-colors">
+    <input defaultChecked={true} className="peer absolute inset-0 opacity-0 cursor-pointer" type="checkbox"/>
+    <div className="absolute inset-0 rounded-full bg-secondary scale-0 peer-checked:scale-100 transition-transform"></div>
+    <span className="material-symbols-outlined absolute text-[12px] text-white opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
+  </div>
+  <span className="font-medium">After-hours Parking Allowed</span>
+</label>
+<label className="flex items-center gap-3 text-sm text-on-surface-variant cursor-pointer group w-fit transition-colors hover:text-on-surface">
+  <div className="relative flex items-center justify-center w-5 h-5 rounded-full bg-surface-container-low border border-outline-variant/50 group-hover:border-secondary/70 transition-colors">
+    <input defaultChecked={true} className="peer absolute inset-0 opacity-0 cursor-pointer" type="checkbox"/>
+    <div className="absolute inset-0 rounded-full bg-secondary scale-0 peer-checked:scale-100 transition-transform"></div>
+    <span className="material-symbols-outlined absolute text-[12px] text-white opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
+  </div>
+  <span className="font-medium">After-hours Entry</span>
+</label>
+<label className="flex items-center gap-3 text-sm text-on-surface-variant cursor-pointer group w-fit transition-colors hover:text-on-surface">
+  <div className="relative flex items-center justify-center w-5 h-5 rounded-full bg-surface-container-low border border-outline-variant/50 group-hover:border-secondary/70 transition-colors">
+    <input defaultChecked={true} className="peer absolute inset-0 opacity-0 cursor-pointer" type="checkbox"/>
+    <div className="absolute inset-0 rounded-full bg-secondary scale-0 peer-checked:scale-100 transition-transform"></div>
+    <span className="material-symbols-outlined absolute text-[12px] text-white opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
+  </div>
+  <span className="font-medium">After-hours Exit</span>
+</label>
 </div>
 </div>
 <div className="space-y-4 p-6 bg-surface-container-low rounded-xl">
