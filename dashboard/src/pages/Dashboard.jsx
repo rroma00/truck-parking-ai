@@ -49,27 +49,18 @@ export default function Dashboard() {
 </label>
 </div>
 <div className="grid grid-cols-2 gap-4">
-<div className="space-y-1 relative z-50">
+<div className="space-y-1 relative">
 <label className="text-[10px] uppercase tracking-wider text-on-primary-container font-bold">Surface Type</label>
-<div className="w-full bg-white/10 border border-secondary rounded-lg text-sm flex items-center justify-between px-3 py-2 cursor-pointer shadow-[0_0_8px_rgba(59,130,246,0.3)]">
-<span className="text-white">Asphalt</span>
-<span className="material-symbols-outlined text-white/70 text-lg leading-none">expand_more</span>
-</div>
-<div className="absolute top-full left-0 mt-2 w-full bg-[#1e2a3b]/95 backdrop-blur-md rounded-lg shadow-2xl overflow-hidden border border-white/5 pb-1">
-<div className="flex flex-col pt-1">
-<div className="px-3 py-2.5 bg-blue-500/25 text-white text-sm font-medium cursor-pointer">
-Asphalt
-</div>
-<div className="px-3 py-2.5 text-slate-300 text-sm hover:bg-white/10 hover:text-white cursor-pointer transition-colors">
-Concrete
-</div>
-<div className="px-3 py-2.5 text-slate-300 text-sm hover:bg-white/10 hover:text-white cursor-pointer transition-colors">
-Gravel
-</div>
-<div className="px-3 py-2.5 text-slate-300 text-sm hover:bg-white/10 hover:text-white cursor-pointer transition-colors">
-Dirt
-</div>
-</div>
+<div className="relative">
+<select className="w-full bg-white/10 border-transparent rounded-lg text-sm text-white focus:ring-secondary focus:border-secondary appearance-none px-3 py-2 cursor-pointer hover:bg-white/15 transition-colors [&>option]:bg-[#182136] [&>option]:text-white">
+<option value="Asphalt">Asphalt</option>
+<option value="Concrete">Concrete</option>
+<option value="Gravel">Gravel</option>
+<option value="Dirt">Dirt</option>
+</select>
+<span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none text-[20px]">
+expand_more
+</span>
 </div>
 </div>
 <div className="space-y-1">
