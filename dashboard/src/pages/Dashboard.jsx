@@ -198,6 +198,20 @@ export default function Dashboard() {
   const [is53ftFriendly, setIs53ftFriendly] = useState(true);
   const [isDropTrailerAllowed, setIsDropTrailerAllowed] = useState(false);
 
+  const [maxLength, setMaxLength] = useState('75');
+  const [maxStay, setMaxStay] = useState('No Limit');
+  const [isStayMenuOpen, setIsStayMenuOpen] = useState(false);
+  const stayOptions = ['No Limit', '24 Hours', '48 Hours', '1 Week', 'Monthly'];
+  const stayContainerRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (stayContainerRef.current && !stayContainerRef.current.contains(e.target)) setIsStayMenuOpen(false);
+    };
+    if (isStayMenuOpen) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isStayMenuOpen]);
+
   const handlePhoneFormat = (val, setter) => {
     let coreVal = val;
     if (coreVal.startsWith('+1 ')) coreVal = coreVal.substring(3);
@@ -515,18 +529,46 @@ export default function Dashboard() {
 </div>
 <div className="grid grid-cols-1 gap-4">
 <div className="space-y-2">
-<label className="text-[10px] font-bold text-on-surface-variant uppercase">Max Vehicle Length (ft)</label>
-<input className="w-full border-none bg-surface-container-low rounded-lg p-3 focus:ring-2 focus:ring-secondary/20" type="number" value="75"/>
+<label className="text-[10px] font-bold text-on-surface-variant uppercase">Max Vehicle Length</label>
+<div className="relative group">
+  <input 
+    type="text" 
+    value={maxLength}
+    onChange={(e) => setMaxLength(e.target.value.replace(/\D/g, ''))}
+    className="w-full border-none bg-surface-container-low hover:bg-surface-container-high rounded-xl p-3 pr-8 focus:ring-2 focus:ring-secondary/20 transition-all font-medium text-[15px] shadow-sm tracking-wide text-on-surface"
+  />
+  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant/70 font-medium text-sm pointer-events-none">ft</span>
 </div>
-<div className="space-y-2">
+</div>
+<div className="space-y-2" ref={stayContainerRef}>
 <label className="text-[10px] font-bold text-on-surface-variant uppercase">Max Stay Duration</label>
-<select className="w-full border-none bg-surface-container-low rounded-lg p-3 focus:ring-2 focus:ring-secondary/20 text-sm">
-<option>No Limit</option>
-<option>24 Hours</option>
-<option>48 Hours</option>
-<option>1 Week</option>
-<option>Monthly</option>
-</select>
+<div className="relative w-full">
+  <button 
+    type="button" 
+    onClick={() => setIsStayMenuOpen(!isStayMenuOpen)}
+    className="w-full flex items-center justify-between border-none bg-surface-container-low hover:bg-surface-container-high rounded-xl p-3 focus:ring-2 focus:ring-secondary/20 transition-all font-medium text-[15px] shadow-sm tracking-wide text-on-surface"
+  >
+    <span>{maxStay}</span>
+    <span className={`material-symbols-outlined text-on-surface-variant text-[18px] transition-transform duration-200 ${isStayMenuOpen ? 'rotate-180' : ''}`}>expand_more</span>
+  </button>
+  {isStayMenuOpen && (
+    <div className="absolute top-[105%] left-0 w-full bg-surface-container-lowest border border-white/5 rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.7)] z-50 overflow-hidden transform transition-all duration-200 p-1">
+      {stayOptions.map(opt => (
+        <button
+          key={opt}
+          onClick={() => { setMaxStay(opt); setIsStayMenuOpen(false); }}
+          className={`w-full flex items-center px-4 py-2.5 rounded-lg text-[14px] font-medium transition-colors ${
+            maxStay === opt 
+              ? 'bg-[#5468ff]/10 text-[#5468ff]' 
+              : 'text-on-surface hover:bg-surface-container-low'
+          }`}
+        >
+          {opt}
+        </button>
+      ))}
+    </div>
+  )}
+</div>
 </div>
 </div>
 </div>
