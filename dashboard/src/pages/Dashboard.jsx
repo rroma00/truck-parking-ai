@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 
-const WheelColumn = ({ list, value, onChange }) => {
+const WheelColumn = ({ list, value, onChange, throttle = 250 }) => {
   const [activeIdx, setActiveIdx] = useState(list.indexOf(value));
   const trackRef = useRef(null);
   const accumTimer = useRef(null);
@@ -20,7 +20,7 @@ const WheelColumn = ({ list, value, onChange }) => {
       if (accumTimer.current) return;
       accumTimer.current = setTimeout(() => {
         accumTimer.current = null;
-      }, 250);
+      }, throttle);
 
       const dir = Math.sign(e.deltaY);
       if (dir === 0) return;
@@ -172,7 +172,7 @@ const WheelTimePicker = ({ initialTime }) => {
 
             <WheelColumn list={hours} value={h} onChange={setH} />
             <div className="w-[1px] bg-white/5 my-2 z-10"></div>
-            <WheelColumn list={minutes} value={m} onChange={setM} />
+            <WheelColumn list={minutes} value={m} onChange={setM} throttle={100} />
             <div className="w-[1px] bg-white/5 my-2 z-10"></div>
             <WheelColumn list={periods} value={p} onChange={setP} />
           </div>
