@@ -49,18 +49,18 @@ export default function Dashboard() {
 </label>
 </div>
 <div className="grid grid-cols-2 gap-4">
-<div className="space-y-1 relative">
-<label className="text-[10px] uppercase tracking-wider text-on-primary-container font-bold">Surface Type</label>
+<div className="space-y-1.5 relative group">
+<label className="text-[10px] uppercase tracking-wider text-on-primary-container font-bold px-1">Surface Type</label>
 <div className="relative">
-<select className="w-full bg-white/10 border-transparent rounded-lg text-sm text-white focus:ring-secondary focus:border-secondary appearance-none px-3 py-2 cursor-pointer hover:bg-white/15 transition-colors [&>option]:bg-[#182136] [&>option]:text-white">
+<select className="w-full bg-white/10 border border-white/5 rounded-xl text-sm text-white/95 focus:ring-2 focus:ring-secondary/30 focus:border-secondary/50 appearance-none bg-none px-4 py-2.5 pr-10 cursor-pointer hover:bg-white/[0.12] transition-colors [&>option]:bg-[#1a2436] [&>option]:text-white/95 shadow-sm">
 <option value="Asphalt">Asphalt</option>
 <option value="Concrete">Concrete</option>
 <option value="Gravel">Gravel</option>
 <option value="Dirt">Dirt</option>
 </select>
-<span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none text-[20px]">
-expand_more
-</span>
+<div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center text-white/40 group-hover:text-white/60 transition-colors">
+<span className="material-symbols-outlined text-[18px]">expand_more</span>
+</div>
 </div>
 </div>
 <div className="space-y-1">
