@@ -20,7 +20,7 @@ const WheelColumn = ({ list, value, onChange }) => {
       if (accumTimer.current) return;
       accumTimer.current = setTimeout(() => {
         accumTimer.current = null;
-      }, 60);
+      }, 250);
 
       const dir = Math.sign(e.deltaY);
       if (dir === 0) return;
