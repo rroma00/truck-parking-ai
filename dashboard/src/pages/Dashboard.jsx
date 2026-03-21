@@ -188,7 +188,7 @@ export default function Dashboard() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [afterHoursPhone, setAfterHoursPhone] = useState('');
 
-  const availableVehicleTypes = ['Tractor-Trailer', 'Trailer Only', 'Bobtail', 'Box Truck', 'Regular Vehicle / RV'];
+  const availableVehicleTypes = ['Tractor-Trailer', 'Trailer Only', 'Bobtail', 'Box Truck', 'Sedan/SUV', 'RV'];
   const [vehicleTypes, setVehicleTypes] = useState(['Tractor-Trailer', 'Trailer Only']);
 
   const toggleVehicleType = (type) => {
@@ -197,6 +197,25 @@ export default function Dashboard() {
 
   const [is53ftFriendly, setIs53ftFriendly] = useState(true);
   const [isDropTrailerAllowed, setIsDropTrailerAllowed] = useState(false);
+
+  const [dailyRate, setDailyRate] = useState('25.00');
+  const [weeklyRate, setWeeklyRate] = useState('140.00');
+  const [monthlyRate, setMonthlyRate] = useState('500.00');
+
+  const handleCurrencyFormat = (val, setter) => {
+    let clean = val.replace(/[^\d.]/g, '');
+    const parts = clean.split('.');
+    if (parts.length > 2) clean = parts[0] + '.' + parts.slice(1).join('');
+    if (clean.includes('.')) {
+      const [whole, decimal] = clean.split('.');
+      clean = `${whole}.${decimal.slice(0, 2)}`;
+    }
+    setter(clean);
+  };
+
+  const [totalSpaces, setTotalSpaces] = useState('100');
+  const [availableNow, setAvailableNow] = useState('45');
+  const [isRealTimeTrackingEnabled, setIsRealTimeTrackingEnabled] = useState(false);
 
   const [maxLength, setMaxLength] = useState('75');
   const [maxStay, setMaxStay] = useState('No Limit');
@@ -364,7 +383,7 @@ export default function Dashboard() {
 <div className="space-y-2">
 <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wide">Phone Number</label>
 <div className="relative flex items-center">
-<span className="absolute left-3 text-white/50 text-[15px] pointer-events-none">+1</span>
+<span className="absolute left-3 text-on-surface text-[15px] pointer-events-none">+1</span>
 <input 
   value={phoneNumber}
   onChange={(e) => handlePhoneFormat(e.target.value, setPhoneNumber)}
@@ -377,7 +396,7 @@ export default function Dashboard() {
 <div className="space-y-2">
 <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wide">After-Hours Support</label>
 <div className="relative flex items-center">
-<span className="absolute left-3 text-white/50 text-[15px] pointer-events-none">+1</span>
+<span className="absolute left-3 text-on-surface text-[15px] pointer-events-none">+1</span>
 <input 
   value={afterHoursPhone}
   onChange={(e) => handlePhoneFormat(e.target.value, setAfterHoursPhone)}
@@ -583,18 +602,18 @@ export default function Dashboard() {
 <div className="space-y-4 col-span-1">
 <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wide">Surface Type</label>
 <div className="space-y-2">
-<label className="flex items-center gap-3 p-3 bg-surface-container-low rounded-lg cursor-pointer">
-<input checked="" className="text-secondary" name="surface" type="radio"/>
-<span className="text-sm">Asphalt</span>
+{['Asphalt', 'Concrete', 'Gravel', 'Dirt'].map(surface => (
+<label key={surface} className="flex items-center gap-3 p-3 bg-surface-container-low rounded-lg cursor-pointer hover:bg-surface-container-high transition-colors">
+<input 
+  checked={selectedSurface === surface}
+  onChange={() => setSelectedSurface(surface)}
+  className="text-secondary cursor-pointer" 
+  name="surface" 
+  type="radio"
+/>
+<span className="text-sm">{surface}</span>
 </label>
-<label className="flex items-center gap-3 p-3 bg-surface-container-low rounded-lg cursor-pointer">
-<input className="text-secondary" name="surface" type="radio"/>
-<span className="text-sm">Concrete</span>
-</label>
-<label className="flex items-center gap-3 p-3 bg-surface-container-low rounded-lg cursor-pointer">
-<input className="text-secondary" name="surface" type="radio"/>
-<span className="text-sm">Gravel</span>
-</label>
+))}
 </div>
 </div>
 <div className="md:col-span-2 grid grid-cols-2 gap-4">
@@ -633,58 +652,86 @@ export default function Dashboard() {
 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 <div className="space-y-4">
 <div className="space-y-2">
-<label className="text-[10px] font-bold text-on-surface-variant uppercase">Overnight Rate</label>
-<div className="relative">
-<span className="absolute left-3 top-3 text-outline">$</span>
-<input className="w-full border-none bg-surface-container-low rounded-lg p-3 pl-8 focus:ring-2 focus:ring-secondary/20" type="text" value="25.00"/>
-</div>
-</div>
-<div className="space-y-2">
 <label className="text-[10px] font-bold text-on-surface-variant uppercase">Daily Rate</label>
 <div className="relative">
-<span className="absolute left-3 top-3 text-outline">$</span>
-<input className="w-full border-none bg-surface-container-low rounded-lg p-3 pl-8 focus:ring-2 focus:ring-secondary/20" type="text" value="15.00"/>
+<span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant font-medium pointer-events-none">$</span>
+<input 
+  className="w-full border-none bg-surface-container-low rounded-lg p-3 pl-7 font-medium text-on-surface focus:ring-2 focus:ring-secondary/20 transition-all" 
+  type="text" 
+  value={dailyRate}
+  onChange={(e) => handleCurrencyFormat(e.target.value, setDailyRate)}
+  placeholder="0.00"
+/>
 </div>
 </div>
 <div className="space-y-2">
 <label className="text-[10px] font-bold text-on-surface-variant uppercase">Weekly Rate</label>
 <div className="relative">
-<span className="absolute left-3 top-3 text-outline">$</span>
-<input className="w-full border-none bg-surface-container-low rounded-lg p-3 pl-8 focus:ring-2 focus:ring-secondary/20" type="text" value="140.00"/>
+<span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant font-medium pointer-events-none">$</span>
+<input 
+  className="w-full border-none bg-surface-container-low rounded-lg p-3 pl-7 font-medium text-on-surface focus:ring-2 focus:ring-secondary/20 transition-all" 
+  type="text" 
+  value={weeklyRate}
+  onChange={(e) => handleCurrencyFormat(e.target.value, setWeeklyRate)}
+  placeholder="0.00"
+/>
+</div>
+</div>
+<div className="space-y-2">
+<label className="text-[10px] font-bold text-on-surface-variant uppercase">Monthly Rate</label>
+<div className="relative">
+<span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant font-medium pointer-events-none">$</span>
+<input 
+  className="w-full border-none bg-surface-container-low rounded-lg p-3 pl-7 font-medium text-on-surface focus:ring-2 focus:ring-secondary/20 transition-all" 
+  type="text" 
+  value={monthlyRate}
+  onChange={(e) => handleCurrencyFormat(e.target.value, setMonthlyRate)}
+  placeholder="0.00"
+/>
 </div>
 </div>
 </div>
 <div className="md:col-span-2 space-y-6">
 <div className="grid grid-cols-2 gap-4">
-<div className="p-6 bg-secondary-container/5 rounded-xl border border-secondary/10">
+<div className="p-6 bg-secondary-container/5 rounded-xl border border-secondary/10 hover:border-secondary/20 transition-colors">
 <label className="text-[10px] font-bold text-secondary uppercase block mb-1">Total Spaces</label>
-<input className="w-full bg-transparent border-none text-2xl font-bold text-primary p-0 focus:ring-0" type="number" value="100"/>
+<input 
+  className="w-full bg-transparent border-none text-2xl font-bold text-primary p-0 focus:ring-0" 
+  type="text" 
+  value={totalSpaces}
+  onChange={(e) => setTotalSpaces(e.target.value.replace(/\D/g, ''))}
+/>
 </div>
-<div className="p-6 bg-secondary/5 rounded-xl border border-secondary/10">
+<div className="p-6 bg-secondary/5 rounded-xl border border-secondary/10 hover:border-secondary/20 transition-colors">
 <label className="text-[10px] font-bold text-secondary uppercase block mb-1">Available Now</label>
-<input className="w-full bg-transparent border-none text-2xl font-bold text-primary p-0 focus:ring-0" type="number" value="45"/>
+<input 
+  className="w-full bg-transparent border-none text-2xl font-bold text-primary p-0 focus:ring-0" 
+  type="text" 
+  value={availableNow}
+  onChange={(e) => setAvailableNow(e.target.value.replace(/\D/g, ''))}
+/>
 </div>
 </div>
-<div className="flex items-center justify-between p-4 bg-surface-container-low rounded-xl relative group transition-colors hover:bg-surface-container-high cursor-help">
+<div onClick={() => setIsRealTimeTrackingEnabled(!isRealTimeTrackingEnabled)} className="flex items-center justify-between p-4 bg-surface-container-low rounded-xl transition-colors hover:bg-surface-container-high cursor-pointer">
   <div>
     <p className="text-sm font-bold text-primary">Enable Real-time Tracking</p>
     <p className="text-xs text-on-surface-variant">Update availability automatically via AI logs.</p>
   </div>
-  {/* Tooltip Disclaimer */}
-  <div className="absolute bottom-[calc(100%+12px)] left-1/2 -translate-x-1/2 w-[280px] p-3.5 bg-surface-container-highest border border-white/5 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.4)] z-50 opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 translate-y-2 group-hover:translate-y-0">
-    <div className="flex gap-2.5">
-      <span className="material-symbols-outlined text-secondary text-[18px] shrink-0">info</span>
-      <p className="text-[11px] leading-[1.6] text-on-surface font-medium">
-        Enabling live tracking requires all lot management activities to be handled within the system.
-      </p>
+  <div className="relative inline-flex items-center justify-center cursor-pointer group">
+    <input checked={isRealTimeTrackingEnabled} readOnly className="sr-only peer" type="checkbox"/>
+    <div className="w-11 h-6 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+    {/* Tooltip Disclaimer */}
+    <div className="absolute bottom-[calc(100%+16px)] left-1/2 -translate-x-1/2 w-[280px] p-3.5 bg-surface-container-highest border border-white/5 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.4)] z-50 opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 translate-y-2 group-hover:translate-y-0 cursor-default">
+      <div className="flex gap-2.5">
+        <span className="material-symbols-outlined text-secondary text-[18px] shrink-0">info</span>
+        <p className="text-[11px] leading-[1.6] text-on-surface font-medium text-left">
+          Enabling live tracking requires all lot management activities to be handled within the system.
+        </p>
+      </div>
+      {/* Tooltip Arrow */}
+      <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-surface-container-highest rotate-45 border-r border-b border-white/5"></div>
     </div>
-    {/* Tooltip Arrow */}
-    <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-surface-container-highest rotate-45 border-r border-b border-white/5"></div>
   </div>
-<div className="relative inline-flex items-center cursor-pointer">
-<input checked="" className="sr-only peer" type="checkbox"/>
-<div className="w-11 h-6 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
-</div>
 </div>
 </div>
 </div>
