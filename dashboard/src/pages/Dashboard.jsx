@@ -49,13 +49,28 @@ export default function Dashboard() {
 </label>
 </div>
 <div className="grid grid-cols-2 gap-4">
-<div className="space-y-1">
+<div className="space-y-1 relative z-50">
 <label className="text-[10px] uppercase tracking-wider text-on-primary-container font-bold">Surface Type</label>
-<select className="w-full bg-white/10 border-transparent rounded-lg text-sm focus:ring-secondary focus:border-secondary">
-<option>Asphalt</option>
-<option>Gravel</option>
-<option>Concrete</option>
-</select>
+<div className="w-full bg-white/10 border border-secondary rounded-lg text-sm flex items-center justify-between px-3 py-2 cursor-pointer shadow-[0_0_8px_rgba(59,130,246,0.3)]">
+<span className="text-white">Asphalt</span>
+<span className="material-symbols-outlined text-white/70 text-lg leading-none">expand_more</span>
+</div>
+<div className="absolute top-full left-0 mt-2 w-full bg-[#1e2a3b]/95 backdrop-blur-md rounded-lg shadow-2xl overflow-hidden border border-white/5 pb-1">
+<div className="flex flex-col pt-1">
+<div className="px-3 py-2.5 bg-blue-500/25 text-white text-sm font-medium cursor-pointer">
+Asphalt
+</div>
+<div className="px-3 py-2.5 text-slate-300 text-sm hover:bg-white/10 hover:text-white cursor-pointer transition-colors">
+Concrete
+</div>
+<div className="px-3 py-2.5 text-slate-300 text-sm hover:bg-white/10 hover:text-white cursor-pointer transition-colors">
+Gravel
+</div>
+<div className="px-3 py-2.5 text-slate-300 text-sm hover:bg-white/10 hover:text-white cursor-pointer transition-colors">
+Dirt
+</div>
+</div>
+</div>
 </div>
 <div className="space-y-1">
 <label className="text-[10px] uppercase tracking-wider text-on-primary-container font-bold">Overnight Price</label>
