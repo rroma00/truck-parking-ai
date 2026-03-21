@@ -3,6 +3,27 @@ import { useState } from 'react';
 export default function Dashboard() {
   const [isSurfaceMenuOpen, setIsSurfaceMenuOpen] = useState(false);
   const [selectedSurface, setSelectedSurface] = useState('Dirt');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [afterHoursPhone, setAfterHoursPhone] = useState('');
+
+  const handlePhoneFormat = (val, setter) => {
+    let coreVal = val;
+    if (coreVal.startsWith('+1 ')) coreVal = coreVal.substring(3);
+    
+    let nums = coreVal.replace(/\D/g, '');
+    
+    if (nums.length === 11 && nums.startsWith('1')) nums = nums.substring(1);
+    nums = nums.substring(0, 10);
+    
+    if (nums.length === 0) {
+      setter('');
+      return;
+    }
+    
+    if (nums.length <= 3) setter(`+1 (${nums}`);
+    else if (nums.length <= 6) setter(`+1 (${nums.slice(0, 3)}) ${nums.slice(3)}`);
+    else setter(`+1 (${nums.slice(0, 3)}) ${nums.slice(3, 6)}-${nums.slice(6, 10)}`);
+  };
   
   return (
     <>
@@ -135,11 +156,23 @@ export default function Dashboard() {
 </div>
 <div className="space-y-2">
 <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wide">Phone Number</label>
-<input className="w-full border-none bg-surface-container-low rounded-lg p-3 focus:ring-2 focus:ring-secondary/20" placeholder="+1 (555) 000-0000" type="tel"/>
+<input 
+  value={phoneNumber}
+  onChange={(e) => handlePhoneFormat(e.target.value, setPhoneNumber)}
+  className="w-full border-none bg-surface-container-low rounded-lg p-3 focus:ring-2 focus:ring-secondary/20" 
+  placeholder="+1 (555) 000-0000" 
+  type="tel"
+/>
 </div>
 <div className="space-y-2">
 <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wide">After-Hours Support</label>
-<input className="w-full border-none bg-surface-container-low rounded-lg p-3 focus:ring-2 focus:ring-secondary/20" placeholder="+1 (555) 000-0000" type="tel"/>
+<input 
+  value={afterHoursPhone}
+  onChange={(e) => handlePhoneFormat(e.target.value, setAfterHoursPhone)}
+  className="w-full border-none bg-surface-container-low rounded-lg p-3 focus:ring-2 focus:ring-secondary/20" 
+  placeholder="+1 (555) 000-0000" 
+  type="tel"
+/>
 </div>
 <div className="col-span-2 flex flex-wrap items-center gap-6 p-4 bg-surface-container-low rounded-xl">
 <span className="text-sm font-medium text-primary">Booking Type:</span>
