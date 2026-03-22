@@ -1,6 +1,32 @@
 const supabase = require('../supabaseClient')
+const {
+  hasLegacyOperationalSchema,
+  mapLocationToLot,
+  buildAvailabilityFromLocation,
+  getLocationLotById
+} = require('./schemaCompat')
 
 async function getDashboardSummary(lotId) {
+  if (!(await hasLegacyOperationalSchema())) {
+    const location = await getLocationLotById(lotId)
+    const availability = buildAvailabilityFromLocation(location)
+
+    return {
+      lot: mapLocationToLot(location),
+      kpis: {
+        total_calls_today: 0,
+        missed_prevented: 0,
+        booked_spots: 0,
+        revenue_today: 0,
+        occupancy_percent: availability.total_spots > 0
+          ? Math.round((availability.occupied_spots / availability.total_spots) * 100)
+          : 0
+      },
+      availability,
+      recent_activity: []
+    }
+  }
+
   // 1. Fetch Lot
   const { data: lot, error: lotError } = await supabase
     .from('Lots')

@@ -1,7 +1,10 @@
 const supabase = require('../supabaseClient')
 const { logEvent } = require('./events')
+const { requireLegacyOperationalSchema } = require('./schemaCompat')
 
 async function createReservation(payload) {
+  await requireLegacyOperationalSchema('Reservations')
+
   // 1. Validate spot exists and belongs to lot
   const { data: spot, error: spotError } = await supabase
     .from('Spots')
@@ -72,6 +75,8 @@ async function createReservation(payload) {
 }
 
 async function autoAssignReservation(payload) {
+  await requireLegacyOperationalSchema('Reservations')
+
   // Find next available spot by spot_number
   const { data: spot, error: spotError } = await supabase
     .from('Spots')
@@ -90,6 +95,8 @@ async function autoAssignReservation(payload) {
 }
 
 async function cancelReservation(reservationId, notes) {
+  await requireLegacyOperationalSchema('Reservations')
+
   const { data: resv, error } = await supabase
     .from('Reservations')
     .select('*')

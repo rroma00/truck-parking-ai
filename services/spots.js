@@ -1,7 +1,10 @@
 const supabase = require('../supabaseClient')
 const { logEvent } = require('./events')
+const { requireLegacyOperationalSchema } = require('./schemaCompat')
 
 async function updateSpotStatus(spotId, status, notes) {
+  await requireLegacyOperationalSchema('Spot management')
+
   const { data: spot, error: findError } = await supabase
     .from('Spots')
     .select('*')
@@ -31,6 +34,8 @@ async function updateSpotStatus(spotId, status, notes) {
 }
 
 async function releaseSpot(spotId, notes) {
+  await requireLegacyOperationalSchema('Spot management')
+
   const { data: spot, error: findError } = await supabase
     .from('Spots')
     .select('*')
