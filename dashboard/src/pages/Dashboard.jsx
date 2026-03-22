@@ -250,11 +250,93 @@ export default function Dashboard() {
     else if (nums.length <= 6) setter(`(${nums.slice(0, 3)}) ${nums.slice(3)}`);
     else setter(`(${nums.slice(0, 3)}) ${nums.slice(3, 6)}-${nums.slice(6, 10)}`);
   };
+
+  const [locationName, setLocationName] = useState('North Houston Logistics Center');
+  const [address, setAddress] = useState('');
+  const [gateInstructions, setGateInstructions] = useState('');
+  const [defaultGateCode, setDefaultGateCode] = useState('');
+  const [securityNotes, setSecurityNotes] = useState('');
+  const [arrivalDirections, setArrivalDirections] = useState('');
+  const [whereToPark, setWhereToPark] = useState('');
+  const [lateArrivalInfo, setLateArrivalInfo] = useState('');
+  const [isPublishing, setIsPublishing] = useState(false);
+
+  const handlePublish = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+
+    if (!locationName.trim() || !address.trim() || !phoneNumber.trim()) {
+      alert('Please fill out the Location Name, Address, and Phone Number before publishing.');
+      return;
+    }
+
+    setIsPublishing(true);
+    const dataToSave = {
+      location_name: locationName.trim(),
+      address: address.trim(),
+      phone_number: phoneNumber.trim(),
+      after_hours_phone: afterHoursPhone.trim(),
+      booking_type: 'Reservation Required', 
+      is_24_7: true, 
+      office_hours_start: '08:00 AM', 
+      office_hours_end: '06:00 PM', 
+      after_hours_parking_allowed: true,
+      after_hours_entry_allowed: true,
+      after_hours_exit_allowed: true,
+      automatic_gate: true,
+      default_gate_code: defaultGateCode.trim(),
+      gate_instructions: gateInstructions.trim(),
+      permitted_vehicle_types: vehicleTypes,
+      is_53ft_friendly: is53ftFriendly,
+      is_drop_trailer_allowed: isDropTrailerAllowed,
+      max_vehicle_length: parseInt(maxLength) || null,
+      max_stay_duration: maxStay,
+      surface_type: selectedSurface,
+      security_gated_fenced: true, 
+      security_cameras: true, 
+      security_well_lit: true, 
+      security_notes: securityNotes.trim(),
+      daily_rate: parseFloat(dailyRate) || 0,
+      weekly_rate: parseFloat(weeklyRate) || 0,
+      monthly_rate: parseFloat(monthlyRate) || 0,
+      total_spaces: parseInt(totalSpaces) || 0,
+      available_spaces: parseInt(availableNow) || 0,
+      is_real_time_tracking_enabled: isRealTimeTrackingEnabled,
+      arrival_directions: arrivalDirections.trim(),
+      where_to_park: whereToPark.trim(),
+      late_arrival_contact_info: lateArrivalInfo.trim()
+    };
+
+    try {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+      const apiUrl = `${baseUrl}/api/locations`;
+      
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dataToSave)
+      });
+      
+      const result = await response.json();
+      if (response.ok && result.success) {
+        alert('Data successfully pushed to Supabase!');
+        // Optional reset:
+        // setAddress(''); 
+        // setLocationName(''); 
+        // ...
+      } else {
+        alert('Failed to push data: ' + (result.error || response.statusText));
+      }
+    } catch (err) {
+      alert('Error publishing location: ' + err.message);
+    } finally {
+      setIsPublishing(false);
+    }
+  };
   
   return (
     <>
 
-{/* Header Section */}
+
 <header className="flex flex-col md:flex-row justify-between items-end mb-12 gap-8">
 <div className="flex-1">
 <h1 className="text-5xl font-extrabold text-primary font-manrope tracking-tight mb-2">Location Setup</h1>
@@ -268,7 +350,9 @@ export default function Dashboard() {
 </div>
 <div className="flex gap-3">
 <button className="px-6 py-3 rounded-xl font-semibold bg-surface-container-low text-primary hover:bg-surface-container-high transition-all active:scale-95">Save Draft</button>
-<button className="px-8 py-3 rounded-xl font-semibold bg-gradient-to-r from-primary to-primary-container text-white shadow-lg shadow-primary/10 hover:shadow-primary/20 transition-all active:scale-95">Publish Location</button>
+<button onClick={handlePublish} disabled={isPublishing} className="px-8 py-3 rounded-xl font-semibold bg-gradient-to-r from-primary to-primary-container text-white shadow-lg shadow-primary/10 hover:shadow-primary/20 transition-all active:scale-95 disabled:opacity-50">
+  {isPublishing ? 'Publishing...' : 'Publish Location'}
+</button>
 </div>
 </header>
 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
@@ -370,13 +454,13 @@ export default function Dashboard() {
                     </h3>
 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 <div className="space-y-2 col-span-2">
-<label className="text-xs font-bold text-on-surface-variant uppercase tracking-wide">Location Name</label>
-<input className="w-full border-none bg-surface-container-low rounded-lg p-3 focus:ring-2 focus:ring-secondary/20 transition-all" placeholder="North Houston Logistics Center" type="text"/>
+<label className="text-xs font-bold text-on-surface-variant uppercase tracking-wide">Location Name <span className="text-red-500">*</span></label>
+<input value={locationName} onChange={(e) => setLocationName(e.target.value)} className="w-full border-none bg-surface-container-low rounded-lg p-3 focus:ring-2 focus:ring-secondary/20 transition-all" placeholder="North Houston Logistics Center" type="text"/>
 </div>
 <div className="space-y-2 col-span-2">
-<label className="text-xs font-bold text-on-surface-variant uppercase tracking-wide">Address</label>
+<label className="text-xs font-bold text-on-surface-variant uppercase tracking-wide">Address <span className="text-red-500">*</span></label>
 <div className="relative">
-<input className="w-full border-none bg-surface-container-low rounded-lg p-3 pl-10 focus:ring-2 focus:ring-secondary/20 transition-all" placeholder="Search for address..." type="text"/>
+<input value={address} onChange={(e) => setAddress(e.target.value)} className="w-full border-none bg-surface-container-low rounded-lg p-3 pl-10 focus:ring-2 focus:ring-secondary/20 transition-all" placeholder="Search for address..." type="text"/>
 <span className="material-symbols-outlined absolute left-3 top-3 text-outline text-sm">location_on</span>
 </div>
 </div>

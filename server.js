@@ -249,6 +249,33 @@ app.get('/events/:lotId', async (req, res) => {
   }
 })
 
+// ============================================================================
+// Locations Setup
+// ============================================================================
+app.post('/api/locations', async (req, res) => {
+  try {
+    const locationData = req.body;
+
+    // Server-side validation
+    if (!locationData.location_name || !locationData.address) {
+      return res.status(400).json({ 
+        success: false, 
+        error: "Missing required fields: location_name and address" 
+      });
+    }
+
+    const { data, error } = await supabase
+      .from('parking_locations')
+      .insert([locationData])
+      .select();
+      
+    if (error) throw new Error(error.message);
+    res.json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 app.get('/call-logs/:lotId', async (req, res) => {
   try {
     const types = [
