@@ -13,6 +13,7 @@ import Messages from './pages/Messages';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 import Landing from './pages/Landing';
+import CustomerManagement from './pages/CustomerManagement';
 
 import './App.css';
 
@@ -22,6 +23,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
+          <Route path="/customer-management" element={<CustomerManagement />} />
+          <Route path="/drivers" element={<CustomerManagement />} />
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/call-logs" element={<CallLogs />} />
