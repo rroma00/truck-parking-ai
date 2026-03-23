@@ -2,6 +2,7 @@ require('dotenv').config({ quiet: true })
 
 const express = require('express')
 const cors = require('cors')
+const path = require('path')
 const supabase = require('./supabaseClient')
 const {
   FeatureNotConfiguredError,
@@ -20,6 +21,7 @@ const { updateSpotStatus, releaseSpot } = require('./services/spots')
 const { logEvent } = require('./services/events')
 
 const app = express()
+const dashboardDistPath = path.join(__dirname, 'dashboard', 'dist')
 
 // Configuration
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000'
@@ -51,7 +53,7 @@ function sendError(res, err) {
 // ============================================================================
 // 1. Health
 // ============================================================================
-app.get('/', (req, res) => {
+app.get('/api/health', (req, res) => {
   res.json({ success: true, data: { message: 'API is running' } })
 })
 
@@ -570,6 +572,16 @@ app.post('/sms', async (req, res) => {
   } catch (err) {
     res.send(`<?xml version="1.0" encoding="UTF-8"?><Response><Message>System error. Try again.</Message></Response>`)
   }
+})
+
+app.use(express.static(dashboardDistPath))
+
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api/') || req.path === '/voice' || req.path === '/sms') {
+    return next()
+  }
+
+  return res.sendFile(path.join(dashboardDistPath, 'index.html'))
 })
 
 app.listen(PORT, () => {

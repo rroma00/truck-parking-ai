@@ -58,24 +58,35 @@ const WheelColumn = ({ list, value, onChange, throttle = 250 }) => {
   );
 };
 
-const WheelTimePicker = ({ initialTime }) => {
+const WheelTimePicker = ({ value, onChange, initialTime = '08:00 AM' }) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
-  
-  const [h, setH] = useState(initialTime.split(':')[0]);
-  const [m, setM] = useState(initialTime.split(':')[1].split(' ')[0]);
-  const [p, setP] = useState(initialTime.split(' ')[1]);
-  const [typed, setTyped] = useState(`${h}:${m} ${p}`);
+
+  const sourceTime = value || initialTime;
+  const [h, setH] = useState(sourceTime.split(':')[0]);
+  const [m, setM] = useState(sourceTime.split(':')[1].split(' ')[0]);
+  const [p, setP] = useState(sourceTime.split(' ')[1]);
+  const [typed, setTyped] = useState(sourceTime);
 
   const hours = ['01','02','03','04','05','06','07','08','09','10','11','12'];
   const minutes = ['00','05','10','15','20','25','30','35','40','45','50','55'];
   const periods = ['AM', 'PM'];
 
   useEffect(() => {
-    // Only automatically sync changes backwards to the text box
-    // while the component is open or updated internally.
-    setTyped(`${h}:${m} ${p}`);
-  }, [h, m, p]);
+    if (!value) return;
+    const [nextH, nextRest] = value.split(':');
+    const [nextM, nextP] = nextRest.split(' ');
+    setH(nextH);
+    setM(nextM);
+    setP(nextP);
+    setTyped(value);
+  }, [value]);
+
+  useEffect(() => {
+    const nextValue = `${h}:${m} ${p}`;
+    setTyped(nextValue);
+    if (onChange) onChange(nextValue);
+  }, [h, m, p, onChange]);
 
   const commitInput = (inputStr) => {
     // Basic catch for formats like "8:00 am", "615pm", "12 00 P"
@@ -201,6 +212,17 @@ export default function Dashboard() {
   const [dailyRate, setDailyRate] = useState('25.00');
   const [weeklyRate, setWeeklyRate] = useState('140.00');
   const [monthlyRate, setMonthlyRate] = useState('500.00');
+  const [isOpen24Hours, setIsOpen24Hours] = useState(true);
+  const [officeHoursStart, setOfficeHoursStart] = useState('08:00 AM');
+  const [officeHoursEnd, setOfficeHoursEnd] = useState('06:00 PM');
+  const [afterHoursParkingAllowed, setAfterHoursParkingAllowed] = useState(true);
+  const [afterHoursEntryAllowed, setAfterHoursEntryAllowed] = useState(true);
+  const [afterHoursExitAllowed, setAfterHoursExitAllowed] = useState(true);
+  const [hasAutomaticGate, setHasAutomaticGate] = useState(true);
+  const [hasGatedAccess, setHasGatedAccess] = useState(true);
+  const [hasSecurityCameras, setHasSecurityCameras] = useState(true);
+  const [isWellLit, setIsWellLit] = useState(true);
+  const [hasOnSiteSecurity, setHasOnSiteSecurity] = useState(false);
 
   const handleCurrencyFormat = (val, setter) => {
     let clean = val.replace(/[^\d.]/g, '');
@@ -261,6 +283,26 @@ export default function Dashboard() {
   const [lateArrivalInfo, setLateArrivalInfo] = useState('');
   const [isPublishing, setIsPublishing] = useState(false);
 
+  const formatCurrency = (value) => {
+    if (!value) return '$0.00';
+    const numericValue = Number.parseFloat(value);
+    if (Number.isNaN(numericValue)) return '$0.00';
+    return `$${numericValue.toFixed(2)}`;
+  };
+
+  const quickSummaryHours = isOpen24Hours
+    ? 'Open 24/7'
+    : `${officeHoursStart || 'Not set'} - ${officeHoursEnd || 'Not set'}`;
+  const quickSummaryAfterHours = afterHoursParkingAllowed ? 'Allowed' : 'Not Allowed';
+  const quickSummarySurface = selectedSurface || 'Not set';
+  const quickSummary53ft = is53ftFriendly ? 'Supported' : 'Not Supported';
+  const quickSummaryPrice = formatCurrency(dailyRate);
+  const quickSummaryOpenSpaces = availableNow || 'Not set';
+  const securityBadges = [
+    hasGatedAccess ? 'Gated' : null,
+    hasSecurityCameras ? 'Cameras' : null
+  ].filter(Boolean);
+
   const handlePublish = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
 
@@ -276,13 +318,13 @@ export default function Dashboard() {
       phone_number: phoneNumber.trim(),
       after_hours_phone: afterHoursPhone.trim(),
       booking_type: 'Reservation Required', 
-      is_24_7: true, 
-      office_hours_start: '08:00 AM', 
-      office_hours_end: '06:00 PM', 
-      after_hours_parking_allowed: true,
-      after_hours_entry_allowed: true,
-      after_hours_exit_allowed: true,
-      automatic_gate: true,
+      is_24_7: isOpen24Hours,
+      office_hours_start: officeHoursStart,
+      office_hours_end: officeHoursEnd,
+      after_hours_parking_allowed: afterHoursParkingAllowed,
+      after_hours_entry_allowed: afterHoursEntryAllowed,
+      after_hours_exit_allowed: afterHoursExitAllowed,
+      automatic_gate: hasAutomaticGate,
       default_gate_code: defaultGateCode.trim(),
       gate_instructions: gateInstructions.trim(),
       permitted_vehicle_types: vehicleTypes,
@@ -291,9 +333,9 @@ export default function Dashboard() {
       max_vehicle_length: parseInt(maxLength) || null,
       max_stay_duration: maxStay,
       surface_type: selectedSurface,
-      security_gated_fenced: true, 
-      security_cameras: true, 
-      security_well_lit: true, 
+      security_gated_fenced: hasGatedAccess,
+      security_cameras: hasSecurityCameras,
+      security_well_lit: isWellLit,
       security_notes: securityNotes.trim(),
       daily_rate: parseFloat(dailyRate) || 0,
       weekly_rate: parseFloat(weeklyRate) || 0,
@@ -303,7 +345,8 @@ export default function Dashboard() {
       is_real_time_tracking_enabled: isRealTimeTrackingEnabled,
       arrival_directions: arrivalDirections.trim(),
       where_to_park: whereToPark.trim(),
-      late_arrival_contact_info: lateArrivalInfo.trim()
+      late_arrival_contact_info: lateArrivalInfo.trim(),
+      security_on_site: hasOnSiteSecurity
     };
 
     try {
@@ -430,16 +473,37 @@ export default function Dashboard() {
 <label className="text-[10px] uppercase tracking-wider text-on-primary-container font-bold">Overnight Price</label>
 <div className="relative flex items-center">
 <span className="absolute left-3.5 text-white/50 text-sm pointer-events-none">$</span>
-<input className="w-full bg-white/10 border-transparent rounded-lg text-sm pl-7 focus:ring-secondary focus:border-secondary placeholder:text-white/40" placeholder="25.00" type="text" inputMode="decimal"/>
+<input
+  className="w-full bg-white/10 border-transparent rounded-lg text-sm pl-7 focus:ring-secondary focus:border-secondary placeholder:text-white/40"
+  placeholder="25.00"
+  type="text"
+  inputMode="decimal"
+  value={dailyRate}
+  onChange={(e) => handleCurrencyFormat(e.target.value, setDailyRate)}
+/>
 </div>
 </div>
 <div className="space-y-1">
 <label className="text-[10px] uppercase tracking-wider text-on-primary-container font-bold">Available Spaces</label>
-<input className="w-full bg-white/10 border-transparent rounded-lg text-sm focus:ring-secondary focus:border-secondary placeholder:text-white/40" placeholder="45" type="text" inputMode="numeric" pattern="[0-9]*"/>
+<input
+  className="w-full bg-white/10 border-transparent rounded-lg text-sm focus:ring-secondary focus:border-secondary placeholder:text-white/40"
+  placeholder="45"
+  type="text"
+  inputMode="numeric"
+  pattern="[0-9]*"
+  value={availableNow}
+  onChange={(e) => setAvailableNow(e.target.value.replace(/\D/g, ''))}
+/>
 </div>
 <div className="space-y-1">
 <label className="text-[10px] uppercase tracking-wider text-on-primary-container font-bold">Late Arrival Info</label>
-<input className="w-full bg-white/10 border-transparent rounded-lg text-sm focus:ring-secondary focus:border-secondary" placeholder="Gate Code: 1234" type="text"/>
+<input
+  className="w-full bg-white/10 border-transparent rounded-lg text-sm focus:ring-secondary focus:border-secondary"
+  placeholder="Gate Code: 1234"
+  type="text"
+  value={lateArrivalInfo}
+  onChange={(e) => setLateArrivalInfo(e.target.value)}
+/>
 </div>
 </div>
 </div>
@@ -521,7 +585,7 @@ export default function Dashboard() {
 <label className="flex items-center gap-3 cursor-pointer group">
 <span className="text-sm font-semibold text-primary">Open 24/7</span>
 <div className="relative inline-flex items-center">
-<input defaultChecked={true} className="sr-only peer" type="checkbox"/>
+<input checked={isOpen24Hours} onChange={() => setIsOpen24Hours(!isOpen24Hours)} className="sr-only peer" type="checkbox"/>
 <div className="w-11 h-6 bg-surface-container-high border border-outline-variant/30 rounded-full peer peer-checked:bg-secondary peer-checked:border-secondary transition-all duration-200 ease-in-out"></div>
 <div className="absolute left-[2px] top-[2px] bg-white border border-gray-300 rounded-full h-[20px] w-[20px] transition-transform duration-200 ease-in-out peer-checked:translate-x-full peer-checked:border-transparent shadow-sm"></div>
 </div>
@@ -531,14 +595,14 @@ export default function Dashboard() {
 <div className="space-y-4">
 <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wide">Office Hours</label>
 <div className="grid grid-cols-2 gap-3 relative z-40">
-<WheelTimePicker initialTime="08:00 AM" />
-<WheelTimePicker initialTime="06:00 PM" />
+<WheelTimePicker value={officeHoursStart} onChange={setOfficeHoursStart} initialTime="08:00 AM" />
+<WheelTimePicker value={officeHoursEnd} onChange={setOfficeHoursEnd} initialTime="06:00 PM" />
 </div>
 <div className="pt-4 space-y-3">
 <p className="text-sm font-semibold text-primary">After-hours capabilities:</p>
 <label className="flex items-center gap-3 text-sm text-on-surface-variant cursor-pointer group w-fit transition-colors hover:text-on-surface">
   <div className="relative flex items-center justify-center w-5 h-5 rounded-full bg-surface-container-low border border-outline-variant/50 group-hover:border-secondary/70 transition-colors">
-    <input defaultChecked={true} className="peer absolute inset-0 opacity-0 cursor-pointer" type="checkbox"/>
+    <input checked={afterHoursParkingAllowed} onChange={() => setAfterHoursParkingAllowed(!afterHoursParkingAllowed)} className="peer absolute inset-0 opacity-0 cursor-pointer" type="checkbox"/>
     <div className="absolute inset-0 rounded-full bg-secondary scale-0 peer-checked:scale-100 transition-transform"></div>
     <span className="material-symbols-outlined absolute text-[12px] text-white opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
   </div>
@@ -546,7 +610,7 @@ export default function Dashboard() {
 </label>
 <label className="flex items-center gap-3 text-sm text-on-surface-variant cursor-pointer group w-fit transition-colors hover:text-on-surface">
   <div className="relative flex items-center justify-center w-5 h-5 rounded-full bg-surface-container-low border border-outline-variant/50 group-hover:border-secondary/70 transition-colors">
-    <input defaultChecked={true} className="peer absolute inset-0 opacity-0 cursor-pointer" type="checkbox"/>
+    <input checked={afterHoursEntryAllowed} onChange={() => setAfterHoursEntryAllowed(!afterHoursEntryAllowed)} className="peer absolute inset-0 opacity-0 cursor-pointer" type="checkbox"/>
     <div className="absolute inset-0 rounded-full bg-secondary scale-0 peer-checked:scale-100 transition-transform"></div>
     <span className="material-symbols-outlined absolute text-[12px] text-white opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
   </div>
@@ -554,7 +618,7 @@ export default function Dashboard() {
 </label>
 <label className="flex items-center gap-3 text-sm text-on-surface-variant cursor-pointer group w-fit transition-colors hover:text-on-surface">
   <div className="relative flex items-center justify-center w-5 h-5 rounded-full bg-surface-container-low border border-outline-variant/50 group-hover:border-secondary/70 transition-colors">
-    <input defaultChecked={true} className="peer absolute inset-0 opacity-0 cursor-pointer" type="checkbox"/>
+    <input checked={afterHoursExitAllowed} onChange={() => setAfterHoursExitAllowed(!afterHoursExitAllowed)} className="peer absolute inset-0 opacity-0 cursor-pointer" type="checkbox"/>
     <div className="absolute inset-0 rounded-full bg-secondary scale-0 peer-checked:scale-100 transition-transform"></div>
     <span className="material-symbols-outlined absolute text-[12px] text-white opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
   </div>
@@ -569,7 +633,7 @@ export default function Dashboard() {
 </div>
 <label className="flex items-center gap-3 text-sm text-on-surface-variant font-medium cursor-pointer group w-fit">
 <div className="relative flex items-center justify-center w-5 h-5 rounded bg-surface-container-low border border-outline-variant/50 group-hover:border-secondary/70 transition-colors">
-<input defaultChecked={true} className="peer absolute inset-0 opacity-0 cursor-pointer" type="checkbox"/>
+<input checked={hasAutomaticGate} onChange={() => setHasAutomaticGate(!hasAutomaticGate)} className="peer absolute inset-0 opacity-0 cursor-pointer" type="checkbox"/>
 <div className="absolute inset-0 rounded bg-secondary scale-0 peer-checked:scale-100 transition-transform duration-200 flex items-center justify-center shadow-[0_2px_8px_rgba(37,99,235,0.4)]">
 <span className="material-symbols-outlined text-white text-[14px] font-bold">check</span>
 </div>
@@ -578,11 +642,11 @@ export default function Dashboard() {
 </label>
 <div className="space-y-2">
 <label className="text-[10px] font-bold text-on-surface-variant uppercase">Default Gate Code</label>
-<input className="w-full border-none bg-white rounded-lg p-3 focus:ring-2 focus:ring-secondary/20" placeholder="1234#" type="text"/>
+<input value={defaultGateCode} onChange={(e) => setDefaultGateCode(e.target.value)} className="w-full border-none bg-white rounded-lg p-3 focus:ring-2 focus:ring-secondary/20" placeholder="1234#" type="text"/>
 </div>
 <div className="space-y-2">
 <label className="text-[10px] font-bold text-on-surface-variant uppercase">Gate Instructions</label>
-<textarea className="w-full border-none bg-white rounded-lg p-3 text-sm focus:ring-2 focus:ring-secondary/20" placeholder="Pull up close to the sensor..." rows="2"></textarea>
+<textarea value={gateInstructions} onChange={(e) => setGateInstructions(e.target.value)} className="w-full border-none bg-white rounded-lg p-3 text-sm focus:ring-2 focus:ring-secondary/20" placeholder="Pull up close to the sensor..." rows="2"></textarea>
 </div>
 </div>
 </div>
@@ -705,24 +769,24 @@ export default function Dashboard() {
 <p className="text-xs font-bold text-primary uppercase">Security Features</p>
 <label className="flex items-center justify-between text-sm">
 <span>Gated &amp; Fenced</span>
-<input checked="" className="rounded text-secondary" type="checkbox"/>
+<input checked={hasGatedAccess} onChange={() => setHasGatedAccess(!hasGatedAccess)} className="rounded text-secondary" type="checkbox"/>
 </label>
 <label className="flex items-center justify-between text-sm">
 <span>Security Cameras</span>
-<input checked="" className="rounded text-secondary" type="checkbox"/>
+<input checked={hasSecurityCameras} onChange={() => setHasSecurityCameras(!hasSecurityCameras)} className="rounded text-secondary" type="checkbox"/>
 </label>
 <label className="flex items-center justify-between text-sm">
 <span>Well-Lit Lot</span>
-<input checked="" className="rounded text-secondary" type="checkbox"/>
+<input checked={isWellLit} onChange={() => setIsWellLit(!isWellLit)} className="rounded text-secondary" type="checkbox"/>
 </label>
 <label className="flex items-center justify-between text-sm">
 <span>On-site Security</span>
-<input className="rounded text-secondary" type="checkbox"/>
+<input checked={hasOnSiteSecurity} onChange={() => setHasOnSiteSecurity(!hasOnSiteSecurity)} className="rounded text-secondary" type="checkbox"/>
 </label>
 </div>
 <div className="space-y-2">
 <label className="text-xs font-bold text-on-surface-variant uppercase">Security Notes</label>
-<textarea className="w-full border-none bg-surface-container-low rounded-lg p-3 text-sm focus:ring-2 focus:ring-secondary/20" placeholder="Mention roving patrols or keycard access details..." rows="6"></textarea>
+<textarea value={securityNotes} onChange={(e) => setSecurityNotes(e.target.value)} className="w-full border-none bg-surface-container-low rounded-lg p-3 text-sm focus:ring-2 focus:ring-secondary/20" placeholder="Mention roving patrols or keycard access details..." rows="6"></textarea>
 </div>
 </div>
 </div>
@@ -779,18 +843,20 @@ export default function Dashboard() {
 <div className="grid grid-cols-2 gap-4">
 <div className="p-6 bg-secondary-container/5 rounded-xl border border-secondary/10 hover:border-secondary/20 transition-colors">
 <label className="text-[10px] font-bold text-secondary uppercase block mb-1">Total Spaces</label>
-<input 
-  className="w-full bg-transparent border-none text-2xl font-bold text-primary p-0 focus:ring-0" 
-  type="text" 
+<input
+  className="w-full bg-transparent border-none text-2xl font-bold text-primary p-0 focus:ring-0 appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+  type="text"
+  inputMode="numeric"
   value={totalSpaces}
   onChange={(e) => setTotalSpaces(e.target.value.replace(/\D/g, ''))}
 />
 </div>
 <div className="p-6 bg-secondary/5 rounded-xl border border-secondary/10 hover:border-secondary/20 transition-colors">
 <label className="text-[10px] font-bold text-secondary uppercase block mb-1">Available Now</label>
-<input 
-  className="w-full bg-transparent border-none text-2xl font-bold text-primary p-0 focus:ring-0" 
-  type="text" 
+<input
+  className="w-full bg-transparent border-none text-2xl font-bold text-primary p-0 focus:ring-0 appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+  type="text"
+  inputMode="numeric"
   value={availableNow}
   onChange={(e) => setAvailableNow(e.target.value.replace(/\D/g, ''))}
 />
@@ -830,11 +896,11 @@ export default function Dashboard() {
 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 <div className="space-y-2">
 <label className="text-xs font-bold text-on-surface-variant uppercase">Arrival Directions</label>
-<textarea className="w-full border-none bg-surface-container-low rounded-lg p-3 text-sm focus:ring-2 focus:ring-secondary/20" placeholder="Take Exit 45, turn right at the Texaco..." rows="4"></textarea>
+<textarea value={arrivalDirections} onChange={(e) => setArrivalDirections(e.target.value)} className="w-full border-none bg-surface-container-low rounded-lg p-3 text-sm focus:ring-2 focus:ring-secondary/20" placeholder="Take Exit 45, turn right at the Texaco..." rows="4"></textarea>
 </div>
 <div className="space-y-2">
 <label className="text-xs font-bold text-on-surface-variant uppercase">Where to Park</label>
-<textarea className="w-full border-none bg-surface-container-low rounded-lg p-3 text-sm focus:ring-2 focus:ring-secondary/20" placeholder="Park in rows 5-10 against the back fence..." rows="4"></textarea>
+<textarea value={whereToPark} onChange={(e) => setWhereToPark(e.target.value)} className="w-full border-none bg-surface-container-low rounded-lg p-3 text-sm focus:ring-2 focus:ring-secondary/20" placeholder="Park in rows 5-10 against the back fence..." rows="4"></textarea>
 </div>
 </div>
 <div className="p-6 bg-tertiary-container/5 border border-tertiary/10 rounded-xl flex items-start gap-4">
@@ -842,7 +908,7 @@ export default function Dashboard() {
 <div className="space-y-2 flex-1">
 <label className="text-xs font-bold text-on-tertiary-container uppercase">Late Arrival/After-Hours Contact</label>
 <p className="text-xs text-on-surface-variant mb-2">Instructions for drivers arriving when the office is closed.</p>
-<input className="w-full border-none bg-white rounded-lg p-3 text-sm focus:ring-2 focus:ring-secondary/20" placeholder="Call (555) 123-4567 for gate override or use the AI chat." type="text"/>
+<input value={lateArrivalInfo} onChange={(e) => setLateArrivalInfo(e.target.value)} className="w-full border-none bg-white rounded-lg p-3 text-sm focus:ring-2 focus:ring-secondary/20" placeholder="Call (555) 123-4567 for gate override or use the AI chat." type="text"/>
 </div>
 </div>
 </div>
@@ -861,52 +927,37 @@ export default function Dashboard() {
 <div className="space-y-4">
 <div className="flex items-center justify-between pb-3 border-b border-outline-variant/20">
 <span className="text-xs font-medium text-on-surface-variant">Hours</span>
-<span className="text-xs font-bold text-primary">Open 24/7</span>
+<span key={quickSummaryHours} className="text-xs font-bold text-primary transition-all duration-200 ease-out animate-[fadeIn_.18s_ease-out]">{quickSummaryHours}</span>
 </div>
 <div className="flex items-center justify-between pb-3 border-b border-outline-variant/20">
 <span className="text-xs font-medium text-on-surface-variant">After-hours</span>
-<span className="text-xs font-bold text-secondary">Allowed</span>
+<span key={quickSummaryAfterHours} className="text-xs font-bold text-secondary transition-all duration-200 ease-out animate-[fadeIn_.18s_ease-out]">{quickSummaryAfterHours}</span>
 </div>
 <div className="flex items-center justify-between pb-3 border-b border-outline-variant/20">
 <span className="text-xs font-medium text-on-surface-variant">Surface</span>
-<span className="text-xs font-bold text-primary">Asphalt</span>
+<span key={quickSummarySurface} className="text-xs font-bold text-primary transition-all duration-200 ease-out animate-[fadeIn_.18s_ease-out]">{quickSummarySurface}</span>
 </div>
 <div className="flex items-center justify-between pb-3 border-b border-outline-variant/20">
 <span className="text-xs font-medium text-on-surface-variant">53ft Trailer</span>
-<span className="text-xs font-bold text-secondary">Supported</span>
+<span key={quickSummary53ft} className="text-xs font-bold text-secondary transition-all duration-200 ease-out animate-[fadeIn_.18s_ease-out]">{quickSummary53ft}</span>
 </div>
 <div className="flex items-center justify-between pb-3 border-b border-outline-variant/20">
 <span className="text-xs font-medium text-on-surface-variant">Security</span>
 <span className="flex gap-2">
-<span className="text-[10px] bg-white px-2 py-0.5 rounded font-bold">Gated</span>
-<span className="text-[10px] bg-white px-2 py-0.5 rounded font-bold">Cameras</span>
+{securityBadges.length > 0 ? securityBadges.map((badge) => (
+  <span key={badge} className="text-[10px] bg-white px-2 py-0.5 rounded font-bold transition-all duration-200 ease-out animate-[fadeIn_.18s_ease-out]">{badge}</span>
+)) : <span className="text-[10px] bg-surface-container-high px-2 py-0.5 rounded font-bold text-on-surface-variant transition-all duration-200 ease-out animate-[fadeIn_.18s_ease-out]">Not set</span>}
 </span>
 </div>
 <div className="flex items-center justify-between pt-2">
 <div className="flex flex-col">
 <span className="text-[10px] text-on-surface-variant font-bold uppercase">Price</span>
-<span className="text-xl font-extrabold text-primary font-manrope">$25.00</span>
+<span key={quickSummaryPrice} className="text-xl font-extrabold text-primary font-manrope transition-all duration-200 ease-out animate-[fadeIn_.18s_ease-out]">{quickSummaryPrice}</span>
 </div>
 <div className="flex flex-col items-end">
 <span className="text-[10px] text-on-surface-variant font-bold uppercase">Open Spaces</span>
-<span className="text-xl font-extrabold text-secondary font-manrope">45</span>
+<span key={quickSummaryOpenSpaces} className="text-xl font-extrabold text-secondary font-manrope transition-all duration-200 ease-out animate-[fadeIn_.18s_ease-out]">{quickSummaryOpenSpaces}</span>
 </div>
-</div><div className="pt-4 border-t border-outline-variant/20">
-<p className="text-[10px] font-bold text-on-surface-variant uppercase mb-3">AI Activity</p>
-<div className="space-y-3">
-<div className="flex items-center justify-between">
-<span className="text-xs font-medium text-on-surface-variant">AI-Handled Calls</span>
-<span className="text-xs font-bold text-primary">124</span>
-</div>
-<div className="flex items-center justify-between">
-<span className="text-xs font-medium text-on-surface-variant">Questions Answered</span>
-<span className="text-xs font-bold text-primary">342</span>
-</div>
-</div>
-<a className="mt-4 flex items-center gap-1 text-[11px] font-bold text-secondary hover:underline transition-all" href="#">
-        View Detailed Analytics
-        <span className="material-symbols-outlined text-sm">arrow_forward</span>
-</a>
 </div>
 </div>
 </div>
