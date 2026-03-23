@@ -384,12 +384,6 @@ export default function Dashboard() {
 <div className="flex-1">
 <h1 className="text-5xl font-extrabold text-primary font-manrope tracking-tight mb-2">Location Setup</h1>
 <p className="text-on-surface-variant text-lg">Enter the key details to train your parking assistant for this yard.</p>
-<div className="mt-6 flex items-center gap-4 max-w-md">
-<div className="flex-1 h-2 bg-surface-container-high rounded-full overflow-hidden">
-<div className="w-[20%] h-full bg-secondary"></div>
-</div>
-<span className="text-sm font-semibold text-secondary">20% Complete</span>
-</div>
 </div>
 <div className="flex gap-3">
 <button className="px-6 py-3 rounded-xl font-semibold bg-surface-container-low text-primary hover:bg-surface-container-high transition-all active:scale-95">Save Draft</button>
