@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom';
 import AppLayout from './components/layout/AppLayout';
 import { LotProvider } from './context/LotContext';
 
@@ -13,32 +13,77 @@ import Messages from './pages/Messages';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 import Landing from './pages/Landing';
+import Onboarding from './pages/Onboarding';
 import CustomerManagement from './pages/CustomerManagement';
 
 import './App.css';
 
+function getOnboardingCompleteFlag() {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  try {
+    return window.localStorage.getItem('onboardingComplete') === 'true';
+  } catch (error) {
+    console.error('[OnboardingGuard] Failed to read onboardingComplete flag', error);
+    return false;
+  }
+}
+
+function OnboardingGuard({ children }) {
+  const onboardingComplete = getOnboardingCompleteFlag();
+
+  if (!onboardingComplete) {
+    return <Navigate to="/onboarding" replace />;
+  }
+
+  return children;
+}
+
 function App() {
   return (
-    <LotProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/customer-management" element={<CustomerManagement />} />
-          <Route path="/drivers" element={<CustomerManagement />} />
-          <Route element={<AppLayout />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/call-logs" element={<CallLogs />} />
-            <Route path="/reservations" element={<Reservations />} />
-            <Route path="/parking-availability" element={<ParkingAvailability />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/ai-settings" element={<AiSettings />} />
-            <Route path="/messages" element={<Messages />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/settings" element={<Settings />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </LotProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/onboarding" element={<Onboarding />} />
+        <Route
+          path="/customer-management"
+          element={(
+            <LotProvider>
+              <CustomerManagement />
+            </LotProvider>
+          )}
+        />
+        <Route
+          path="/drivers"
+          element={(
+            <LotProvider>
+              <CustomerManagement />
+            </LotProvider>
+          )}
+        />
+        <Route
+          element={(
+            <OnboardingGuard>
+              <LotProvider>
+                <AppLayout />
+              </LotProvider>
+            </OnboardingGuard>
+          )}
+        >
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/call-logs" element={<CallLogs />} />
+          <Route path="/reservations" element={<Reservations />} />
+          <Route path="/parking-availability" element={<ParkingAvailability />} />
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/ai-settings" element={<AiSettings />} />
+          <Route path="/messages" element={<Messages />} />
+          <Route path="/analytics" element={<Analytics />} />
+          <Route path="/settings" element={<Settings />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 

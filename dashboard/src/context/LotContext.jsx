@@ -10,16 +10,23 @@ export const LotProvider = ({ children }) => {
   useEffect(() => {
     let isMounted = true;
 
-    api.get('/lots')
-      .then((lots) => {
+    const loadLots = async () => {
+      try {
+        const lots = await api.get('/lots');
         if (!isMounted || !Array.isArray(lots) || lots.length === 0) return;
 
         const selectedExists = lots.some((lot) => lot.id === selectedLotId);
         if (!selectedExists) {
           setSelectedLotId(lots[0].id);
         }
-      })
-      .catch((err) => console.error("Failed to load lots:", err));
+      } catch (err) {
+        if (!isMounted) return;
+        console.error('Failed to load lots:', err);
+        setLotDetails(null);
+      }
+    };
+
+    loadLots();
 
     return () => {
       isMounted = false;
@@ -27,11 +34,30 @@ export const LotProvider = ({ children }) => {
   }, [selectedLotId]);
 
   useEffect(() => {
-    if (selectedLotId) {
-      api.get(`/lots/${selectedLotId}`)
-        .then(data => setLotDetails(data))
-        .catch(err => console.error("Failed to load lot context:", err));
+    if (!selectedLotId) {
+      setLotDetails(null);
+      return;
     }
+
+    let isMounted = true;
+
+    const loadLotDetails = async () => {
+      try {
+        const data = await api.get(`/lots/${selectedLotId}`);
+        if (!isMounted) return;
+        setLotDetails(data || null);
+      } catch (err) {
+        if (!isMounted) return;
+        console.error('Failed to load lot context:', err);
+        setLotDetails(null);
+      }
+    };
+
+    loadLotDetails();
+
+    return () => {
+      isMounted = false;
+    };
   }, [selectedLotId]);
 
   return (
