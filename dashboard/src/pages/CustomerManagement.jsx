@@ -2,6 +2,8 @@ import { useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } fro
 import { Link } from 'react-router-dom';
 import { LotContext } from '../context/LotContext';
 import { availabilityService } from '../services/availabilityService';
+import { reservationsService } from '../services/reservationsService';
+import api from '../services/api';
 
 const STATUS_OPTIONS = ['Expected', 'Checked In', 'Checked Out', 'Needs Support', 'Cancelled'];
 const driverFilters = ['All', 'Expected', 'Checked In', 'Checked Out', 'Needs Support', 'Cancelled', 'Warnings'];
@@ -1726,12 +1728,75 @@ function BookingModal({
   );
 }
 
+function mapReservationToDriver(r) {
+  const statusMap = {
+    confirmed: 'Expected',
+    checked_in: 'Checked In',
+    completed: 'Checked Out',
+    cancelled: 'Cancelled'
+  };
+  const status = statusMap[r.status] || 'Expected';
+
+  const reservationLabel = {
+    confirmed: 'Confirmed',
+    checked_in: 'Confirmed',
+    completed: 'Completed',
+    cancelled: 'Cancelled'
+  }[r.status] || 'Confirmed';
+
+  const lastDetailMap = {
+    confirmed: 'Reservation confirmed',
+    checked_in: 'Customer checked in',
+    completed: 'Customer checked out',
+    cancelled: 'Reservation cancelled'
+  };
+
+  const fmt = (iso) => new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit' }).format(new Date(iso));
+
+  const timeline = [
+    { time: fmt(r.created_at), text: 'Reservation created', confirmed: true }
+  ];
+  if (r.status === 'checked_in' || r.status === 'completed') {
+    timeline.push({ time: fmt(r.updated_at || r.created_at), text: 'Customer checked in', confirmed: true });
+  }
+  if (r.status === 'completed') {
+    timeline.push({ time: fmt(r.updated_at || r.created_at), text: 'Customer checked out', confirmed: true });
+  }
+  if (r.status === 'cancelled') {
+    timeline.push({ time: fmt(r.updated_at || r.created_at), text: 'Reservation cancelled', confirmed: true });
+  }
+
+  return {
+    id: r.id,
+    initials: getInitials(r.customer_name || 'Unknown'),
+    name: r.customer_name || 'Unknown',
+    company: 'Independent',
+    rating: 0,
+    phone: r.phone_number || '',
+    vehicle: r.vehicle_type || '',
+    trailer: '',
+    assignedSpot: r.spot_number || 'Unassigned',
+    assignedSpotId: '',
+    reservation: reservationLabel,
+    status,
+    lastActivity: fmt(r.updated_at || r.created_at),
+    lastDetail: lastDetailMap[r.status] || 'Reservation created',
+    note: r.notes || '',
+    scheduledArrival: r.scheduled_arrival || r.created_at,
+    expectedCheckout: r.expected_checkout || r.created_at,
+    contactSummary: `Reservation for ${r.customer_name || 'customer'}${r.nights ? ` — ${r.nights} night${r.nights !== 1 ? 's' : ''}` : ''}.`,
+    followUp: status === 'Expected' ? 'Confirm arrival and check customer in when they arrive.' : '',
+    timeline
+  };
+}
+
 export default function CustomerManagement() {
   const { lotDetails, selectedLotId } = useContext(LotContext);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
-  const [driverRecords, setDriverRecords] = useState(initialDrivers);
-  const [selectedDriverId, setSelectedDriverId] = useState(initialDrivers[0].id);
+  const [driverRecords, setDriverRecords] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedDriverId, setSelectedDriverId] = useState(null);
   const [spotModalState, setSpotModalState] = useState({ isOpen: false, driverId: null, value: '' });
   const [noteModalState, setNoteModalState] = useState({ isOpen: false, driverId: null, value: '' });
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
@@ -1861,6 +1926,49 @@ export default function CustomerManagement() {
       isMounted = false;
     };
   }, [lotDetails, selectedLotId]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const locations = await api.get('/api/locations');
+        if (!locations || locations.length === 0) {
+          setLoading(false);
+          return;
+        }
+        const locationId = locations[0].id;
+        const reservations = await reservationsService.getReservations(locationId);
+        const formatted = reservations.map(r => ({
+          id: r.id,
+          initials: (r.customer_name || 'UK').split(' ').map(n => n[0]).join(''),
+          name: r.customer_name || 'Unknown',
+          company: 'N/A',
+          rating: 4.5,
+          phone: r.phone_number || 'N/A',
+          vehicle: r.vehicle_type || 'Semi Truck',
+          trailer: '53ft Trailer',
+          assignedSpot: r.spot_number || 'Unassigned',
+          reservation: 'Confirmed',
+          status: r.status === 'confirmed' ? 'Expected' : r.status === 'checked_in' ? 'Checked In' : r.status === 'completed' ? 'Checked Out' : 'Cancelled',
+          lastActivity: new Date(r.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+          lastDetail: 'Reservation created',
+          note: r.notes || '',
+          scheduledArrival: r.scheduled_arrival || new Date().toISOString(),
+          expectedCheckout: r.expected_checkout || new Date().toISOString(),
+          contactSummary: r.notes || '',
+          followUp: '',
+          timeline: [
+            { time: new Date(r.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }), text: 'Reservation created', confirmed: true }
+          ]
+        }));
+        setDriverRecords(formatted);
+      } catch (error) {
+        console.error('Failed to fetch:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   useEffect(() => {
     if (!isBookingModalOpen) {
@@ -2152,6 +2260,8 @@ export default function CustomerManagement() {
     resetBookingDraft();
     setIsBookingModalOpen(false);
   }
+
+  if (loading) return <div className="p-8 text-center">Loading reservations...</div>;
 
   return (
     <div className="bg-surface text-on-surface min-h-screen">

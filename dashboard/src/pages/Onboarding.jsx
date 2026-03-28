@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-const ONBOARDING_STORAGE_KEY = 'parklog-owner-onboarding-draft';
+const ONBOARDING_STORAGE_KEY = 'locationSetupDraft';
 
 const initialFormState = {
   fullName: '',
@@ -61,6 +61,22 @@ const formatPhoneNumber = (value) => {
   return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
 };
 
+const normalizeDraft = (draft) => ({
+  fullName: typeof draft.fullName === 'string' ? draft.fullName : '',
+  companyName: typeof draft.companyName === 'string' ? draft.companyName : '',
+  email: typeof draft.email === 'string' ? draft.email : '',
+  phoneNumber: formatPhoneNumber(typeof draft.phoneNumber === 'string' ? draft.phoneNumber : ''),
+  locationName: typeof draft.locationName === 'string' ? draft.locationName : '',
+  city: typeof draft.city === 'string' ? draft.city : '',
+  state: typeof draft.state === 'string' ? draft.state.toUpperCase().slice(0, 2) : '',
+  totalSpots:
+    typeof draft.totalSpots === 'string'
+      ? draft.totalSpots.replace(/\D/g, '').slice(0, 4)
+      : typeof draft.totalSpots === 'number'
+        ? String(draft.totalSpots).replace(/\D/g, '').slice(0, 4)
+        : '',
+});
+
 const validateForm = (form) => {
   const phoneDigits = stripPhoneDigits(form.phoneNumber);
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -78,36 +94,42 @@ const validateForm = (form) => {
 };
 
 export default function Onboarding() {
-  console.log('[Onboarding] render start');
-
   const navigate = useNavigate();
   const [form, setForm] = useState(initialFormState);
   const [restoreNoticeVisible, setRestoreNoticeVisible] = useState(false);
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
+  const [hasLoadedDraft, setHasLoadedDraft] = useState(false);
 
   useEffect(() => {
     const savedDraft = safeStorage.getItem(ONBOARDING_STORAGE_KEY);
-    if (!savedDraft) return;
+    if (!savedDraft) {
+      setHasLoadedDraft(true);
+      return;
+    }
 
     try {
       const parsedDraft = JSON.parse(savedDraft);
       if (!parsedDraft || typeof parsedDraft !== 'object' || Array.isArray(parsedDraft)) {
         console.warn('[Onboarding] Ignoring invalid onboarding draft payload');
         safeStorage.removeItem(ONBOARDING_STORAGE_KEY);
+        setHasLoadedDraft(true);
         return;
       }
 
-      setForm({ ...initialFormState, ...parsedDraft });
+      setForm(normalizeDraft({ ...initialFormState, ...parsedDraft }));
       setRestoreNoticeVisible(true);
     } catch (error) {
       console.error('Failed to restore onboarding draft:', error);
       safeStorage.removeItem(ONBOARDING_STORAGE_KEY);
+    } finally {
+      setHasLoadedDraft(true);
     }
   }, []);
 
   useEffect(() => {
+    if (!hasLoadedDraft) return;
     safeStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify(form));
-  }, [form]);
+  }, [form, hasLoadedDraft]);
 
   useEffect(() => {
     if (!restoreNoticeVisible) return undefined;

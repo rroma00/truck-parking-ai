@@ -12,7 +12,7 @@ export default function Landing() {
             <a className="text-[#45464E] font-medium hover:text-[#0058BE] transition-colors" href="#pricing">Pricing</a>
             <Link className="text-[#45464E] font-medium hover:text-[#0058BE] transition-colors" to="/login">Login</Link>
             <Link to="/onboarding" className="bg-gradient-to-r from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-lg font-bold text-sm hover:scale-[0.98] transition-all duration-200">
-                Start Earning
+                Get Started
             </Link>
           </div>
           {/* Mobile Menu Icon (Placeholder) */}
@@ -39,7 +39,7 @@ export default function Landing() {
             </p>
             <div className="flex flex-wrap gap-4 pt-4">
               <Link to="/onboarding" className="bg-gradient-to-r from-primary to-primary-container text-on-primary px-8 py-4 rounded-xl font-bold text-lg shadow-xl shadow-primary/10 hover:scale-[0.98] transition-all">
-                Start Earning Today
+                Get Started
               </Link>
               <button className="bg-surface-container-lowest text-primary px-8 py-4 rounded-xl font-bold text-lg border border-outline-variant/30 hover:bg-surface-container-low transition-all">
                 See How It Works
@@ -274,7 +274,7 @@ export default function Landing() {
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Link to="/onboarding" className="bg-secondary text-white px-10 py-5 rounded-2xl font-bold text-xl hover:scale-[1.02] transition-all shadow-xl shadow-black/20 text-center">
-                Start Earning Today
+                Get Started
               </Link>
               <button className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-10 py-5 rounded-2xl font-bold text-xl hover:bg-white/20 transition-all">
                 Talk to an Expert

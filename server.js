@@ -345,6 +345,61 @@ app.post('/api/locations', async (req, res) => {
   }
 });
 
+app.get('/api/locations', async (_req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('parking_locations')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw new Error(error.message);
+    res.json({ success: true, data });
+  } catch (err) {
+    sendError(res, err);
+  }
+});
+
+app.get('/api/reservations/:locationId', async (req, res) => {
+  try {
+    let query = supabase
+      .from('reservations')
+      .select('*')
+      .eq('location_id', req.params.locationId)
+      .order('created_at', { ascending: false });
+
+    if (req.query.status) query = query.eq('status', req.query.status);
+
+    const limit = parseInt(req.query.limit) || 100;
+    const offset = parseInt(req.query.offset) || 0;
+    query = query.range(offset, offset + limit - 1);
+
+    const { data, error } = await query;
+    if (error) throw new Error(error.message);
+    res.json({ success: true, data });
+  } catch (err) {
+    sendError(res, err);
+  }
+});
+
+app.patch('/api/reservations/:id', async (req, res) => {
+  try {
+    const updates = { updated_at: new Date().toISOString() };
+    if (req.body.status) updates.status = req.body.status;
+    if (req.body.spot_number) updates.spot_number = req.body.spot_number;
+    if (req.body.notes) updates.notes = req.body.notes;
+
+    const { data, error } = await supabase
+      .from('reservations')
+      .update(updates)
+      .eq('id', req.params.id)
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+    res.json({ success: true, data });
+  } catch (err) {
+    sendError(res, err);
+  }
+});
+
 app.get('/call-logs/:lotId', async (req, res) => {
   try {
     if (!(await hasLegacyOperationalSchema())) {
@@ -576,7 +631,7 @@ app.post('/sms', async (req, res) => {
 
 app.use(express.static(dashboardDistPath))
 
-app.get('*', (req, res, next) => {
+app.use((req, res, next) => {
   if (req.path.startsWith('/api/') || req.path === '/voice' || req.path === '/sms') {
     return next()
   }

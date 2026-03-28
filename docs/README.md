@@ -14,6 +14,8 @@ Please refer to the following documents to understand the system comprehensively
 - [System Architecture](ARCHITECTURE.md): Details about how the frontend and backend interact and the technology stack.
 - [Deployment Guide](DEPLOYMENT.md): Step-by-step instructions on deploying the API to Railway and the Frontend to Vercel.
 - [UI Migration Log](MIGRATION_WALKTHROUGH.md): Details about the 2026 UI overhaul to the "Precision Architect" design system.
+- [Work Log 2026-03-22](WORKLOG_2026-03-22.md): Day-by-day setup and UI implementation notes from March 22, 2026.
+- [Work Log 2026-03-23](WORKLOG_2026-03-23.md): Customer Management routing, UI work, local verification, and git activity from March 23, 2026.
 
 ## Getting Started Locally
 
