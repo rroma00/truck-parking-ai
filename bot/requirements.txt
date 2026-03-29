@@ -1,5 +1,5 @@
-pipecat-ai[deepgram,cartesia,silero,twilio,anthropic]>=0.0.108
-anthropic>=0.40.0
+pipecat-ai[deepgram,cartesia,silero,twilio,openai]>=0.0.108
+openai>=1.30.0
 deepgram-sdk>=3.0.0
 cartesia>=1.0.0
 twilio>=9.0.0

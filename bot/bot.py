@@ -2,9 +2,9 @@
 Pipecat voice-bot pipeline for truck parking reservations.
 
 Flow:
-  Twilio μ-law audio → Deepgram STT → Claude LLM (with tools) → Cartesia TTS → Twilio
+  Twilio μ-law audio → Deepgram STT → OpenAI LLM (with tools) → Cartesia TTS → Twilio
 
-Tools available to Claude:
+Tools available to the LLM:
   check_availability   — GET  /api/locations
   book_reservation     — POST /api/reservations  +  Twilio SMS confirmation
 """
@@ -26,7 +26,7 @@ from pipecat.pipeline.runner import PipelineRunner
 from pipecat.pipeline.task import PipelineParams, PipelineTask
 from pipecat.processors.aggregators.openai_llm_context import OpenAILLMContext
 from pipecat.serializers.twilio import TwilioFrameSerializer
-from pipecat.services.anthropic.llm import AnthropicLLMService
+from pipecat.services.openai.llm import OpenAILLMService
 from pipecat.services.cartesia.tts import CartesiaTTSService
 from pipecat.services.deepgram.stt import DeepgramSTTService
 from pipecat.transports.websocket.fastapi import (
@@ -39,7 +39,7 @@ load_dotenv()
 # ─── Configuration ────────────────────────────────────────────────────────────
 
 BACKEND_URL   = os.environ.get("BACKEND_URL", "https://truck-parking-ai-production.up.railway.app")
-ANTHROPIC_KEY = os.environ["ANTHROPIC_API_KEY"]
+OPENAI_KEY    = os.environ["OPENAI_API_KEY"]
 DEEPGRAM_KEY  = os.environ["DEEPGRAM_API_KEY"]
 CARTESIA_KEY  = os.environ["CARTESIA_API_KEY"]
 TWILIO_SID    = os.environ["TWILIO_ACCOUNT_SID"]
@@ -235,9 +235,9 @@ async def run_bot(websocket: WebSocket, stream_sid: str, call_sid: str) -> None:
         model="nova-2-phonecall",
     )
 
-    llm = AnthropicLLMService(
-        api_key=ANTHROPIC_KEY,
-        model="claude-sonnet-4-6",
+    llm = OpenAILLMService(
+        api_key=OPENAI_KEY,
+        model="gpt-4o-mini",
     )
     llm.register_function("check_availability", check_availability)
     llm.register_function("book_reservation", book_reservation)
@@ -274,7 +274,7 @@ async def run_bot(websocket: WebSocket, stream_sid: str, call_sid: str) -> None:
     @transport.event_handler("on_client_connected")
     async def on_connected(transport, client):
         logger.info("Twilio client connected — queuing greeting")
-        # Inject a user turn to trigger the opening greeting from Claude
+        # Inject a user turn to trigger the opening greeting
         await task.queue_frames([
             LLMMessagesFrame([
                 {"role": "user", "content": "Greet the caller and ask how you can help."}
