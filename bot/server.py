@@ -45,9 +45,10 @@ async def websocket_endpoint(websocket: WebSocket):
     logger.info("Twilio WebSocket connected — waiting for start message")
 
     stream_sid = None
+    call_sid = None
     try:
         # Twilio sends a 'connected' message first, then a 'start' message
-        # containing the stream_sid. Read until we get it.
+        # containing stream_sid and call_sid. Read until we get it.
         async for raw in websocket.iter_text():
             msg = json.loads(raw)
             event = msg.get("event")
@@ -56,15 +57,15 @@ async def websocket_endpoint(websocket: WebSocket):
                 continue
             if event == "start":
                 stream_sid = msg["start"]["streamSid"]
-                logger.info(f"Twilio: stream started sid={stream_sid}")
+                call_sid   = msg["start"]["callSid"]
+                logger.info(f"Twilio: stream started sid={stream_sid} call={call_sid}")
                 break
-            # Ignore anything else (e.g. early media frames)
 
-        if not stream_sid:
+        if not stream_sid or not call_sid:
             logger.error("Never received Twilio start message — closing")
             return
 
-        await run_bot(websocket, stream_sid)
+        await run_bot(websocket, stream_sid, call_sid)
     except Exception as e:
         logger.error(f"Bot error: {e}")
     finally:
