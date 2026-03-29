@@ -10,7 +10,6 @@ Tools available to Claude:
 """
 
 import asyncio
-import json
 import os
 from typing import Any
 
@@ -21,6 +20,7 @@ from loguru import logger
 from twilio.rest import Client as TwilioClient
 
 from pipecat.audio.vad.silero import SileroVADAnalyzer
+from pipecat.frames.frames import LLMMessagesFrame, EndFrame
 from pipecat.pipeline.pipeline import Pipeline
 from pipecat.pipeline.runner import PipelineRunner
 from pipecat.pipeline.task import PipelineParams, PipelineTask
@@ -38,43 +38,38 @@ load_dotenv()
 
 # ─── Configuration ────────────────────────────────────────────────────────────
 
-BACKEND_URL     = os.environ.get("BACKEND_URL", "https://truck-parking-ai-production.up.railway.app")
-ANTHROPIC_KEY   = os.environ["ANTHROPIC_API_KEY"]
-DEEPGRAM_KEY    = os.environ["DEEPGRAM_API_KEY"]
-CARTESIA_KEY    = os.environ["CARTESIA_API_KEY"]
-TWILIO_SID      = os.environ["TWILIO_ACCOUNT_SID"]
-TWILIO_TOKEN    = os.environ["TWILIO_AUTH_TOKEN"]
-TWILIO_NUMBER   = os.environ.get("TWILIO_PHONE_NUMBER", "+18556845491")
+BACKEND_URL   = os.environ.get("BACKEND_URL", "https://truck-parking-ai-production.up.railway.app")
+ANTHROPIC_KEY = os.environ["ANTHROPIC_API_KEY"]
+DEEPGRAM_KEY  = os.environ["DEEPGRAM_API_KEY"]
+CARTESIA_KEY  = os.environ["CARTESIA_API_KEY"]
+TWILIO_SID    = os.environ["TWILIO_ACCOUNT_SID"]
+TWILIO_TOKEN  = os.environ["TWILIO_AUTH_TOKEN"]
+TWILIO_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER", "+18556845491")
 
 twilio_client = TwilioClient(TWILIO_SID, TWILIO_TOKEN)
 
 # ─── System prompt ────────────────────────────────────────────────────────────
 
-SYSTEM_PROMPT = """You are ParkFlow, a friendly AI assistant for a truck parking facility, handling inbound phone calls. Your job is to help truck drivers check availability and book parking spots.
+SYSTEM_PROMPT = """You are ParkFlow, a friendly AI assistant for a truck parking facility handling inbound phone calls. Help truck drivers check availability and book parking spots.
 
 Guidelines:
 - Keep responses SHORT — this is a live phone call. One or two sentences max.
 - Be warm, professional, and direct.
-- Always greet the caller first, then ask how you can help.
 - When checking availability, call check_availability and report the location name, available spots, and nightly rate.
-- When a driver wants to book, collect their full name and call-back phone number before calling book_reservation.
-- After booking, confirm: driver name, location, and confirmation number.
-- If no spots are available, apologize and let them know you'll have availability soon.
-- Do not make up spot counts or prices — always use the tool data.
-- End the call politely once the booking is complete or the driver has what they need.
-"""
+- When a driver wants to book, collect their full name and callback phone number before calling book_reservation.
+- After booking, confirm the driver name and confirmation number.
+- If no spots are available, apologize and suggest calling back soon.
+- Do not make up spot counts or prices — always use tool data.
+- End the call politely once the booking is complete."""
 
-# ─── Tool definitions (Anthropic / OpenAI schema) ─────────────────────────────
+# ─── Tool definitions ─────────────────────────────────────────────────────────
 
 TOOLS = [
     {
         "type": "function",
         "function": {
             "name": "check_availability",
-            "description": (
-                "Check available truck parking spots and pricing across all locations. "
-                "Call this whenever the driver asks about availability, open spots, or pricing."
-            ),
+            "description": "Check available truck parking spots and pricing across all locations.",
             "parameters": {
                 "type": "object",
                 "properties": {},
@@ -86,17 +81,13 @@ TOOLS = [
         "type": "function",
         "function": {
             "name": "book_reservation",
-            "description": (
-                "Book a parking spot for a truck driver. "
-                "Use only after collecting the driver's full name and phone number. "
-                "Sends an SMS confirmation automatically."
-            ),
+            "description": "Book a parking spot. Collect driver name and phone number first.",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "location_id": {
                         "type": "string",
-                        "description": "The UUID of the parking location from check_availability.",
+                        "description": "UUID of the parking location from check_availability.",
                     },
                     "customer_name": {
                         "type": "string",
@@ -104,11 +95,11 @@ TOOLS = [
                     },
                     "phone_number": {
                         "type": "string",
-                        "description": "Driver's phone number in E.164 format, e.g. +15551234567.",
+                        "description": "Driver's phone number in E.164 format e.g. +15551234567.",
                     },
                     "notes": {
                         "type": "string",
-                        "description": "Optional notes about the reservation.",
+                        "description": "Optional notes.",
                     },
                 },
                 "required": ["location_id", "customer_name", "phone_number"],
@@ -127,10 +118,12 @@ async def check_availability(
     context: Any,
     result_callback: Any,
 ) -> None:
-    """Fetch all locations + availability from the backend."""
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get(f"{BACKEND_URL}/api/locations", timeout=aiohttp.ClientTimeout(total=8)) as resp:
+            async with session.get(
+                f"{BACKEND_URL}/api/locations",
+                timeout=aiohttp.ClientTimeout(total=8),
+            ) as resp:
                 payload = await resp.json()
 
         locations = payload.get("data", [])
@@ -140,15 +133,13 @@ async def check_availability(
 
         results = []
         for loc in locations:
-            available = loc.get("available_spots") or loc.get("total_spots", 0)
-            rate = loc.get("daily_rate") or loc.get("overnight_price")
             results.append({
-                "location_id":   loc.get("id"),
-                "name":          loc.get("location_name") or loc.get("name"),
-                "address":       loc.get("address"),
-                "available_spots": available,
-                "total_spots":   loc.get("total_spots"),
-                "nightly_rate":  rate,
+                "location_id":    loc.get("id"),
+                "name":           loc.get("location_name") or loc.get("name"),
+                "address":        loc.get("address"),
+                "available_spots": loc.get("available_spots") or loc.get("total_spots", 0),
+                "total_spots":    loc.get("total_spots"),
+                "nightly_rate":   loc.get("daily_rate") or loc.get("overnight_price"),
             })
 
         await result_callback({"locations": results})
@@ -165,7 +156,6 @@ async def book_reservation(
     context: Any,
     result_callback: Any,
 ) -> None:
-    """Create a reservation via the backend API, then send an SMS confirmation."""
     try:
         payload = {
             "location_id":   args["location_id"],
@@ -190,12 +180,10 @@ async def book_reservation(
         reservation = result["data"]
         confirmation_id = str(reservation.get("id", ""))[:8].upper()
 
-        # Send SMS confirmation
         sms_body = (
             f"ParkFlow Confirmation #{confirmation_id}\n"
             f"Name: {args['customer_name']}\n"
-            f"Your truck parking spot has been reserved. "
-            f"Reply HELP to reach dispatch."
+            f"Your truck parking spot is confirmed. Reply HELP for dispatch."
         )
         try:
             twilio_client.messages.create(
@@ -211,7 +199,6 @@ async def book_reservation(
             "success": True,
             "confirmation_id": confirmation_id,
             "customer_name":   args["customer_name"],
-            "phone_number":    args["phone_number"],
             "sms_sent":        True,
         })
     except Exception as e:
@@ -222,11 +209,7 @@ async def book_reservation(
 # ─── Pipeline ─────────────────────────────────────────────────────────────────
 
 async def run_bot(websocket: WebSocket) -> None:
-    """Build and run the full Pipecat pipeline for a single call."""
-
-    # The TwilioFrameSerializer reads the stream_sid from the first Twilio
-    # 'connected' message on the WebSocket. We pass it in after init.
-    serializer = TwilioFrameSerializer()
+    """Build and run the Pipecat pipeline for a single Twilio call."""
 
     transport = FastAPIWebsocketTransport(
         websocket=websocket,
@@ -237,47 +220,30 @@ async def run_bot(websocket: WebSocket) -> None:
             vad_enabled=True,
             vad_analyzer=SileroVADAnalyzer(),
             vad_audio_passthrough=True,
-            serializer=serializer,
+            serializer=TwilioFrameSerializer(),
         ),
     )
 
     stt = DeepgramSTTService(
         api_key=DEEPGRAM_KEY,
-        # Deepgram model optimised for phone audio
-        params=DeepgramSTTService.InputParams(
-            language="en-US",
-            model="nova-2-phonecall",
-        ),
+        language="en-US",
+        model="nova-2-phonecall",
     )
 
     llm = AnthropicLLMService(
         api_key=ANTHROPIC_KEY,
         model="claude-sonnet-4-6",
     )
-
-    # Register tool handlers
     llm.register_function("check_availability", check_availability)
     llm.register_function("book_reservation", book_reservation)
 
     tts = CartesiaTTSService(
         api_key=CARTESIA_KEY,
-        # Professional US English male voice
         voice_id="a0e99841-438c-4a64-b679-ae501e7d6091",
-        params=CartesiaTTSService.InputParams(
-            speed="normal",
-            emotion=[],
-        ),
     )
 
     messages = [
-        {
-            "role": "system",
-            "content": SYSTEM_PROMPT,
-        },
-        {
-            "role": "user",
-            "content": "The phone is ringing. Greet the caller warmly and ask how you can help.",
-        },
+        {"role": "system", "content": SYSTEM_PROMPT},
     ]
 
     context = OpenAILLMContext(messages=messages, tools=TOOLS)
@@ -302,13 +268,18 @@ async def run_bot(websocket: WebSocket) -> None:
 
     @transport.event_handler("on_client_connected")
     async def on_connected(transport, client):
-        logger.info("Client connected — starting greeting")
-        await task.queue_frames([context_aggregator.user().get_context_frame()])
+        logger.info("Twilio client connected — queuing greeting")
+        # Inject a user turn to trigger the opening greeting from Claude
+        await task.queue_frames([
+            LLMMessagesFrame([
+                {"role": "user", "content": "Greet the caller and ask how you can help."}
+            ])
+        ])
 
     @transport.event_handler("on_client_disconnected")
     async def on_disconnected(transport, client):
-        logger.info("Client disconnected")
-        await task.cancel()
+        logger.info("Twilio client disconnected")
+        await task.queue_frames([EndFrame()])
 
     runner = PipelineRunner(handle_sigint=False)
     await runner.run(task)

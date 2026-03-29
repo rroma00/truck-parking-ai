@@ -26,13 +26,14 @@ app = FastAPI()
 
 @app.post("/twiml")
 async def twiml_webhook():
-    """Return TwiML that connects the caller to our WebSocket pipeline."""
+    """Return TwiML that opens a bidirectional Media Stream WebSocket."""
     xml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Connect>
-    <Stream url="wss://{BOT_HOST}/ws" />
+    <Stream url="wss://{BOT_HOST}/ws">
+      <Parameter name="asr_language" value="en-US"/>
+    </Stream>
   </Connect>
-  <Pause length="60"/>
 </Response>"""
     return Response(content=xml, media_type="text/xml")
 
