@@ -3,7 +3,21 @@
     "allow": [
       "WebSearch",
       "WebFetch(domain:supabase.com)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(railway --version)",
+      "Bash(railway whoami:*)",
+      "Bash(railway link:*)",
+      "Bash(railway variables:*)",
+      "Bash(railway service:*)",
+      "Bash(railway up:*)",
+      "Bash(railway logs:*)",
+      "Bash(RAILWAY_TOKEN=\"rw_Fe26.2**36968bd8f0d2143f11bafb8d3c1d4cb061fadf4f003d1280fa13097dba6ed537*d5hqdA1_HakWGUSw9wESgQ*pwEZ4Gol-xzX4AIZouSOc7g_UVDbzDr-lSS2xIlskGiWZEweo5D4Lzso_KBudvomCwxek054PhKQQhNoFQ5gbQ*1776480691684*e9751d54692be1219a172076b1569f502a19c0c376934e51b163acb25fa73054*mtMZ08A4P0mA10XooPd04ORGR6Pa4IJq6yoBVCpgaLg\")",
+      "Bash(curl -s -X POST https://backboard.railway.app/graphql/v2 -H \"Content-Type: application/json\" -H \"Authorization: Bearer $RAILWAY_TOKEN\" -d '{\"\"\"\"query\"\"\"\": \"\"\"\"query { deployment\\(id: \\\\\"\"\"\"82d40acf-09ae-4fc6-a960-7c0cdcadc5db\\\\\"\"\"\"\\) { id status } }\"\"\"\"}')",
+      "Bash(curl -s -X POST https://backboard.railway.app/graphql/v2 -H \"Content-Type: application/json\" -H \"Authorization: Bearer $RAILWAY_TOKEN\" -d '{\"\"\"\"query\"\"\"\": \"\"\"\"query { deploymentLogs\\(deploymentId: \\\\\"\"\"\"82d40acf-09ae-4fc6-a960-7c0cdcadc5db\\\\\"\"\"\", limit: 50\\) { message severity } }\"\"\"\"}')",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(curl -s -X POST https://backboard.railway.app/graphql/v2 -H \"Content-Type: application/json\" -H \"Authorization: Bearer $RAILWAY_TOKEN\" -d '{\"\"\"\"query\"\"\"\": \"\"\"\"query { deployment\\(id: \\\\\"\"\"\"5d23b6ce-6f13-481b-b5dc-1d22eabc0bdb\\\\\"\"\"\"\\) { id status } }\"\"\"\"}')",
+      "Bash(curl -s -X POST https://backboard.railway.app/graphql/v2 -H \"Content-Type: application/json\" -H \"Authorization: Bearer $RAILWAY_TOKEN\" -d '{\"\"\"\"query\"\"\"\": \"\"\"\"query { deploymentLogs\\(deploymentId: \\\\\"\"\"\"5d23b6ce-6f13-481b-b5dc-1d22eabc0bdb\\\\\"\"\"\", limit: 20\\) { message severity } }\"\"\"\"}')"
     ]
   }
 }
