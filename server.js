@@ -380,6 +380,45 @@ app.get('/api/reservations/:locationId', async (req, res) => {
   }
 });
 
+app.post('/api/reservations', async (req, res) => {
+  try {
+    const {
+      location_id, customer_name, phone_number,
+      vehicle_type, spot_number, source, price, notes
+    } = req.body;
+
+    if (!location_id || !customer_name || !phone_number) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields: location_id, customer_name, phone_number'
+      });
+    }
+
+    const { data, error } = await supabase
+      .from('reservations')
+      .insert([{
+        location_id,
+        customer_name,
+        phone_number,
+        vehicle_type: vehicle_type || 'truck',
+        spot_number: spot_number || null,
+        source: source || 'voice',
+        price: price || null,
+        notes: notes || null,
+        status: 'confirmed',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }])
+      .select()
+      .single();
+
+    if (error) throw new Error(error.message);
+    res.json({ success: true, data });
+  } catch (err) {
+    sendError(res, err);
+  }
+});
+
 app.patch('/api/reservations/:id', async (req, res) => {
   try {
     const updates = { updated_at: new Date().toISOString() };
