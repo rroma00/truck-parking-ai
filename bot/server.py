@@ -30,7 +30,7 @@ async def twiml_webhook():
     xml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Connect>
-    <Stream url="wss://{BOT_HOST}/ws">
+    <Stream url="wss://{BOT_HOST}/ws" track="inbound_track">
       <Parameter name="asr_language" value="en-US"/>
     </Stream>
   </Connect>
