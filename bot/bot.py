@@ -208,7 +208,7 @@ async def book_reservation(
 
 # ─── Pipeline ─────────────────────────────────────────────────────────────────
 
-async def run_bot(websocket: WebSocket) -> None:
+async def run_bot(websocket: WebSocket, stream_sid: str) -> None:
     """Build and run the Pipecat pipeline for a single Twilio call."""
 
     transport = FastAPIWebsocketTransport(
@@ -220,7 +220,7 @@ async def run_bot(websocket: WebSocket) -> None:
             vad_enabled=True,
             vad_analyzer=SileroVADAnalyzer(),
             vad_audio_passthrough=True,
-            serializer=TwilioFrameSerializer(),
+            serializer=TwilioFrameSerializer(stream_sid),
         ),
     )
 

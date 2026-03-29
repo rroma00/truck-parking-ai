@@ -7,6 +7,7 @@ Endpoints:
   WS   /ws      — Twilio streams μ-law audio here; Pipecat pipeline runs here.
 """
 
+import json
 import os
 
 import uvicorn
@@ -41,9 +42,29 @@ async def twiml_webhook():
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
-    logger.info("Twilio WebSocket connected")
+    logger.info("Twilio WebSocket connected — waiting for start message")
+
+    stream_sid = None
     try:
-        await run_bot(websocket)
+        # Twilio sends a 'connected' message first, then a 'start' message
+        # containing the stream_sid. Read until we get it.
+        async for raw in websocket.iter_text():
+            msg = json.loads(raw)
+            event = msg.get("event")
+            if event == "connected":
+                logger.info("Twilio: connected")
+                continue
+            if event == "start":
+                stream_sid = msg["start"]["streamSid"]
+                logger.info(f"Twilio: stream started sid={stream_sid}")
+                break
+            # Ignore anything else (e.g. early media frames)
+
+        if not stream_sid:
+            logger.error("Never received Twilio start message — closing")
+            return
+
+        await run_bot(websocket, stream_sid)
     except Exception as e:
         logger.error(f"Bot error: {e}")
     finally:
