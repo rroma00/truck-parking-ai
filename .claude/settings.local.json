@@ -17,7 +17,9 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(curl -s -X POST https://backboard.railway.app/graphql/v2 -H \"Content-Type: application/json\" -H \"Authorization: Bearer $RAILWAY_TOKEN\" -d '{\"\"\"\"query\"\"\"\": \"\"\"\"query { deployment\\(id: \\\\\"\"\"\"5d23b6ce-6f13-481b-b5dc-1d22eabc0bdb\\\\\"\"\"\"\\) { id status } }\"\"\"\"}')",
-      "Bash(curl -s -X POST https://backboard.railway.app/graphql/v2 -H \"Content-Type: application/json\" -H \"Authorization: Bearer $RAILWAY_TOKEN\" -d '{\"\"\"\"query\"\"\"\": \"\"\"\"query { deploymentLogs\\(deploymentId: \\\\\"\"\"\"5d23b6ce-6f13-481b-b5dc-1d22eabc0bdb\\\\\"\"\"\", limit: 20\\) { message severity } }\"\"\"\"}')"
+      "Bash(curl -s -X POST https://backboard.railway.app/graphql/v2 -H \"Content-Type: application/json\" -H \"Authorization: Bearer $RAILWAY_TOKEN\" -d '{\"\"\"\"query\"\"\"\": \"\"\"\"query { deploymentLogs\\(deploymentId: \\\\\"\"\"\"5d23b6ce-6f13-481b-b5dc-1d22eabc0bdb\\\\\"\"\"\", limit: 20\\) { message severity } }\"\"\"\"}')",
+      "Bash(curl -s -X POST https://backboard.railway.app/graphql/v2 -H \"Content-Type: application/json\" -H \"Authorization: Bearer $RAILWAY_TOKEN\" -d '{\"\"\"\"query\"\"\"\":\"\"\"\"query{deployment\\(id:\\\\\"\"\"\"c6ee7fe3-df11-41dc-8665-38651140259c\\\\\"\"\"\"\\){status}}\"\"\"\"}')",
+      "Bash(curl -s -X POST https://backboard.railway.app/graphql/v2 -H \"Content-Type: application/json\" -H \"Authorization: Bearer $RAILWAY_TOKEN\" -d '{\"\"\"\"query\"\"\"\":\"\"\"\"query{deploymentLogs\\(deploymentId:\\\\\"\"\"\"c6ee7fe3-df11-41dc-8665-38651140259c\\\\\"\"\"\",limit:15\\){message severity}}\"\"\"\"}')"
     ]
   }
 }

@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TruckPark AI | Never Miss Another Booking</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary-fixed": "#2c1700",
+              "on-primary-fixed-variant": "#3b456c",
+              "primary": "#050f36",
+              "surface-container-lowest": "#ffffff",
+              "outline": "#76767f",
+              "on-primary-fixed": "#0e193e",
+              "surface-bright": "#f7f9ff",
+              "tertiary-fixed": "#ffdcbc",
+              "on-surface-variant": "#45464e",
+              "outline-variant": "#c6c5cf",
+              "surface-container-low": "#f1f4fb",
+              "surface-container-highest": "#dfe2e9",
+              "on-background": "#181c21",
+              "surface-dim": "#d7dae1",
+              "tertiary-fixed-dim": "#eebe8d",
+              "surface-tint": "#535c86",
+              "surface": "#f7f9ff",
+              "surface-container": "#ebeef5",
+              "primary-fixed-dim": "#bbc4f4",
+              "on-tertiary-container": "#b0865a",
+              "surface-container-high": "#e5e8ef",
+              "on-tertiary-fixed-variant": "#61401a",
+              "on-primary-container": "#838db9",
+              "on-primary": "#ffffff",
+              "on-tertiary": "#ffffff",
+              "surface-variant": "#dfe2e9",
+              "secondary-fixed-dim": "#adc6ff",
+              "inverse-primary": "#bbc4f4",
+              "secondary-container": "#2170e4",
+              "on-error-container": "#93000a",
+              "inverse-surface": "#2d3136",
+              "on-secondary-fixed": "#001a42",
+              "on-secondary-container": "#fefcff",
+              "on-error": "#ffffff",
+              "on-surface": "#181c21",
+              "error": "#ba1a1a",
+              "primary-container": "#1b254b",
+              "inverse-on-surface": "#eef1f8",
+              "on-secondary": "#ffffff",
+              "secondary": "#0058be",
+              "primary-fixed": "#dde1ff",
+              "background": "#f7f9ff",
+              "secondary-fixed": "#d8e2ff",
+              "tertiary": "#1f0f00",
+              "tertiary-container": "#3c2100",
+              "on-secondary-fixed-variant": "#004395",
+              "error-container": "#ffdad6"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); }
+    </style>
+</head>
+<body class="bg-surface text-on-surface selection:bg-secondary-fixed">
+<!-- Top Navigation -->
+<nav class="bg-white/85 dark:bg-slate-950/85 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 shadow-sm fixed top-0 w-full z-50">
+<div class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
+<div class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">TruckPark AI</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-slate-600 dark:text-slate-400 hover:text-blue-700 transition-colors text-sm font-medium" href="#problem">Problem</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-blue-700 transition-colors text-sm font-medium" href="#how-it-works">How it Works</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-blue-700 transition-colors text-sm font-medium" href="#features">Features</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-blue-700 transition-colors text-sm font-medium" href="#pricing">Pricing</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-blue-700 transition-colors text-sm font-medium" href="#faq">FAQ</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-slate-600 dark:text-slate-400 hover:text-blue-700 font-medium text-sm">Log In</button>
+<button class="bg-primary hover:bg-primary-container text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all active:scale-95">Get Demo</button>
+</div>
+</div>
+</nav>
+<!-- Hero Section -->
+<section class="pt-32 pb-24 px-6 max-w-7xl mx-auto overflow-hidden">
+<div class="grid lg:grid-cols-2 gap-16 items-center">
+<div class="relative z-10">
+<span class="inline-flex items-center gap-2 px-3 py-1 bg-secondary-fixed text-on-secondary-fixed rounded-full text-xs font-bold tracking-wide uppercase mb-6">
+<span class="material-symbols-outlined text-[14px]">smart_toy</span>
+                    AI-POWERED PHONE ASSISTANT
+                </span>
+<h1 class="text-5xl md:text-6xl font-extrabold text-primary leading-tight mb-6">
+                    Never Miss Another Booking—Even at 2 AM
+                </h1>
+<p class="text-xl text-on-surface-variant mb-10 max-w-xl leading-relaxed">
+                    AI answers every call in seconds, checks availability, and books spots automatically—so you can focus on running your lot, not your phone.
+                </p>
+<div class="flex flex-col sm:flex-row gap-4 mb-8">
+<button class="px-8 py-4 bg-gradient-to-r from-primary to-primary-container text-white rounded-lg font-bold text-lg shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 group">
+                        Start Free Trial <span class="group-hover:translate-x-1 transition-transform">→</span>
+</button>
+<button class="px-8 py-4 border-2 border-outline-variant text-primary rounded-lg font-bold text-lg hover:bg-surface-container-low transition-all">
+                        Watch 60-Second Demo
+                    </button>
+</div>
+<div class="flex items-center gap-6 text-sm text-on-surface-variant font-medium">
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-lg">check_circle</span> No credit card required</span>
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary text-lg">check_circle</span> Setup in 5 minutes</span>
+</div>
+</div>
+<div class="relative lg:h-[600px] flex items-center justify-center">
+<!-- Main Dashboard Mockup -->
+<div class="relative w-full max-w-2xl bg-surface-container-lowest rounded-xl shadow-2xl overflow-hidden border border-outline-variant/20 p-4">
+<div class="flex items-center justify-between mb-6 border-b border-surface-container pb-4">
+<h3 class="font-bold text-primary">Customer Management</h3>
+<div class="flex gap-2">
+<div class="w-3 h-3 rounded-full bg-error/40"></div>
+<div class="w-3 h-3 rounded-full bg-tertiary-fixed-dim"></div>
+<div class="w-3 h-3 rounded-full bg-secondary-fixed-dim"></div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="p-4 bg-surface-container-low rounded-lg">
+<p class="text-xs text-on-surface-variant mb-1">Daily Revenue</p>
+<p class="text-2xl font-bold text-primary">$4,820.00</p>
+</div>
+<div class="p-4 bg-surface-container-low rounded-lg">
+<p class="text-xs text-on-surface-variant mb-1">Active Bookings</p>
+<p class="text-2xl font-bold text-secondary">32</p>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest border border-surface-container rounded-lg">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center font-bold text-primary">JB</div>
+<div>
+<p class="text-sm font-bold">John B. Trucking</p>
+<p class="text-xs text-on-surface-variant">Confirmed 12m ago</p>
+</div>
+</div>
+<span class="px-2 py-1 bg-secondary-fixed text-on-secondary-fixed text-[10px] font-bold rounded">CHECKED IN</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest border border-surface-container rounded-lg">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center font-bold text-tertiary">MT</div>
+<div>
+<p class="text-sm font-bold">Mike T. Logistics</p>
+<p class="text-xs text-on-surface-variant">Arrival: 10:45 PM</p>
+</div>
+</div>
+<span class="px-2 py-1 bg-surface-container-highest text-on-surface-variant text-[10px] font-bold rounded">EXPECTED</span>
+</div>
+</div>
+<!-- Floating Notification -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 glass-panel p-4 rounded-xl shadow-2xl border border-white flex items-center gap-4 w-[280px]">
+<div class="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-white">support_agent</span>
+</div>
+<div>
+<p class="text-xs font-bold text-primary">New AI Booking</p>
+<p class="text-sm">Reservation from Mike T.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Problem Section -->
+<section class="bg-primary py-24 text-white relative overflow-hidden" id="problem">
+<div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
+<div class="max-w-lg">
+<h2 class="text-4xl font-bold mb-6 leading-tight">Every Missed Call Is a Booking Your Competitor Just Got</h2>
+<p class="text-lg text-on-primary-container leading-relaxed mb-8">
+                    It's 2:47 AM. A driver calls looking for overnight parking. Your phone goes to voicemail. He hangs up and books with the lot down the road. You never even knew he called—or how much money you just lost.
+                </p>
+<div class="space-y-4">
+<div class="flex items-start gap-4 p-4 rounded-lg bg-primary-container/50">
+<span class="material-symbols-outlined text-error">phone_missed</span>
+<div>
+<p class="font-bold">The Silent Killer</p>
+<p class="text-sm text-on-primary-container">68% of drivers won't leave a voicemail. They just call the next number.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="flex justify-center lg:justify-end">
+<div class="w-72 h-[550px] bg-slate-900 rounded-[3rem] border-8 border-slate-800 shadow-2xl relative overflow-hidden flex flex-col items-center pt-20 px-6">
+<div class="w-16 h-1 w-1/4 bg-slate-800 rounded-full mb-12"></div>
+<p class="text-slate-500 text-sm mb-2">2:47 AM</p>
+<div class="text-center mb-12">
+<div class="w-20 h-20 bg-slate-800 rounded-full mx-auto flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-slate-400 text-4xl">person</span>
+</div>
+<p class="text-xl font-bold">Unknown Driver</p>
+<p class="text-slate-400 text-sm">Potential Booking</p>
+</div>
+<div class="w-full bg-error/10 border border-error/20 p-4 rounded-xl flex items-center gap-3">
+<span class="material-symbols-outlined text-error">phone_missed</span>
+<div class="flex-1">
+<p class="text-xs font-bold text-error">Missed Call</p>
+<p class="text-[10px] text-error/80">Call ended at 2:48 AM</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- How It Works Section -->
+<section class="py-24 px-6 max-w-7xl mx-auto" id="how-it-works">
+<div class="text-center mb-16">
+<h2 class="text-4xl font-bold text-primary mb-4">From Missed Call to Booked Spot in 30 Seconds</h2>
+<p class="text-on-surface-variant max-w-2xl mx-auto italic">High-performance booking flow comparison</p>
+</div>
+<div class="grid md:grid-cols-2 gap-8">
+<!-- Old Way -->
+<div class="bg-surface-container-low p-8 rounded-2xl border border-outline-variant/30">
+<div class="flex items-center gap-3 mb-8">
+<span class="w-10 h-10 rounded-full bg-error-container text-error flex items-center justify-center font-bold">X</span>
+<h3 class="text-xl font-bold text-primary uppercase tracking-tight">The Old Way</h3>
+</div>
+<div class="space-y-6 relative">
+<div class="absolute left-[19px] top-4 bottom-4 w-0.5 bg-outline-variant/30"></div>
+<div class="flex gap-6 relative">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-sm">schedule</span>
+</div>
+<div>
+<p class="font-bold">2:47 AM</p>
+<p class="text-sm text-on-surface-variant">Driver calls. You're asleep. Phone goes to voicemail.</p>
+</div>
+</div>
+<div class="flex gap-6 relative">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-sm">voicemail</span>
+</div>
+<div>
+<p class="font-bold">4:00 AM</p>
+<p class="text-sm text-on-surface-variant text-error font-medium">Driver books with the lot across town instead.</p>
+</div>
+</div>
+<div class="flex gap-6 relative">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-sm">mail</span>
+</div>
+<div>
+<p class="font-bold">9:00 AM</p>
+<p class="text-sm text-on-surface-variant">You check voicemail. It's too late. Booking lost.</p>
+</div>
+</div>
+</div>
+<div class="mt-8 p-4 bg-error-container/30 border border-error/10 rounded-lg">
+<p class="text-error font-bold text-center">TOTAL TIME: 6+ HOURS (LOST REVENUE)</p>
+</div>
+</div>
+<!-- New Way -->
+<div class="bg-surface-container-lowest p-8 rounded-2xl shadow-xl border-2 border-secondary/20">
+<div class="flex items-center gap-3 mb-8">
+<span class="w-10 h-10 rounded-full bg-secondary text-white flex items-center justify-center font-bold">✓</span>
+<h3 class="text-xl font-bold text-primary uppercase tracking-tight">The ParkAI Way</h3>
+</div>
+<div class="space-y-6 relative">
+<div class="absolute left-[19px] top-4 bottom-4 w-0.5 bg-secondary/20"></div>
+<div class="flex gap-6 relative">
+<div class="w-10 h-10 rounded-full bg-secondary text-white flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">phone_in_talk</span>
+</div>
+<div>
+<p class="font-bold">2:47:00 AM</p>
+<p class="text-sm text-on-surface-variant">Driver calls. AI answers in 2 seconds.</p>
+</div>
+</div>
+<div class="flex gap-6 relative">
+<div class="w-10 h-10 rounded-full bg-secondary text-white flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<p class="font-bold">2:47:15 AM</p>
+<p class="text-sm text-on-surface-variant">AI checks availability &amp; quotes price. Driver confirms.</p>
+</div>
+</div>
+<div class="flex gap-6 relative">
+<div class="w-10 h-10 rounded-full bg-secondary text-white flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">notifications_active</span>
+</div>
+<div>
+<p class="font-bold">2:47:30 AM</p>
+<p class="text-sm text-on-surface-variant font-medium text-secondary">Spot confirmed. See booking instantly in dashboard.</p>
+</div>
+</div>
+</div>
+<div class="mt-8 p-4 bg-secondary-fixed/50 border border-secondary/20 rounded-lg">
+<p class="text-secondary font-bold text-center uppercase tracking-wider">Total Time: 30 Seconds (Booked!)</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Key Features -->
+<section class="py-24 px-6 max-w-7xl mx-auto bg-surface" id="features">
+<div class="grid md:grid-cols-2 gap-6">
+<div class="p-10 bg-surface-container-low rounded-xl group hover:bg-surface-container-lowest transition-all hover:shadow-lg border border-transparent hover:border-outline-variant/20">
+<div class="w-12 h-12 bg-primary text-white rounded-lg flex items-center justify-center mb-6">
+<span class="material-symbols-outlined">family_restroom</span>
+</div>
+<h3 class="text-2xl font-bold mb-4">Answers Every Call—Even During Family Dinner</h3>
+<p class="text-on-surface-variant leading-relaxed">Stop letting work interrupt your life. Our AI maintains a 100% answer rate, ensuring no driver is left hanging while you're focused on what matters.</p>
+</div>
+<div class="p-10 bg-surface-container-low rounded-xl group hover:bg-surface-container-lowest transition-all hover:shadow-lg border border-transparent hover:border-outline-variant/20">
+<div class="w-12 h-12 bg-secondary text-white rounded-lg flex items-center justify-center mb-6">
+<span class="material-symbols-outlined">speed</span>
+</div>
+<h3 class="text-2xl font-bold mb-4">Books Spots in 30 Seconds—Not 3 Hours</h3>
+<p class="text-on-surface-variant leading-relaxed">Efficiency is the name of the game. Drivers get answers instantly, prices immediately, and a booking confirmation before they even shift gears.</p>
+</div>
+<div class="p-10 bg-surface-container-low rounded-xl group hover:bg-surface-container-lowest transition-all hover:shadow-lg border border-transparent hover:border-outline-variant/20">
+<div class="w-12 h-12 bg-tertiary-container text-tertiary-fixed rounded-lg flex items-center justify-center mb-6">
+<span class="material-symbols-outlined">dashboard</span>
+</div>
+<h3 class="text-2xl font-bold mb-4">See Every Booking The Second It Happens</h3>
+<p class="text-on-surface-variant leading-relaxed">Stay in total control with a real-time dashboard. No manual data entry, no paper logs. Just clean, accurate records of every truck entering your lot.</p>
+</div>
+<div class="p-10 bg-surface-container-low rounded-xl group hover:bg-surface-container-lowest transition-all hover:shadow-lg border border-transparent hover:border-outline-variant/20">
+<div class="w-12 h-12 bg-outline text-white rounded-lg flex items-center justify-center mb-6">
+<span class="material-symbols-outlined">psychology</span>
+</div>
+<h3 class="text-2xl font-bold mb-4">Handles "Do You Allow Reefers?" And 20 Other Questions</h3>
+<p class="text-on-surface-variant leading-relaxed">Our AI doesn't just book; it knows your rules. Whether it's hazardous materials, reefer units, or height limits, the AI gives accurate answers every time.</p>
+</div>
+</div>
+</section>
+<!-- Calculator Section -->
+<section class="py-24 px-6 bg-surface-container-low border-y border-outline-variant/10">
+<div class="max-w-4xl mx-auto bg-surface-container-lowest p-12 rounded-3xl shadow-xl">
+<div class="text-center mb-12">
+<h2 class="text-3xl font-bold text-primary mb-2">How Many Bookings Are You Missing?</h2>
+<p class="text-on-surface-variant">The numbers might surprise you. Calculate your potential growth.</p>
+</div>
+<div class="grid md:grid-cols-2 gap-12 items-center">
+<div class="space-y-8">
+<div>
+<label class="block text-sm font-bold text-primary mb-4">How many calls do you typically miss per week?</label>
+<input class="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-secondary" max="50" min="1" type="range" value="10"/>
+<div class="flex justify-between mt-2 text-xs font-bold text-on-surface-variant">
+<span>1 CALL</span>
+<span class="bg-secondary text-white px-2 py-1 rounded">10 CALLS</span>
+<span>50 CALLS</span>
+</div>
+</div>
+<div class="p-4 bg-surface-container-low rounded-lg border border-outline-variant/20">
+<p class="text-xs font-bold text-on-surface-variant uppercase mb-2">Industry Average</p>
+<p class="text-sm">Each missed truck parking booking represents roughly <span class="font-bold">$150</span> in immediate revenue.</p>
+</div>
+</div>
+<div class="bg-primary p-8 rounded-2xl text-white">
+<p class="text-sm font-medium text-on-primary-container mb-6">POTENTIAL BOOKINGS LOST</p>
+<div class="space-y-4">
+<div class="flex justify-between items-end border-b border-white/10 pb-4">
+<span class="text-sm text-on-primary-container">Weekly</span>
+<span class="text-3xl font-bold">$1,500</span>
+</div>
+<div class="flex justify-between items-end border-b border-white/10 pb-4">
+<span class="text-sm text-on-primary-container">Monthly</span>
+<span class="text-3xl font-bold">$6,000</span>
+</div>
+<div class="flex justify-between items-end pb-4">
+<span class="text-sm text-on-primary-container">Yearly</span>
+<span class="text-4xl font-extrabold text-secondary-fixed">$72,000</span>
+</div>
+</div>
+</div>
+</div>
+<p class="mt-8 text-xs text-on-surface-variant text-center">
+                Disclaimer: This calculator shows potential bookings based on industry averages... ParkAI helps you answer more calls—revenue depends on your lot's demand.
+            </p>
+</div>
+</section>
+<!-- Social Proof -->
+<section class="py-24 px-6 max-w-7xl mx-auto">
+<h2 class="text-center text-3xl font-bold text-primary mb-16">What Lot Owners Tell Us During Demos</h2>
+<div class="grid md:grid-cols-3 gap-8 mb-20">
+<div class="p-8 border border-outline-variant rounded-xl italic text-on-surface">
+                "I was skeptical about AI... but this is just like having an employee who never sleeps. I can actually enjoy dinner with my family now knowing my lot is still filling up."
+                <div class="mt-6 flex items-center gap-3 not-italic">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest"></div>
+<div>
+<p class="font-bold text-sm">Dave R.</p>
+<p class="text-xs text-on-surface-variant">Logistics Lot Owner</p>
+</div>
+</div>
+</div>
+<div class="p-8 border border-outline-variant rounded-xl italic text-on-surface">
+                "I used to find 5-6 missed calls every morning. Now those are 5-6 reservations waiting for me when I log in at 8 AM. It paid for itself in the first two nights."
+                <div class="mt-6 flex items-center gap-3 not-italic">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest"></div>
+<div>
+<p class="font-bold text-sm">Mark S.</p>
+<p class="text-xs text-on-surface-variant">Metro Parking Hub</p>
+</div>
+</div>
+</div>
+<div class="p-8 border border-outline-variant rounded-xl italic text-on-surface">
+                "The AI knows all my rules about hazardous materials and reefer units. It's more reliable than my last night-shift hire and costs a fraction of the price."
+                <div class="mt-6 flex items-center gap-3 not-italic">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest"></div>
+<div>
+<p class="font-bold text-sm">Kevin L.</p>
+<p class="text-xs text-on-surface-variant">Interstate Truck Stop</p>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-8 py-12 border-y border-outline-variant/20">
+<div class="text-center">
+<p class="text-4xl font-extrabold text-secondary mb-2">100%</p>
+<p class="text-sm font-bold text-primary uppercase">Call Answer Rate</p>
+</div>
+<div class="text-center">
+<p class="text-4xl font-extrabold text-secondary mb-2">30s</p>
+<p class="text-sm font-bold text-primary uppercase">Avg Booking Time</p>
+</div>
+<div class="text-center col-span-2 md:col-span-1">
+<p class="text-4xl font-extrabold text-secondary mb-2">24/7</p>
+<p class="text-sm font-bold text-primary uppercase">Uptime Guaranteed</p>
+</div>
+</div>
+</section>
+<!-- Pricing Section -->
+<section class="py-24 px-6 bg-surface-container-low" id="pricing">
+<div class="max-w-7xl mx-auto">
+<div class="text-center mb-16">
+<h2 class="text-4xl font-bold text-primary mb-4">Simple Pricing. No Surprises.</h2>
+<p class="text-on-surface-variant">One plan. Everything included. Professional scale.</p>
+</div>
+<div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-8 items-stretch">
+<div class="p-10 bg-white rounded-2xl shadow-xl border-2 border-secondary relative overflow-hidden flex flex-col">
+<div class="absolute top-0 right-0 bg-secondary text-white px-4 py-1 text-xs font-bold uppercase tracking-widest rounded-bl-lg">Most Popular</div>
+<div class="mb-8">
+<h3 class="text-2xl font-bold text-primary mb-4">ParkAI Standard</h3>
+<div class="flex items-baseline gap-2">
+<span class="text-5xl font-extrabold text-primary">$200</span>
+<span class="text-on-surface-variant">/month</span>
+</div>
+</div>
+<ul class="space-y-4 mb-10 flex-1">
+<li class="flex items-center gap-3"><span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span> Unlimited calls &amp; bookings</li>
+<li class="flex items-center gap-3"><span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span> Real-time dashboard access</li>
+<li class="flex items-center gap-3"><span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span> Natural-sounding AI voice</li>
+<li class="flex items-center gap-3"><span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span> Instant setup (under 5 mins)</li>
+<li class="flex items-center gap-3"><span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span> SMS confirmations for drivers</li>
+</ul>
+<button class="w-full py-4 bg-primary text-white rounded-xl font-bold hover:bg-secondary transition-colors">Start Free Trial</button>
+</div>
+<div class="p-10 bg-surface-container-highest/50 rounded-2xl border border-outline-variant/30 flex flex-col justify-center">
+<h4 class="text-xl font-bold text-primary mb-6 text-center">Cost Comparison</h4>
+<div class="space-y-6">
+<div class="flex justify-between items-center p-4 bg-error-container/20 rounded-lg">
+<span class="font-medium text-error">Hiring Part-Time Help</span>
+<span class="font-bold text-error">$1,200/mo</span>
+</div>
+<div class="flex justify-between items-center p-4 bg-secondary-fixed/30 rounded-lg border-2 border-secondary/20">
+<span class="font-bold text-secondary">ParkAI (Unlimited)</span>
+<span class="font-extrabold text-secondary">$200/mo</span>
+</div>
+<div class="text-center pt-4">
+<p class="text-2xl font-extrabold text-primary">83% Monthly Savings</p>
+<p class="text-sm text-on-surface-variant">No training, no sick days, no taxes.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- FAQ Section -->
+<section class="py-24 px-6 max-w-3xl mx-auto" id="faq">
+<h2 class="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
+<div class="space-y-6">
+<div class="p-6 bg-surface-container-low rounded-xl">
+<p class="font-bold text-primary mb-2">Will drivers know it's AI?</p>
+<p class="text-sm text-on-surface-variant leading-relaxed">Our voice technology is highly natural. Most drivers just appreciate how quickly they get an answer. If they ask, the AI can honestly state it's an automated assistant here to help them book quickly.</p>
+</div>
+<div class="p-6 bg-surface-container-low rounded-xl">
+<p class="font-bold text-primary mb-2">What if it makes a mistake?</p>
+<p class="text-sm text-on-surface-variant leading-relaxed">The AI follows strict logic provided by you. If it encounters a complex situation it can't handle, it politely informs the driver that a manager will call them back and instantly notifies you.</p>
+</div>
+<div class="p-6 bg-surface-container-low rounded-xl">
+<p class="font-bold text-primary mb-2">Do I need a new phone number?</p>
+<p class="text-sm text-on-surface-variant leading-relaxed">No. You simply set your current phone line to "Forward on Busy" or "Forward on No Answer" to your unique ParkAI number. It works seamlessly with your existing setup.</p>
+</div>
+<div class="p-6 bg-surface-container-low rounded-xl">
+<p class="font-bold text-primary mb-2">What if my lot is full?</p>
+<p class="text-sm text-on-surface-variant leading-relaxed">The AI has real-time access to your inventory. If you're full, it will politely inform the driver and offer to put them on a waiting list or suggest they call back later, saving you the time of answering to say "no."</p>
+</div>
+</div>
+</section>
+<!-- Final CTA -->
+<section class="py-24 px-6">
+<div class="max-w-5xl mx-auto bg-gradient-to-br from-primary via-primary-container to-secondary p-12 rounded-[2.5rem] text-center text-white relative overflow-hidden">
+<div class="absolute top-0 right-0 w-64 h-64 bg-secondary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+<div class="relative z-10">
+<h2 class="text-4xl md:text-5xl font-extrabold mb-6">Ready to Answer Every Call?</h2>
+<p class="text-xl text-on-primary-container mb-10 max-w-2xl mx-auto">
+                    Join lot owners who never miss a booking—even at 2 AM, even on Christmas morning.
+                </p>
+<button class="px-10 py-5 bg-white text-primary rounded-xl font-extrabold text-xl shadow-2xl hover:scale-105 transition-all mb-8">
+                    Start Earning in 5 Minutes →
+                </button>
+<div class="max-w-md mx-auto p-4 bg-white/10 backdrop-blur rounded-lg border border-white/20">
+<p class="text-xs font-bold uppercase tracking-widest text-secondary-fixed mb-1">Our Risk-Free Guarantee</p>
+<p class="text-sm leading-relaxed">If ParkAI doesn't answer at least one call you would have missed in 14 days, we'll refund your first month and send you $50.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-slate-50 dark:bg-slate-900 py-12 border-t border-slate-100 dark:border-slate-800">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8 px-6 max-w-7xl mx-auto">
+<div class="col-span-1 md:col-span-1">
+<div class="text-lg font-bold text-slate-900 dark:text-white mb-4">TruckPark AI</div>
+<p class="text-sm text-slate-500 dark:text-slate-400">Operational Excellence for Fleet Managers and Lot Owners.</p>
+</div>
+<div>
+<p class="font-bold text-primary mb-4">Product</p>
+<ul class="space-y-2 text-sm text-slate-500 dark:text-slate-400">
+<li><a class="hover:text-slate-900 dark:hover:text-white transition-colors" href="#">Features</a></li>
+<li><a class="hover:text-slate-900 dark:hover:text-white transition-colors" href="#">Pricing</a></li>
+<li><a class="hover:text-slate-900 dark:hover:text-white transition-colors" href="#">Demo</a></li>
+</ul>
+</div>
+<div>
+<p class="font-bold text-primary mb-4">Support</p>
+<ul class="space-y-2 text-sm text-slate-500 dark:text-slate-400">
+<li><a class="hover:text-slate-900 dark:hover:text-white transition-colors" href="#">Contact Support</a></li>
+<li><a class="hover:text-slate-900 dark:hover:text-white transition-colors" href="#">System Status</a></li>
+<li><a class="hover:text-slate-900 dark:hover:text-white transition-colors" href="#">Help Center</a></li>
+</ul>
+</div>
+<div>
+<p class="font-bold text-primary mb-4">Legal</p>
+<ul class="space-y-2 text-sm text-slate-500 dark:text-slate-400">
+<li><a class="hover:text-slate-900 dark:hover:text-white transition-colors" href="#">Privacy Policy</a></li>
+<li><a class="hover:text-slate-900 dark:hover:text-white transition-colors" href="#">Terms of Service</a></li>
+</ul>
+</div>
+</div>
+<div class="mt-12 text-center text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800 pt-8">
+            © 2024 TruckPark AI. Operational Excellence for Fleet Managers.
+        </div>
+</footer>
+</body></html>
