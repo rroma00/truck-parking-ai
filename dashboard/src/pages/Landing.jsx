@@ -33,47 +33,92 @@ function FaqItem({ faq }) {
 }
 
 function TimelineStep({ time, title, detail, icon, isAi, index }) {
-  const [isOpen, setIsOpen] = useState(false);
-  
   // Custom animation styles for staggered entry
   const animationDelay = `${index * 200 + (isAi ? 400 : 200)}ms`;
 
   return (
     <div 
-      className={`flex gap-6 relative p-3 -mx-3 rounded-xl transition-all duration-300 cursor-pointer animate-slide-up
+      className={`flex gap-6 relative p-5 rounded-[2rem] transition-all duration-700 animate-slide-up z-10
         ${isAi 
-          ? 'hover:bg-secondary/5 hover:border-secondary/30 hover:shadow-[0_4px_20px_rgba(var(--color-secondary),0.1)] hover:-translate-y-1 group' 
-          : 'hover:bg-surface-container-highest hover:-translate-y-1 group'
+          ? 'bg-white border border-slate-200/50 shadow-sm hover:shadow-md hover:-translate-y-1 group hover:bg-slate-50' 
+          : 'bg-white border border-slate-200/50 shadow-sm hover:shadow-md hover:-translate-y-1 group hover:bg-[#FFF9F9]'
         }`}
       style={{ animationDelay }}
-      onClick={() => setIsOpen(!isOpen)}
     >
-      <div className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center z-10 transition-colors duration-300
+      <div className={`w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center z-20 transition-all duration-700
         ${isAi 
-          ? 'bg-secondary text-white shadow-[0_0_15px_rgba(var(--color-secondary),0.4)] group-hover:bg-secondary-fixed group-hover:text-on-secondary-fixed' 
-          : 'bg-surface-container-highest border border-outline-variant text-on-surface-variant group-hover:border-error/30'
+          ? 'bg-secondary text-white shadow-md group-hover:scale-110 group-hover:rotate-3' 
+          : 'bg-[#D04E3A] text-white shadow-md group-hover:bg-[#C03E2A] group-hover:scale-105'
         }`}
       >
-        <span className="material-symbols-outlined text-sm" style={isAi ? { fontVariationSettings: "'FILL' 1" } : {}}>{icon}</span>
+        <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>{icon}</span>
       </div>
       <div className="flex-1 pt-1.5">
-        <div className="flex justify-between items-center mb-1 relative pr-4">
-          <p className={`font-bold ${isAi ? 'text-secondary' : 'text-on-surface'}`}>{time}</p>
-          <span className={`material-symbols-outlined text-sm transition-transform duration-300 absolute right-0 top-1/2 -translate-y-1/2 ${isOpen ? 'rotate-180' : ''} ${isAi ? 'text-secondary/70' : 'text-on-surface-variant'}`}>
-            expand_more
-          </span>
+        <div className="flex justify-between items-center mb-1 relative">
+          <p className={`text-[11px] font-black uppercase tracking-[0.2em] ${isAi ? 'text-secondary' : 'text-[#D04E3A]'}`}>{time}</p>
         </div>
-        <p className={`text-sm font-medium ${isAi ? 'text-on-surface' : (index === 1 ? 'text-error line-through decoration-error/50' : 'text-on-surface-variant')}`}>{title}</p>
+        <p className={`text-lg font-black leading-tight mb-2 font-['Manrope'] text-slate-900`}>{title}</p>
         
-        {/* Expandable Detail */}
-        <div className={`grid transition-all duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100 mt-2' : 'grid-rows-[0fr] opacity-0'}`}>
-          <div className="overflow-hidden">
-            <p className={`text-[13px] leading-relaxed pb-2 pt-1 ${isAi ? 'text-on-surface-variant' : 'text-on-surface-variant/80'}`}>
-              {detail}
-            </p>
-          </div>
+        <p className={`text-sm leading-relaxed font-semibold transition-colors ${isAi ? 'text-slate-500' : 'text-slate-500 group-hover:text-slate-600'}`}>
+          {detail}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function FeatureCard({ icon, title, description, colorClass, delay }) {
+  return (
+    <div 
+      className="p-10 bg-white rounded-[2.5rem] border border-slate-200/60 shadow-sm transition-all duration-500 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)] hover:-translate-y-2 group relative overflow-hidden animate-slide-up"
+      style={{ animationDelay: delay }}
+    >
+      {/* Subtle corner accent */}
+      <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-transparent to-transparent group-hover:to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700`}></div>
+      
+      <div className={`w-14 h-14 ${colorClass} rounded-2xl flex items-center justify-center mb-8 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-sm group-hover:shadow-lg`}>
+        <span className="material-symbols-outlined text-2xl font-black">{icon}</span>
+      </div>
+      
+      <h3 className="text-2xl font-black mb-4 font-['Manrope'] text-slate-900 leading-tight group-hover:text-primary transition-colors">
+        {title}
+      </h3>
+      
+      <p className="text-slate-500 leading-relaxed font-semibold text-sm mb-0">
+        {description}
+      </p>
+    </div>
+  );
+}
+
+function TestimonialCard({ quote, author, title, avatar, delay }) {
+  return (
+    <div 
+      className="p-10 rounded-[2.5rem] bg-white border border-slate-200/60 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl group relative animate-slide-up antialiased"
+      style={{ animationDelay: delay }}
+    >
+      <p className="text-gray-900 text-lg leading-relaxed italic font-medium mb-10 relative z-10 antialiased">
+        "{quote}"
+      </p>
+      
+      <div className="flex items-center gap-4 border-t border-slate-200/50 pt-8 mt-auto">
+        <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white shadow-sm ring-2 ring-slate-100 group-hover:ring-primary/20 transition-all">
+          <img src={avatar} alt={author} className="w-full h-full object-cover" />
+        </div>
+        <div>
+          <p className="font-black text-slate-900 font-['Manrope'] antialiased">{author}</p>
+          <p className="text-xs font-bold text-slate-500 uppercase tracking-widest antialiased">{title}</p>
         </div>
       </div>
+    </div>
+  );
+}
+
+function StatItem({ value, label, delay }) {
+  return (
+    <div className="text-center group animate-slide-up" style={{ animationDelay: delay }}>
+      <p className="text-6xl font-black text-secondary mb-3 transition-transform group-hover:scale-110 duration-500">{value}</p>
+      <p className="text-xs font-black text-primary uppercase tracking-[0.25em]">{label}</p>
     </div>
   );
 }
@@ -407,7 +452,7 @@ export default function Landing() {
         <div className="absolute bottom-[-10%] right-[-5%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] -z-10 pointer-events-none animate-ambient-drift" style={{animationDelay: '-5s'}}></div>
         
         <div className="max-w-[1400px] mx-auto relative z-10">
-          <style dangerouslySetInnerHTML={{__html: `
+        <style dangerouslySetInnerHTML={{__html: `
           @keyframes slideFadeUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -425,14 +470,16 @@ export default function Landing() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
           
           {/* Old Way Timeline */}
-          <div className="bg-surface-container-low p-8 rounded-2xl border border-outline-variant/30 flex flex-col h-full animate-slide-up" style={{animationDelay: '100ms'}}>
-            <div className="flex items-center gap-3 mb-8">
-              <span className="w-10 h-10 rounded-full bg-error-container text-error flex items-center justify-center font-bold">X</span>
-              <h3 className="text-xl font-bold text-primary uppercase tracking-tight font-['Manrope']">The Old Way</h3>
+          <div className="bg-white p-12 rounded-[3.5rem] border border-slate-200 flex flex-col h-full animate-slide-up shadow-[0_30px_100px_-20px_rgba(0,0,0,0.08)] hover:shadow-[0_40px_120px_-20px_rgba(0,0,0,0.12)] transition-all duration-700 group relative" style={{animationDelay: '100ms'}}>
+            <div className="flex items-center gap-5 mb-12">
+              <span className="w-14 h-14 rounded-2xl bg-[#D04E3A] text-white flex items-center justify-center font-black shadow-lg transition-transform group-hover:scale-110">
+                <span className="material-symbols-outlined font-black">close</span>
+              </span>
+              <h3 className="text-2xl font-black text-[#D04E3A] uppercase tracking-[0.15em] font-['Manrope']">The Old Way</h3>
             </div>
-            <div className="space-y-2 relative flex-1">
+            <div className="space-y-8 relative flex-1">
               {/* Timeline Spine */}
-              <div className="absolute left-[19px] top-4 bottom-8 w-0.5 bg-outline-variant/30"></div>
+              <div className="absolute left-[47px] top-12 bottom-16 w-1.5 bg-[#D04E3A]/10 rounded-full z-0"></div>
               
               <TimelineStep 
                 time="2:47 AM" 
@@ -459,20 +506,23 @@ export default function Landing() {
                 index={2} 
               />
             </div>
-            <div className="mt-8 p-4 bg-error-container/30 border border-error/20 rounded-xl hover:bg-error-container/50 transition-colors">
-              <p className="text-error font-extrabold text-center tracking-wide text-sm">TOTAL TIME: 6+ HOURS (LOST REVENUE)</p>
+            <div className="mt-12 h-28 flex items-center justify-center p-8 bg-[#D04E3A] shadow-xl rounded-[2rem] transition-all group-hover:shadow-2xl border border-white/10">
+              <p className="text-white font-black text-center uppercase tracking-[0.15em] text-sm">TOTAL TIME: 6+ HOURS (LOST REVENUE)</p>
             </div>
           </div>
           
           {/* New Way Timeline */}
-          <div className="bg-surface-container-lowest p-8 rounded-2xl shadow-xl border-2 border-secondary/20 flex flex-col h-full animate-slide-up" style={{animationDelay: '300ms'}}>
-            <div className="flex items-center gap-3 mb-8">
-              <span className="w-10 h-10 rounded-full bg-secondary text-white flex items-center justify-center font-bold shadow-[0_0_15px_rgba(var(--color-secondary),0.5)]">✓</span>
-              <h3 className="text-xl font-bold text-primary uppercase tracking-tight font-['Manrope']">The ParkAI Way</h3>
+          <div className="bg-white p-12 rounded-[3.5rem] border border-slate-200 flex flex-col h-full animate-slide-up shadow-[0_30px_100px_-20px_rgba(0,0,0,0.08)] hover:shadow-[0_40px_120px_-20px_rgba(0,0,0,0.12)] transition-all duration-700 relative overflow-hidden group" style={{animationDelay: '300ms'}}>
+            <div className="flex items-center gap-5 mb-12 relative z-10">
+              <span className="w-14 h-14 rounded-2xl bg-secondary text-white flex items-center justify-center font-black shadow-lg transition-transform group-hover:rotate-6">
+                <span className="material-symbols-outlined font-black">check</span>
+              </span>
+              <h3 className="text-2xl font-black text-primary uppercase tracking-[0.15em] font-['Manrope']">The ParkAI Way</h3>
+              <span className="ml-auto px-4 py-1.5 bg-secondary text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-md">The Winner</span>
             </div>
-            <div className="space-y-2 relative flex-1">
-              {/* Timeline Spine (Glowing) */}
-              <div className="absolute left-[19px] top-4 bottom-8 w-0.5 bg-gradient-to-b from-secondary/50 to-primary/20"></div>
+            <div className="space-y-8 relative flex-1 z-10">
+              {/* Timeline Spine (Glowing Gradient) */}
+              <div className="absolute left-[47px] top-12 bottom-16 w-1.5 bg-gradient-to-b from-secondary via-secondary/40 to-primary/10 rounded-full shadow-[0_0_15px_rgba(var(--color-secondary),0.1)]"></div>
               
               <TimelineStep 
                 time="2:47:00 AM" 
@@ -499,9 +549,8 @@ export default function Landing() {
                 index={2} 
               />
             </div>
-            <div className="mt-8 p-6 bg-gradient-to-r from-secondary-fixed/50 to-primary-fixed/50 border-2 border-secondary/30 rounded-xl shadow-[0_0_30px_rgba(var(--color-secondary),0.15)] relative overflow-hidden group cursor-default">
-              <div className="absolute inset-0 bg-white/30 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-[1.5s] ease-in-out"></div>
-              <p className="text-secondary font-black text-center uppercase tracking-widest drop-shadow-sm text-lg">Total Time: 30 Seconds (Booked!)</p>
+            <div className="mt-12 h-28 flex items-center justify-center p-8 bg-secondary shadow-xl rounded-[2rem] relative overflow-hidden group cursor-pointer border border-white/10 transition-all group-hover:shadow-2xl">
+              <p className="text-white font-black text-center uppercase tracking-[0.15em] text-sm z-10">Total Time: 30 Seconds (Booked!)</p>
             </div>
           </div>
           
@@ -521,35 +570,35 @@ export default function Landing() {
           <h2 className="text-4xl font-bold text-primary mb-4 font-['Manrope'] pr-1.5">Everything You Need to Run Your Lot on Autopilot</h2>
           <p className="text-on-surface-variant max-w-2xl mx-auto font-medium">Enterprise-grade AI calls management, inventory tracking, and driver support.</p>
         </div>
-        <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-          <div className="p-12 bg-surface-container-low rounded-xl group hover:bg-surface-container-lowest transition-all hover:shadow-xl border border-transparent hover:border-outline-variant/20">
-            <div className="w-12 h-12 bg-primary text-white rounded-lg flex items-center justify-center mb-6">
-              <span className="material-symbols-outlined">family_restroom</span>
-            </div>
-            <h3 className="text-2xl font-bold mb-4 font-['Manrope']">Answers Every Call—Even During Family Dinner</h3>
-            <p className="text-on-surface-variant leading-relaxed">Stop letting work interrupt your life. Our AI maintains a 100% answer rate, ensuring no driver is left hanging while you're focused on what matters.</p>
-          </div>
-          <div className="p-12 bg-surface-container-low rounded-xl group hover:bg-surface-container-lowest transition-all hover:shadow-xl border border-transparent hover:border-outline-variant/20">
-            <div className="w-12 h-12 bg-secondary text-white rounded-lg flex items-center justify-center mb-6">
-              <span className="material-symbols-outlined">speed</span>
-            </div>
-            <h3 className="text-2xl font-bold mb-4 font-['Manrope']">Books Spots in 30 Seconds—Not 3 Hours</h3>
-            <p className="text-on-surface-variant leading-relaxed">Efficiency is the name of the game. Drivers get answers instantly, prices immediately, and a booking confirmation before they even shift gears.</p>
-          </div>
-          <div className="p-12 bg-surface-container-low rounded-xl group hover:bg-surface-container-lowest transition-all hover:shadow-xl border border-transparent hover:border-outline-variant/20">
-            <div className="w-12 h-12 bg-tertiary-container text-tertiary-fixed rounded-lg flex items-center justify-center mb-6">
-              <span className="material-symbols-outlined">dashboard</span>
-            </div>
-            <h3 className="text-2xl font-bold mb-4 font-['Manrope']">See Every Booking The Second It Happens</h3>
-            <p className="text-on-surface-variant leading-relaxed">Stay in total control with a real-time dashboard. No manual data entry, no paper logs. Just clean, accurate records of every truck entering your lot.</p>
-          </div>
-          <div className="p-12 bg-surface-container-low rounded-xl group hover:bg-surface-container-lowest transition-all hover:shadow-xl border border-transparent hover:border-outline-variant/20">
-            <div className="w-12 h-12 bg-outline text-white rounded-lg flex items-center justify-center mb-6">
-              <span className="material-symbols-outlined">psychology</span>
-            </div>
-            <h3 className="text-2xl font-bold mb-4 font-['Manrope']">Handles "Do You Allow Reefers?" And 20 Other Questions</h3>
-            <p className="text-on-surface-variant leading-relaxed">Our AI doesn't just book; it knows your rules. Whether it's hazardous materials, reefer units, or height limits, the AI gives accurate answers every time.</p>
-          </div>
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-10">
+          <FeatureCard 
+            icon="family_restroom"
+            title="Answers Every Call—Even During Family Dinner"
+            description="Stop letting work interrupt your life. Our AI maintains a 100% answer rate, ensuring no driver is left hanging while you're focused on what matters."
+            colorClass="bg-red-50 text-[#D04E3A]"
+            delay="100ms"
+          />
+          <FeatureCard 
+            icon="speed"
+            title="Books Spots in 30 Seconds—Not 3 Hours"
+            description="Efficiency is the name of the game. Drivers get answers instantly, prices immediately, and a booking confirmation before they even shift gears."
+            colorClass="bg-blue-50 text-secondary"
+            delay="200ms"
+          />
+          <FeatureCard 
+            icon="dashboard"
+            title="See Every Booking The Second It Happens"
+            description="Stay in total control with a real-time dashboard. No manual data entry, no paper logs. Just clean, accurate records of every truck entering your lot."
+            colorClass="bg-indigo-50 text-indigo-600"
+            delay="300ms"
+          />
+          <FeatureCard 
+            icon="psychology"
+            title="Handles 'Do You Allow Reefers?' And 20 Other Questions"
+            description="Our AI doesn't just book; it knows your rules. Whether it's hazardous materials, reefer units, or height limits, the AI gives accurate answers every time."
+            colorClass="bg-emerald-50 text-emerald-600"
+            delay="400ms"
+          />
         </div>
         </div>
       </section>
@@ -609,104 +658,118 @@ export default function Landing() {
       </section>
 
       {/* Social Proof */}
-      <section className="relative py-36 px-6 overflow-hidden">
-        {/* Deep background ambient shift */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[150px] -z-10 pointer-events-none animate-ambient-drift"></div>
+      <section className="relative py-48 px-6 overflow-hidden bg-white antialiased" id="social-proof">
+        {/* Decorative background elements */}
+        <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-slate-50/50 to-transparent pointer-events-none"></div>
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-primary/5 rounded-full blur-[180px] -z-10 pointer-events-none animate-ambient-drift"></div>
+        
         <div className="max-w-[1400px] mx-auto relative z-10">
-        <h2 className="text-center text-3xl font-bold text-primary mb-16 font-['Manrope']">What Lot Owners Tell Us During Demos</h2>
-        <div className="grid md:grid-cols-3 gap-8 lg:gap-12 mb-24">
-          <div className="p-8 border border-outline-variant rounded-xl italic text-on-surface">
-            "I was skeptical about AI... but this is just like having an employee who never sleeps. I can actually enjoy dinner with my family now knowing my lot is still filling up."
-            <div className="mt-6 flex items-center gap-3 not-italic">
-              <div className="w-10 h-10 rounded-full bg-surface-container-highest"></div>
-              <div>
-                <p className="font-bold text-sm">Dave R.</p>
-                <p className="text-xs text-on-surface-variant">Logistics Lot Owner</p>
-              </div>
+          <div className="text-center mb-20">
+            <h2 className="text-4xl font-black text-primary mb-6 font-['Manrope'] tracking-tight">What Lot Owners Tell Us During Demos</h2>
+            <p className="text-slate-500 max-w-2xl mx-auto font-semibold">Join dozens of lot owners who have recovered their nights and boosted their revenue with ParkAI.</p>
+          </div>
+          
+          <div className="grid lg:grid-cols-3 gap-8 lg:gap-10 mb-32 items-stretch">
+            <TestimonialCard 
+              quote="I was skeptical about AI... but this is just like having an employee who never sleeps. I can actually enjoy dinner with my family now knowing my lot is still filling up."
+              author="Dave R."
+              title="Logistics Lot Owner"
+              avatar="file:///C:/Users/user/.gemini/antigravity/brain/a0d4b062-a99d-476e-972c-1caa8c7d2bef/lot_owner_dave_1775094952731.png"
+              delay="100ms"
+            />
+            <TestimonialCard 
+              quote="I used to find 5-6 missed calls every morning. Now those are 5-6 reservations waiting for me when I log in at 8 AM. It paid for itself in the first two nights."
+              author="Mark S."
+              title="Metro Parking Hub"
+              avatar="file:///C:/Users/user/.gemini/antigravity/brain/a0d4b062-a99d-476e-972c-1caa8c7d2bef/lot_owner_mark_1775094970793.png"
+              delay="200ms"
+            />
+            <TestimonialCard 
+              quote="The AI knows all my rules about hazardous materials and reefer units. It's more reliable than my last night-shift hire and costs a fraction of the price."
+              author="Kevin L."
+              title="Interstate Truck Stop"
+              avatar="file:///C:/Users/user/.gemini/antigravity/brain/a0d4b062-a99d-476e-972c-1caa8c7d2bef/lot_owner_kevin_1775094987568.png"
+              delay="300ms"
+            />
+          </div>
+          
+          <div className="py-24 border-t border-slate-200/60 bg-slate-50/50 rounded-[4rem] group">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-16 lg:gap-24 px-12">
+              <StatItem value="100%" label="Call Answer Rate" delay="400ms" />
+              <StatItem value="30s" label="Avg Booking Time" delay="500ms" />
+              <StatItem value="24/7" label="Reliability" delay="600ms" />
             </div>
           </div>
-          <div className="p-8 border border-outline-variant rounded-xl italic text-on-surface">
-            "I used to find 5-6 missed calls every morning. Now those are 5-6 reservations waiting for me when I log in at 8 AM. It paid for itself in the first two nights."
-            <div className="mt-6 flex items-center gap-3 not-italic">
-              <div className="w-10 h-10 rounded-full bg-surface-container-highest"></div>
-              <div>
-                <p className="font-bold text-sm">Mark S.</p>
-                <p className="text-xs text-on-surface-variant">Metro Parking Hub</p>
-              </div>
-            </div>
-          </div>
-          <div className="p-8 border border-outline-variant rounded-xl italic text-on-surface">
-            "The AI knows all my rules about hazardous materials and reefer units. It's more reliable than my last night-shift hire and costs a fraction of the price."
-            <div className="mt-6 flex items-center gap-3 not-italic">
-              <div className="w-10 h-10 rounded-full bg-surface-container-highest"></div>
-              <div>
-                <p className="font-bold text-sm">Kevin L.</p>
-                <p className="text-xs text-on-surface-variant">Interstate Truck Stop</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-12 py-16 border-y border-outline-variant/20">
-          <div className="text-center">
-            <p className="text-4xl font-extrabold text-secondary mb-2">100%</p>
-            <p className="text-sm font-bold text-primary uppercase">Call Answer Rate</p>
-          </div>
-          <div className="text-center">
-            <p className="text-4xl font-extrabold text-secondary mb-2">30s</p>
-            <p className="text-sm font-bold text-primary uppercase">Avg Booking Time</p>
-          </div>
-          <div className="text-center col-span-2 md:col-span-1">
-            <p className="text-4xl font-extrabold text-secondary mb-2">24/7</p>
-            <p className="text-sm font-bold text-primary uppercase">Uptime Guaranteed</p>
-          </div>
-        </div>
         </div>
       </section>
 
       {/* Pricing Section (Clean & Integrated) */}
-      <section className="relative py-36 px-6 bg-slate-50 dark:bg-slate-900/40 overflow-hidden border-y border-slate-200/50 dark:border-slate-800" id="pricing">
-        {/* Complex pricing background ambiance */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[600px] bg-gradient-to-r from-primary/5 via-secondary/5 to-tertiary/5 rounded-full blur-[140px] -z-10 pointer-events-none"></div>
-        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-secondary/10 rounded-full blur-[120px] -z-10 pointer-events-none animate-ambient-drift" style={{animationDelay: '-8s'}}></div>
-        
+      <section className="relative py-36 px-6 bg-slate-50 overflow-hidden border-y border-slate-200/50" id="pricing">
         <div className="max-w-[1400px] mx-auto relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-primary mb-4 font-['Manrope']">Simple Pricing. No Surprises.</h2>
-            <p className="text-on-surface-variant">One plan. Everything included. Professional scale.</p>
+            <p className="text-on-surface-variant font-medium">One plan. Everything included. Professional scale.</p>
           </div>
+          
           <div className="max-w-5xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-stretch">
-            <div className="p-10 bg-white rounded-2xl shadow-xl border-2 border-secondary relative overflow-hidden flex flex-col">
-              <div className="absolute top-0 right-0 bg-secondary text-white px-4 py-1 text-xs font-bold uppercase tracking-widest rounded-bl-lg">Most Popular</div>
+            {/* Left Pricing Card (Restored) */}
+            <div className="p-10 bg-white rounded-3xl shadow-xl border-2 border-secondary relative overflow-hidden flex flex-col group transition-all duration-300 hover:shadow-2xl">
+              <div className="absolute top-0 right-0 bg-secondary text-white px-4 py-1.5 text-xs font-bold uppercase tracking-widest rounded-bl-xl">Most Popular</div>
               <div className="mb-8">
                 <h3 className="text-2xl font-bold text-primary mb-4 font-['Manrope']">ParkAI Standard</h3>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-5xl font-extrabold text-primary">$200</span>
-                  <span className="text-on-surface-variant">/month</span>
+                  <span className="text-5xl font-extrabold text-primary tracking-tight">$200</span>
+                  <span className="text-on-surface-variant font-semibold">/month</span>
                 </div>
               </div>
               <ul className="space-y-4 mb-10 flex-1">
-                <li className="flex items-center gap-3"><span className="material-symbols-outlined text-secondary text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span> Unlimited calls &amp; bookings</li>
-                <li className="flex items-center gap-3"><span className="material-symbols-outlined text-secondary text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span> Real-time dashboard access</li>
-                <li className="flex items-center gap-3"><span className="material-symbols-outlined text-secondary text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span> Natural-sounding AI voice</li>
-                <li className="flex items-center gap-3"><span className="material-symbols-outlined text-secondary text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span> Instant setup (under 5 mins)</li>
-                <li className="flex items-center gap-3"><span className="material-symbols-outlined text-secondary text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span> SMS confirmations for drivers</li>
+                {[
+                  "Unlimited calls & bookings",
+                  "Real-time dashboard access",
+                  "Natural-sounding AI voice",
+                  "Instant setup (under 5 mins)",
+                  "SMS confirmations for drivers"
+                ].map((feature, i) => (
+                  <li key={i} className="flex items-center gap-3 text-slate-700 font-medium">
+                    <span className="material-symbols-outlined text-secondary text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                    {feature}
+                  </li>
+                ))}
               </ul>
-              <Link to="/onboarding" className="block text-center w-full py-4 bg-primary text-white rounded-xl font-bold hover:bg-secondary transition-colors">Start Free Trial</Link>
+              <Link to="/onboarding" className="block text-center w-full py-4 bg-primary text-white rounded-xl font-bold hover:bg-secondary transition-all shadow-md active:scale-95">
+                Start Free Trial
+              </Link>
+              <p className="mt-4 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">No credit card required</p>
             </div>
-            <div className="p-10 bg-surface-container-highest/50 rounded-2xl border border-outline-variant/30 flex flex-col justify-center">
-              <h4 className="text-xl font-bold text-primary mb-6 text-center font-['Manrope']">Cost Comparison</h4>
+
+            {/* Right Cost Comparison (Cleaned up) */}
+            <div className="p-10 bg-white/40 rounded-3xl border border-slate-200/60 flex flex-col justify-center">
+              <div className="flex items-center gap-2 mb-8">
+                <span className="material-symbols-outlined text-primary text-lg">insights</span>
+                <h4 className="text-xl font-bold text-primary font-['Manrope'] tracking-tight">Cost Comparison</h4>
+              </div>
               <div className="space-y-6">
-                <div className="flex justify-between items-center p-4 bg-error-container/20 rounded-lg">
-                  <span className="font-medium text-error">Hiring Part-Time Help</span>
-                  <span className="font-bold text-error">$1,200/mo</span>
+                <div className="flex justify-between items-center p-6 bg-white/50 border border-slate-200 rounded-2xl">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Hiring Part-Time Help</span>
+                    <span className="font-semibold text-slate-700 text-sm">Monthly Labor Cost</span>
+                  </div>
+                  <span className="text-xl font-bold text-slate-400">$1,200/mo</span>
                 </div>
-                <div className="flex justify-between items-center p-4 bg-secondary-fixed/30 rounded-lg border-2 border-secondary/20">
-                  <span className="font-bold text-secondary">ParkAI (Unlimited)</span>
-                  <span className="font-extrabold text-secondary">$200/mo</span>
+                
+                <div className="flex justify-between items-center p-6 bg-secondary-fixed/20 border-2 border-secondary/20 rounded-2xl relative">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-black text-secondary uppercase tracking-widest mb-1">The ParkAI Way</span>
+                    <span className="font-bold text-slate-900 text-sm">Unlimited AI Management</span>
+                  </div>
+                  <span className="text-xl font-extrabold text-secondary">$200/mo</span>
                 </div>
-                <div className="text-center pt-4">
-                  <p className="text-2xl font-extrabold text-primary">83% Monthly Savings</p>
-                  <p className="text-sm text-on-surface-variant">No training, no sick days, no taxes.</p>
+                
+                <div className="pt-8 text-center border-t border-slate-200 mt-2">
+                  <p className="text-3xl font-black text-primary mb-2 font-['Manrope']">83% Monthly Savings</p>
+                  <p className="text-sm font-medium text-on-surface-variant max-w-[280px] mx-auto leading-relaxed">
+                    No training, no sick days, no taxes. <br /> Recover your nights starting tonight.
+                  </p>
                 </div>
               </div>
             </div>
