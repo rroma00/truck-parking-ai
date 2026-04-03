@@ -224,7 +224,7 @@ export default function Landing() {
             ))}
           </div>
           <div className="flex items-center gap-4">
-            <Link to="/login" className="text-slate-600 dark:text-slate-400 hover:text-blue-700 font-medium text-sm">Log In</Link>
+            <Link to="/signin" className="text-slate-600 dark:text-slate-400 hover:text-blue-700 font-medium text-sm">Log In</Link>
             <Link to="/onboarding" className="bg-primary hover:bg-primary-container text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all active:scale-95">Get Demo</Link>
           </div>
         </div>
@@ -674,21 +674,21 @@ export default function Landing() {
               quote="I was skeptical about AI... but this is just like having an employee who never sleeps. I can actually enjoy dinner with my family now knowing my lot is still filling up."
               author="Dave R."
               title="Logistics Lot Owner"
-              avatar="file:///C:/Users/user/.gemini/antigravity/brain/a0d4b062-a99d-476e-972c-1caa8c7d2bef/lot_owner_dave_1775094952731.png"
+              avatar="https://ui-avatars.com/api/?name=Dave+R&background=0c2f75&color=fff"
               delay="100ms"
             />
             <TestimonialCard 
               quote="I used to find 5-6 missed calls every morning. Now those are 5-6 reservations waiting for me when I log in at 8 AM. It paid for itself in the first two nights."
               author="Mark S."
               title="Metro Parking Hub"
-              avatar="file:///C:/Users/user/.gemini/antigravity/brain/a0d4b062-a99d-476e-972c-1caa8c7d2bef/lot_owner_mark_1775094970793.png"
+              avatar="https://ui-avatars.com/api/?name=Mark+S&background=0c2f75&color=fff"
               delay="200ms"
             />
             <TestimonialCard 
               quote="The AI knows all my rules about hazardous materials and reefer units. It's more reliable than my last night-shift hire and costs a fraction of the price."
               author="Kevin L."
               title="Interstate Truck Stop"
-              avatar="file:///C:/Users/user/.gemini/antigravity/brain/a0d4b062-a99d-476e-972c-1caa8c7d2bef/lot_owner_kevin_1775094987568.png"
+              avatar="https://ui-avatars.com/api/?name=Kevin+L&background=0c2f75&color=fff"
               delay="300ms"
             />
           </div>
@@ -820,18 +820,14 @@ export default function Landing() {
             <Link to="/onboarding" className="inline-block px-10 py-5 bg-white text-primary rounded-xl font-extrabold text-xl shadow-2xl hover:scale-105 transition-all mb-8">
               Start Earning in 5 Minutes →
             </Link>
-            <div className="max-w-md mx-auto p-4 bg-white/10 backdrop-blur rounded-lg border border-white/20">
-              <p className="text-xs font-bold uppercase tracking-widest text-secondary-fixed mb-1">Our Risk-Free Guarantee</p>
-              <p className="text-sm leading-relaxed">If ParkAI doesn't answer at least one call you would have missed in 14 days, we'll refund your first month and send you $50.</p>
-            </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
       <footer className="bg-slate-50 dark:bg-slate-900 py-12 border-t border-slate-100 dark:border-slate-800 relative z-20">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 px-6 max-w-[1400px] mx-auto">
-          <div className="col-span-1 md:col-span-1">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 px-6 max-w-[1400px] mx-auto">
+          <div className="col-span-1">
             <div className="text-lg font-bold text-slate-900 dark:text-white mb-4 font-['Manrope']">TruckPark AI</div>
             <p className="text-sm text-slate-500 dark:text-slate-400">Operational Excellence for Fleet Managers and Lot Owners.</p>
           </div>
@@ -840,22 +836,13 @@ export default function Landing() {
             <ul className="space-y-2 text-sm text-slate-500 dark:text-slate-400">
               <li><a className="hover:text-slate-900 dark:hover:text-white transition-colors" href="#features">Features</a></li>
               <li><a className="hover:text-slate-900 dark:hover:text-white transition-colors" href="#pricing">Pricing</a></li>
-              <li><Link className="hover:text-slate-900 dark:hover:text-white transition-colors" to="/onboarding">Demo</Link></li>
-            </ul>
-          </div>
-          <div>
-            <p className="font-bold text-primary mb-4">Support</p>
-            <ul className="space-y-2 text-sm text-slate-500 dark:text-slate-400">
-              <li><a className="hover:text-slate-900 dark:hover:text-white transition-colors" href="#">Contact Support</a></li>
-              <li><a className="hover:text-slate-900 dark:hover:text-white transition-colors" href="#">System Status</a></li>
-              <li><a className="hover:text-slate-900 dark:hover:text-white transition-colors" href="#">Help Center</a></li>
             </ul>
           </div>
           <div>
             <p className="font-bold text-primary mb-4">Legal</p>
             <ul className="space-y-2 text-sm text-slate-500 dark:text-slate-400">
-              <li><a className="hover:text-slate-900 dark:hover:text-white transition-colors" href="#">Privacy Policy</a></li>
-              <li><a className="hover:text-slate-900 dark:hover:text-white transition-colors" href="#">Terms of Service</a></li>
+              <li><Link className="hover:text-slate-900 dark:hover:text-white transition-colors" to="/privacy">Privacy Policy</Link></li>
+              <li><Link className="hover:text-slate-900 dark:hover:text-white transition-colors" to="/terms">Terms of Service</Link></li>
             </ul>
           </div>
         </div>

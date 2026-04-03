@@ -15,6 +15,8 @@ import Settings from './pages/Settings';
 import Landing from './pages/Landing';
 import Onboarding from './pages/Onboarding';
 import CustomerManagement from './pages/CustomerManagement';
+import Legal from './pages/Legal';
+import SignIn from './pages/SignIn';
 
 import './App.css';
 
@@ -47,6 +49,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/onboarding" element={<Onboarding />} />
+        <Route path="/terms" element={<Legal type="terms" />} />
+        <Route path="/privacy" element={<Legal type="privacy" />} />
         <Route
           path="/customer-management"
           element={(
@@ -82,6 +86,10 @@ function App() {
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
+        {/* Auth Routes */}
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/login" element={<Navigate to="/signin" replace />} />
+        <Route path="/sign-in" element={<Navigate to="/signin" replace />} />
       </Routes>
     </BrowserRouter>
   );
