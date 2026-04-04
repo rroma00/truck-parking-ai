@@ -123,6 +123,37 @@ function StatItem({ value, label, delay }) {
   );
 }
 
+function AnimatedNumber({ value, prefix = "", suffix = "" }) {
+  const [displayValue, setDisplayValue] = useState(value);
+  
+  useEffect(() => {
+    let start = displayValue;
+    const end = value;
+    if (start === end) return;
+    
+    const duration = 400;
+    const startTime = performance.now();
+    
+    const animate = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      const current = Math.floor(start + (end - start) * progress);
+      setDisplayValue(current);
+      
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        setDisplayValue(end);
+      }
+    };
+    
+    requestAnimationFrame(animate);
+  }, [value]);
+
+  return <>{prefix}{Intl.NumberFormat('en-US').format(displayValue)}{suffix}</>;
+}
+
 export default function Landing() {
   const [missedCalls, setMissedCalls] = useState(10);
   const [activeSection, setActiveSection] = useState('');
@@ -604,56 +635,89 @@ export default function Landing() {
       </section>
 
       {/* Calculator Section */}
-      <section className="py-36 px-6 bg-surface-container-low border-y border-outline-variant/10 shadow-[inset_0_0_40px_rgba(0,0,0,0.02)]">
-        <div className="max-w-4xl mx-auto bg-surface-container-lowest p-12 rounded-3xl shadow-xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-primary mb-2 font-['Manrope']">How Many Bookings Are You Missing?</h2>
-            <p className="text-on-surface-variant">The numbers might surprise you. Calculate your potential growth.</p>
+      <section className="w-full py-28 bg-[radial-gradient(circle_at_30%_40%,#0B1F3A_0%,#020617_100%)] overflow-hidden">
+        <style dangerouslySetInnerHTML={{__html: `
+          input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #ffffff;
+            cursor: pointer;
+          }
+        `}} />
+
+        <div className="max-w-6xl mx-auto relative z-10 flex flex-col md:flex-row gap-16 px-6">
+          
+          {/* LEFT: Control Side */}
+          <div className="w-full md:w-1/2 flex flex-col justify-center">
+            <h2 className="font-['Manrope'] font-bold text-white tracking-tight leading-tight mb-4 text-4xl" style={{ letterSpacing: '-0.03em' }}>
+              How Much Revenue Are You Losing Every Week?
+            </h2>
+            <p className="font-sans text-[#94A3B8] leading-relaxed max-w-[420px] text-lg mb-10">
+              Every missed call is a driver choosing another lot. This is real revenue leaving your business.
+            </p>
+
+            <div className="w-full relative">
+              <input 
+                className="w-full h-2 bg-gray-700 rounded-full appearance-none cursor-pointer" 
+                max="50" 
+                min="1" 
+                type="range" 
+                value={missedCalls} 
+                onChange={(e) => setMissedCalls(e.target.value)} 
+                style={{
+                  background: `linear-gradient(to right, #3B82F6 0%, #3B82F6 ${(missedCalls - 1) / 49 * 100}%, #374151 ${(missedCalls - 1) / 49 * 100}%, #374151 100%)`
+                }}
+              />
+              <div className="flex justify-between text-xs text-gray-400 mt-2">
+                <span>1</span>
+                <span>10</span>
+                <span>25</span>
+                <span>50</span>
+              </div>
+              
+              <div className="text-sm font-semibold text-blue-400 mt-3">
+                You're losing ≈ ${Intl.NumberFormat('en-US').format(weeklyRevenueLost)} per week
+              </div>
+            </div>
           </div>
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
+
+          {/* Divider */}
+          <div className="hidden md:block w-[1px] bg-white/10 mx-4"></div>
+
+          {/* RIGHT: Consequence Side */}
+          <div className="w-full md:w-1/2 flex flex-col justify-center">
+            <div className="bg-gradient-to-br from-[#020617] to-[#0B1F3A] p-10 rounded-2xl border border-white/5 shadow-2xl relative">
+              <div className="space-y-6 border-b border-white/10 pb-8 mb-8">
+                <div className="flex justify-between items-end">
+                  <span className="text-gray-400">Weekly Potential</span>
+                  <span className="text-2xl font-bold text-white transition-all duration-200">
+                    ${Intl.NumberFormat('en-US').format(weeklyRevenueLost)}
+                  </span>
+                </div>
+                <div className="flex justify-between items-end">
+                  <span className="text-gray-400">Monthly Potential</span>
+                  <span className="text-2xl font-bold text-white transition-all duration-200">
+                    ${Intl.NumberFormat('en-US').format(monthlyRevenueLost)}
+                  </span>
+                </div>
+              </div>
+              
               <div>
-                <label className="block text-sm font-bold text-primary mb-4">How many calls do you typically miss per week?</label>
-                <input 
-                  className="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-secondary" 
-                  max="50" 
-                  min="1" 
-                  type="range" 
-                  value={missedCalls} 
-                  onChange={(e) => setMissedCalls(e.target.value)} 
-                />
-                <div className="flex justify-between mt-2 text-xs font-bold text-on-surface-variant">
-                  <span>1 CALL</span>
-                  <span className="bg-secondary text-white px-2 py-1 rounded">{missedCalls} CALLS</span>
-                  <span>50 CALLS</span>
+                <div className="text-sm font-semibold text-blue-400 uppercase tracking-widest mb-4">
+                  Annual Revenue Lost (Conservative Estimate)
                 </div>
-              </div>
-              <div className="p-4 bg-surface-container-low rounded-lg border border-outline-variant/20">
-                <p className="text-xs font-bold text-on-surface-variant uppercase mb-2">Industry Average</p>
-                <p className="text-sm">Each missed truck parking booking represents roughly <span className="font-bold">$150</span> in immediate revenue.</p>
-              </div>
-            </div>
-            <div className="bg-primary p-8 rounded-2xl text-white">
-              <p className="text-sm font-medium text-on-primary-container mb-6">POTENTIAL BOOKINGS LOST</p>
-              <div className="space-y-4">
-                <div className="flex justify-between items-end border-b border-white/10 pb-4">
-                  <span className="text-sm text-on-primary-container">Weekly</span>
-                  <span className="text-3xl font-bold">${Intl.NumberFormat('en-US').format(weeklyRevenueLost)}</span>
-                </div>
-                <div className="flex justify-between items-end border-b border-white/10 pb-4">
-                  <span className="text-sm text-on-primary-container">Monthly</span>
-                  <span className="text-3xl font-bold">${Intl.NumberFormat('en-US').format(monthlyRevenueLost)}</span>
-                </div>
-                <div className="flex justify-between items-end pb-4">
-                  <span className="text-sm text-on-primary-container">Yearly</span>
-                  <span className="text-4xl font-extrabold text-secondary-fixed">${Intl.NumberFormat('en-US').format(yearlyRevenueLost)}</span>
+                <div 
+                  className="text-5xl font-bold text-blue-400 transition-all duration-300" 
+                  style={{ textShadow: "0 0 20px rgba(59,130,246,0.3)" }}
+                >
+                  ${Intl.NumberFormat('en-US').format(yearlyRevenueLost)}
                 </div>
               </div>
             </div>
           </div>
-          <p className="mt-8 text-xs text-on-surface-variant text-center">
-            Disclaimer: This calculator shows potential bookings based on industry averages... ParkAI helps you answer more calls—revenue depends on your lot's demand.
-          </p>
+
         </div>
       </section>
 
