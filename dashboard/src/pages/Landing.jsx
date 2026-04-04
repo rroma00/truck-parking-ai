@@ -209,6 +209,25 @@ export default function Landing() {
     { label: 'FAQ', id: 'faq' }
   ];
 
+  const faqs = [
+    {
+      q: "Will drivers know it's AI?",
+      a: "Our voice technology is highly natural. Most drivers just appreciate how quickly they get an answer. If they ask, the AI can honestly state it's an automated assistant here to help them book quickly."
+    },
+    {
+      q: "What if it makes a mistake?",
+      a: "The AI follows strict logic provided by you. If it encounters a complex situation it can't handle, it politely informs the driver that a manager will call them back and instantly notifies you."
+    },
+    {
+      q: "Do I need a new phone number?",
+      a: "No. You simply set your current phone line to \"Forward on Busy\" or \"Forward on No Answer\" to your unique ParkAI number. It works seamlessly with your existing setup."
+    },
+    {
+      q: "What if my lot is full?",
+      a: "The AI has real-time access to your inventory. If you're full, it will politely inform the driver and offer to put them on a waiting list or suggest they call back later, saving you the time of answering to say \"no.\""
+    }
+  ];
+
   return (
     <main className="bg-surface text-on-surface selection:bg-secondary-fixed min-h-screen relative overflow-hidden">
       {/* Ambient Edge Vignette (Ultra-wide screens) */}
@@ -262,122 +281,171 @@ export default function Landing() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex flex-col justify-center pt-24 pb-12 px-6 overflow-hidden">
-        {/* Clean, Solid Section Backdrop */}
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-white to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 -z-20"></div>
-        {/* Soft Radial Highlight behind mockup - Positioned to prevent overflow */}
-        <div className="absolute top-1/2 -right-24 -translate-y-1/2 w-[800px] h-[800px] bg-secondary/10 rounded-full blur-[140px] -z-10 pointer-events-none animate-ambient-drift"></div>
+      <section className="relative pt-32 pb-24 px-6 overflow-hidden min-h-[90vh] flex flex-col justify-center">
+        {/* Depth layers */}
+        <div className="absolute inset-y-0 right-0 w-2/5 bg-gradient-to-l from-secondary/[0.03] to-transparent pointer-events-none" aria-hidden="true"></div>
+        <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 55% 70% at 72% 50%, rgba(99,102,241,0.045) 0%, transparent 70%)' }} aria-hidden="true"></div>
         
-        <div className="max-w-[1400px] w-full mx-auto grid lg:grid-cols-2 gap-16 items-center relative z-10">
-          {/* Column 1: Text Content */}
-          <div className="relative z-10">
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-full text-xs font-bold tracking-wide uppercase mb-6 shadow-sm hover:shadow-md hover:scale-105 transition-all cursor-default group">
-              <span className="material-symbols-outlined text-[16px] text-secondary animate-pulse">auto_awesome</span>
-              <span className="text-slate-800 dark:text-slate-200">24/7 AI ANSWERS EVERY DRIVER CALL</span>
-            </span>
-            <h1 className="text-5xl md:text-6xl font-black text-primary leading-tight mb-5 font-['Manrope'] drop-shadow-sm">
-              Never Miss Another Booking—Even at 2 AM
+        <div className="relative max-w-7xl mx-auto grid lg:grid-cols-[1fr_1.1fr] gap-8 xl:gap-16 items-center">
+
+          {/* LEFT: Copy */}
+          <div className="relative z-10 max-w-xl animate-slide-up">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-secondary/10 border border-secondary/20 rounded-full text-xs font-bold tracking-widest uppercase text-secondary mb-8 shadow-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse inline-block"></span>
+              AI-Powered Lot Management
+            </div>
+
+            <h1 className="font-headline font-extrabold text-primary tracking-tight mb-6 leading-[1.08]" style={{ fontSize: 'clamp(2.5rem, 4vw, 3.625rem)' }}>
+              Never Miss a Booking<br/><span className="text-primary" style={{ fontWeight: 800 }}>— </span><span className="text-secondary">Even at 3 AM</span>
             </h1>
-            <p className="text-xl text-slate-600 dark:text-slate-300 mb-9 max-w-xl leading-relaxed font-medium">
-              AI answers every call in seconds, checks availability, and books spots automatically—so you can focus on running your lot, not your phone.
+
+            <p className="text-lg text-on-surface-variant leading-relaxed mb-10 max-w-[460px] font-medium">
+              ParkAI answers every call, checks real-time availability, and confirms reservations automatically — so your lot keeps filling while you're off the clock.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 mb-8">
-              <Link to="/onboarding" className="px-8 py-4 bg-gradient-to-br from-primary hover:from-primary-fixed to-primary-container text-white rounded-xl font-bold text-lg shadow-[0_4px_20px_rgba(var(--color-primary),0.25)] hover:shadow-[0_8px_30px_rgba(var(--color-primary),0.35)] hover:scale-[1.03] transition-all flex items-center justify-center gap-2 group">
-                Start Free Trial <span className="group-hover:translate-x-1 transition-transform">→</span>
+
+            <div className="flex flex-wrap items-center gap-6 mb-10">
+              <Link to="/onboarding" className="inline-flex items-center gap-2.5 px-9 py-4 bg-primary text-white rounded-xl font-bold text-lg shadow-lg hover:bg-secondary hover:shadow-xl transition-all duration-300 active:scale-95 group">
+                Start Free Trial
+                <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
               </Link>
-              <button className="px-8 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-primary dark:text-white rounded-xl font-bold text-lg shadow-sm hover:shadow-md hover:border-primary/30 hover:scale-[1.02] transition-all z-10 relative">
-                Watch 60-Second Demo
+              <button className="inline-flex items-center gap-3 px-6 py-4 text-on-surface-variant rounded-xl font-bold text-lg hover:text-primary transition-all group">
+                <span className="material-symbols-outlined text-2xl text-secondary group-hover:scale-110 transition-transform">play_circle</span>
+                Watch Demo
               </button>
             </div>
-            <div className="flex items-center text-sm text-slate-500 font-semibold">
-              <span className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg">
-                <span className="material-symbols-outlined text-secondary text-lg">check_circle</span> 
-                Setup in 5 minutes
+
+            <div className="flex flex-wrap items-center gap-x-8 gap-y-3 opacity-70">
+              <span className="flex items-center gap-2 text-xs font-bold text-on-surface-variant uppercase tracking-wider">
+                <span className="material-symbols-outlined text-secondary text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                No credit card
+              </span>
+              <span className="flex items-center gap-2 text-xs font-bold text-on-surface-variant uppercase tracking-wider">
+                <span className="material-symbols-outlined text-secondary text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                5 min setup
+              </span>
+              <span className="flex items-center gap-2 text-xs font-bold text-on-surface-variant uppercase tracking-wider">
+                <span className="material-symbols-outlined text-secondary text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                Cancel anytime
               </span>
             </div>
           </div>
 
-          {/* Column 2: Visual Mockup */}
-          <div className="relative lg:h-[600px] flex items-center justify-center">
-            <div className="relative w-full max-w-2xl">
-              {/* Floating Notification - Clearly separated with depth */}
-              <div className="absolute -top-[37px] left-[60%] -translate-x-1/2 z-40 bg-white dark:bg-slate-900 p-4 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.15),0_5px_15px_rgba(0,0,0,0.1)] border border-white/50 dark:border-slate-800 flex items-center gap-4 w-[260px] animate-bounce-slow hover:scale-105 transition-transform cursor-pointer">
-                <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center shadow-inner">
-                  <span className="material-symbols-outlined text-white shadow-sm">support_agent</span>
+          {/* RIGHT: Product Mockup */}
+          <div className="relative flex items-center justify-center lg:justify-end animate-slide-up" style={{ animationDelay: '200ms' }}>
+            <div className="relative w-full max-w-[540px] bg-white rounded-2xl shadow-2xl border border-slate-200/70 overflow-hidden transform hover:-translate-y-2 transition-transform duration-700">
+              {/* Chrome bar */}
+              <div className="flex items-center px-4 py-3 bg-slate-50 border-b border-slate-100 gap-2">
+                <div className="flex gap-1.5 shrink-0">
+                  <div className="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-amber-400"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
                 </div>
-                <div>
-                  <p className="text-xs font-black text-primary dark:text-white tracking-tight">New AI Booking</p>
-                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Reservation from Mike T.</p>
-                </div>
+                <div className="flex-1 text-center text-[10px] font-bold text-slate-400 tracking-[0.2em] uppercase">TruckPark AI — Live Dashboard</div>
               </div>
-              
-              {/* Main Dashboard Mockup Card */}
-              <div className="relative w-full bg-surface-container-lowest rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.1),_0_0_0_1px_rgba(0,0,0,0.05)] overflow-hidden p-6 z-20 border border-outline-variant/20">
-                <div className="flex items-center justify-between mb-6 border-b border-surface-container pb-4">
-                  <h3 className="font-bold text-primary text-lg">Customer Management</h3>
-                  <div className="flex gap-2">
-                    <div className="w-3.5 h-3.5 rounded-full bg-error/40 transition-colors"></div>
-                    <div className="w-3.5 h-3.5 rounded-full bg-tertiary-fixed-dim transition-colors"></div>
-                    <div className="w-3.5 h-3.5 rounded-full bg-secondary-fixed-dim transition-colors"></div>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="p-5 bg-surface-container-low hover:bg-surface-container transition-colors rounded-xl border border-outline-variant/10">
-                    <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Daily Revenue</p>
-                    <p className="text-3xl font-black text-primary drop-shadow-sm">$4,820.00</p>
-                  </div>
-                  <div className="p-5 bg-surface-container-low hover:bg-surface-container transition-colors rounded-xl border border-outline-variant/10">
-                    <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Active Bookings</p>
-                    <p className="text-3xl font-black text-secondary drop-shadow-sm">32</p>
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-surface-container-lowest border border-outline-variant/20 shadow-sm rounded-xl hover:shadow-md transition-shadow group">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center font-bold text-primary group-hover:scale-110 transition-transform">JB</div>
+
+              {/* Dashboard body */}
+              <div className="p-6 space-y-4">
+                {/* AI Active Call Panel */}
+                <div className="p-4 bg-secondary/5 border border-secondary/20 rounded-2xl relative overflow-hidden group">
+                  <div className="absolute inset-0 bg-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <div className="flex items-center justify-between mb-4 relative z-10">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center shadow-lg shadow-secondary/20">
+                        <span className="material-symbols-outlined text-white text-xl">support_agent</span>
+                      </div>
                       <div>
-                        <p className="text-sm font-bold text-on-surface">John B. Trucking</p>
-                        <p className="text-xs font-medium text-on-surface-variant">Confirmed 12m ago</p>
+                        <p className="text-[10px] font-black text-primary tracking-[0.15em] uppercase">AI Answering Now</p>
+                        <p className="text-xs font-bold text-on-surface-variant">+1 (312) 555-0184</p>
                       </div>
                     </div>
-                    <span className="px-3 py-1.5 bg-secondary-fixed text-on-secondary-fixed text-[10px] font-black tracking-widest rounded-lg">CHECKED IN</span>
+                    <div className="flex items-center gap-2 px-3 py-1 bg-secondary/10 border border-secondary/25 rounded-full">
+                      <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+                      <span className="text-[9px] font-black text-secondary tracking-widest">LIVE</span>
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between p-4 bg-surface-container-lowest border border-outline-variant/20 shadow-sm rounded-xl hover:shadow-md transition-shadow group">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-tertiary-fixed flex items-center justify-center font-bold text-tertiary group-hover:scale-110 transition-transform">MT</div>
+                  <div className="space-y-2 text-[11px] leading-relaxed bg-white rounded-xl px-4 py-3 border border-slate-100 shadow-inner relative z-10 font-medium">
+                    <div className="flex gap-3">
+                      <span className="text-slate-400 font-bold w-12 shrink-0">Driver:</span>
+                      <span className="text-on-surface">"Do you have overnight spots available tonight?"</span>
+                    </div>
+                    <div className="flex gap-3 border-t border-slate-50 pt-2">
+                      <span className="text-secondary font-black w-12 shrink-0">AI:</span>
+                      <span className="text-on-surface">"Yes — 4 spots open at $65/night. Want me to book one?"</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Metrics */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:border-secondary/20 transition-all">
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Tonight's Revenue</p>
+                    <p className="text-2xl font-black text-primary leading-none group-hover:text-secondary transition-colors">$3,510</p>
+                    <p className="text-[10px] text-emerald-500 font-bold mt-2 flex items-center gap-1">
+                      <span className="material-symbols-outlined text-xs">trending_up</span> 12% vs. last week
+                    </p>
+                  </div>
+                  <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Occupancy</p>
+                    <p className="text-2xl font-black text-primary leading-none">27 / 32</p>
+                    <p className="text-[10px] text-slate-400 font-bold mt-2">4 spots currently open</p>
+                  </div>
+                </div>
+
+                {/* Recent Bookings */}
+                <div className="space-y-2">
+                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Recent AI Bookings</p>
+                  <div className="flex items-center justify-between px-3 py-2 bg-slate-50/50 rounded-xl border border-transparent hover:border-slate-100 hover:bg-slate-50 transition-all">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 text-primary text-[10px] font-black flex items-center justify-center">JB</div>
                       <div>
-                        <p className="text-sm font-bold text-on-surface">Mike T. Logistics</p>
-                        <p className="text-xs font-medium text-on-surface-variant">Arrival: 10:45 PM</p>
+                        <p className="text-xs font-bold text-on-surface">John B. Trucking</p>
+                        <p className="text-[10px] text-slate-400 font-medium">Spot A1 &middot; Confirmed 4m ago</p>
                       </div>
                     </div>
-                    <span className="px-3 py-1.5 bg-surface-container-highest text-on-surface-variant text-[10px] font-black tracking-widest rounded-lg">EXPECTED</span>
+                    <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[9px] font-black rounded-lg">CONFIRMED</span>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Scroll Cue */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce z-20">
-          <div className="w-10 h-10 rounded-full bg-white dark:bg-slate-900 shadow-lg border border-slate-200 dark:border-slate-800 flex items-center justify-center">
-            <span className="material-symbols-outlined text-primary dark:text-white text-xl">keyboard_arrow_down</span>
+            {/* Floating confirmation toast */}
+            <div className="absolute -bottom-6 right-0 z-30 bg-white rounded-2xl px-5 py-4 flex items-center gap-4 shadow-2xl border border-slate-100 animate-slide-up" style={{ animationDelay: '800ms' }}>
+              <div className="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/30">
+                <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>notifications_active</span>
+              </div>
+              <div>
+                <p className="text-xs font-black text-primary leading-none mb-1">Booking Confirmed</p>
+                <p className="text-[11px] text-slate-400 font-bold">Spot A3 &middot; Just Now</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Problem Section: Integrated & Grounded */}
-      <section className="bg-slate-950 pt-16 pb-36 text-white relative overflow-hidden" id="problem">
-        {/* Ambient Dark Background Depth */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/50 via-slate-950 to-black pointer-events-none"></div>
-        {/* Radial Danger Glow behind phone */}
-        <div className="absolute top-1/2 right-[10%] -translate-y-1/2 w-[600px] h-[600px] bg-error/10 blur-[150px] rounded-full pointer-events-none -z-10"></div>
-        <div className="absolute top-[20%] left-[-10%] w-[400px] h-[400px] bg-primary/10 blur-[120px] rounded-full pointer-events-none -z-10"></div>
+      <section className="bg-slate-950 pt-16 pb-36 text-white relative overflow-hidden" id="problem" style={{ background: 'linear-gradient(175deg, #0d1730 0%, #050f36 40%, #030b28 100%)' }}>
+        {/* Depth layer stack */}
+        
+        {/* Top-edge feather */}
+        <div className="absolute inset-x-0 top-0 h-16 pointer-events-none z-10" style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.04) 0%, transparent 100%)' }} aria-hidden="true"></div>
+        
+        {/* Dot grid texture */}
+        <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '32px 32px' }} aria-hidden="true"></div>
+        
+        {/* Radial focus light */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 65% 70% at 75% 50%, rgba(25, 45, 95, 0.3) 0%, transparent 70%)' }} aria-hidden="true"></div>
+        
+        {/* Subtle noise texture */}
+        <div className="absolute inset-0 pointer-events-none opacity-[0.20] mix-blend-overlay" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} aria-hidden="true"></div>
 
         <div className="max-w-[1400px] mx-auto px-6 grid lg:grid-cols-2 gap-20 items-center relative z-10">
           
           {/* Enhanced Content Block */}
           <div className="max-w-xl animate-slide-up">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 border border-white/15 rounded-full text-xs font-bold tracking-widest uppercase text-white/80 mb-7">
+              <span className="material-symbols-outlined text-[14px] text-red-400" style={{ fontVariationSettings: "'FILL' 1" }}>warning</span>
+              Revenue Alert
+            </div>
             <h2 className="text-4xl md:text-5xl font-black mb-6 leading-[1.15] font-['Manrope'] tracking-tight drop-shadow-sm">
               Every Missed Call Is a Booking Your Competitor Just Got
             </h2>
@@ -385,90 +453,228 @@ export default function Landing() {
               It's 2:47 AM. A driver calls looking for overnight parking. Your phone goes to voicemail. He hangs up and books with the lot down the road. You never even knew he called—or how much money you just lost.
             </p>
             
-            {/* Upgraded Premium Warning Card */}
-            <div className="relative overflow-hidden bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-2xl shadow-2xl group hover:bg-white/10 transition-colors duration-300">
-              {/* Subtle Red Edge Accent */}
-              <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-error/80 shadow-[0_0_15px_rgba(var(--color-error),0.8)]"></div>
-              
-              <div className="flex gap-5 relative z-10">
-                <div className="flex-shrink-0 mt-1">
-                  <div className="w-12 h-12 rounded-xl bg-error/10 flex items-center justify-center border border-error/20 shadow-inner group-hover:scale-110 transition-transform">
-                    <span className="material-symbols-outlined text-error text-[24px]">phone_missed</span>
-                  </div>
+            {/* Upgraded Premium Insight Cards */}
+            <div className="space-y-3">
+              <div className="flex items-start gap-4 p-4 rounded-xl border border-white/[0.12] hover:bg-white/[0.08] transition-colors duration-200" style={{ background: 'rgba(255,255,255,0.055)' }}>
+                <div className="w-9 h-9 rounded-lg border border-red-500/25 flex items-center justify-center shrink-0 mt-0.5" style={{ background: 'rgba(239,68,68,0.16)' }}>
+                  <span className="material-symbols-outlined text-red-400 text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>phone_missed</span>
                 </div>
                 <div>
-                  <p className="font-extrabold text-white uppercase tracking-widest text-xs mb-2 opacity-80">The Silent Killer</p>
-                  <p className="text-slate-300 text-base md:text-lg font-medium leading-relaxed">
-                    <strong className="text-white font-bold">68% of drivers won't leave a voicemail.</strong> They just call the next number on Google Maps.
-                  </p>
+                  <p className="font-bold text-sm mb-0.5">68% Never Call Back</p>
+                  <p className="text-[13px] text-white/60 leading-relaxed">Most drivers won't leave a voicemail. They call the next lot on Google Maps — and book there instead.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4 p-4 rounded-xl border border-white/[0.12] hover:bg-white/[0.08] transition-colors duration-200" style={{ background: 'rgba(255,255,255,0.055)' }}>
+                <div className="w-9 h-9 rounded-lg border border-red-500/25 flex items-center justify-center shrink-0 mt-0.5" style={{ background: 'rgba(239,68,68,0.16)' }}>
+                  <span className="material-symbols-outlined text-red-400 text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>dark_mode</span>
+                </div>
+                <div>
+                  <p className="font-bold text-sm mb-0.5">Peak Hours: 8 PM — 4 AM</p>
+                  <p className="text-[13px] text-white/60 leading-relaxed">That's when demand is highest — and when your phone is off. Every night is an undefended revenue opportunity.</p>
                 </div>
               </div>
             </div>
           </div>
           
-          <div className="flex justify-center lg:justify-end relative">
+          <div className="flex justify-center lg:justify-end relative" style={{ filter: 'drop-shadow(0 32px 48px rgba(0,0,0,0.45))' }}>
             {/* 3D Phone Mockup Container */}
-            <div className="relative w-[300px] h-[600px] rounded-[3.5rem] bg-slate-900 p-2 shadow-[0_30px_60px_rgba(0,0,0,0.8),inset_0_4px_4px_rgba(255,255,255,0.1),inset_0_-4px_4px_rgba(0,0,0,0.5)] transform lg:-rotate-2 hover:rotate-0 hover:-translate-y-2 transition-all duration-700 ease-out z-10">
-              
-              {/* Outer Metallic Bezel Outline */}
-              <div className="absolute inset-0 rounded-[3.5rem] border border-slate-700/50 pointer-events-none"></div>
-              
-              {/* Hardware Buttons */}
-              <div className="absolute left-[-2px] top-32 w-1 h-12 bg-slate-800 rounded-l-md border-y border-l border-slate-700 shadow-md"></div>
-              <div className="absolute left-[-2px] top-48 w-1 h-12 bg-slate-800 rounded-l-md border-y border-l border-slate-700 shadow-md"></div>
-              <div className="absolute right-[-2px] top-40 w-1 h-16 bg-slate-800 rounded-r-md border-y border-r border-slate-700 shadow-md"></div>
-
-              {/* Screen Bezel & Display area */}
-              <div className="w-full h-full rounded-[3rem] bg-slate-950 overflow-hidden relative border-[6px] border-black/90 shadow-[inset_0_0_20px_rgba(0,0,0,1)] flex flex-col items-center">
+            <div style={{ perspective: '1200px' }}>
+              <div style={{ transform: 'perspective(1200px) rotateY(-6deg) rotateX(2deg) rotateZ(-1deg)', transformStyle: 'preserve-3d' }}>
                 
-                {/* Dynamic Camera Notch */}
-                <div className="absolute top-2 left-1/2 -translate-x-1/2 w-28 h-7 bg-black rounded-full z-20 flex justify-end items-center pr-3 shadow-[inset_0_-1px_2px_rgba(255,255,255,0.1)] border border-white/5">
-                  <div className="w-3 h-3 rounded-full bg-slate-800/80 shadow-[inset_0_0_2px_rgba(0,0,0,1)] flex items-center justify-center">
-                    <div className="w-1 h-1 rounded-full bg-blue-500/30"></div>
+                {/* Phone Hardware Chassis */}
+                <div className="relative rounded-[3rem] p-[6px]"
+                     style={{
+                       background: 'linear-gradient(135deg, #334155 0%, #0f172a 100%)', 
+                       borderTop: '1px solid rgba(255,255,255,0.35)', 
+                       borderRight: '1px solid rgba(255,255,255,0.15)', 
+                       borderLeft: '1px solid rgba(0,0,0,0.8)',
+                       borderBottom: '1px solid rgba(0,0,0,0.9)',
+                       boxShadow: '-4px 3px 0px #1e293b, -3px 6px 6px rgba(0,0,0,0.85), -10px 18px 30px rgba(0,0,0,0.60), -25px 40px 70px rgba(0,0,0,0.30)'
+                     }}>
+
+                  {/* Screen Glass */}
+                  <div className="w-[17rem] rounded-[2.6rem] relative overflow-hidden flex flex-col items-center pt-10 pb-8 px-5 z-10"
+                       style={{ background: 'linear-gradient(160deg, #101622 0%, #05080c 100%)', boxShadow: 'inset 0 2px 14px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.03), 0 0 0 1.5px rgba(0,0,0,1)' }}>
+                  
+                    {/* Top Notch Area */}
+                    <div className="w-[28%] h-[5px] rounded-full mb-9 relative z-20" style={{ background: '#080d14', boxShadow: 'inset 0 1.5px 3px rgba(0,0,0,0.9), 0 1px 0 rgba(255,255,255,0.03)' }}></div>
+
+                    <div className="text-center mb-7 relative z-20">
+                      <p className="text-white/95 text-xl font-bold mb-0.5" style={{ textShadow: '0 2px 5px rgba(0,0,0,0.5)' }}>2:47 AM</p>
+                      <p className="text-red-400/85 text-[11px] uppercase tracking-[0.2em] font-semibold">No Answer</p>
+                    </div>
+
+                    {/* Caller avatar */}
+                    <div className="text-center mb-7 relative z-20">
+                      <div className="w-[4.8rem] h-[4.8rem] rounded-full mx-auto flex items-center justify-center mb-3.5" 
+                           style={{ background: 'linear-gradient(180deg, #1b2436 0%, #0d121c 100%)', border: '1px solid rgba(255,255,255,0.04)', boxShadow: '0 4px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)' }}>
+                        <span className="material-symbols-outlined text-slate-400/80 text-[2.2rem]" style={{ fontVariationSettings: "'FILL' 0", filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}>local_shipping</span>
+                      </div>
+                      <p className="text-white/95 text-[15.5px] font-bold leading-tight" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>Unknown Driver</p>
+                      <p className="text-slate-400/80 text-[11px] mt-1.5">+1 (unknown) &middot; Potential Booking</p>
+                    </div>
+
+                    {/* Missed call pill */}
+                    <div className="w-full p-3.5 rounded-2xl flex items-center gap-3 relative z-20" 
+                         style={{ background: 'linear-gradient(180deg, rgba(239,68,68,0.12) 0%, rgba(239,68,68,0.07) 100%)', border: '1px solid rgba(239,68,68,0.25)', boxShadow: '0 6px 16px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06)' }}>
+                      <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: 'rgba(239,68,68,0.15)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), 0 2px 4px rgba(0,0,0,0.2)' }}>
+                        <span className="material-symbols-outlined text-red-400 text-[18px]" style={{ fontVariationSettings: "'FILL' 1", filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.4))' }}>phone_missed</span>
+                      </div>
+                      <div>
+                        <p className="text-[13.5px] font-extrabold text-red-400" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.4)' }}>Missed Call</p>
+                        <p className="text-[10px] text-red-400/60 mt-0.5">Call ended &middot; 2:48 AM</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Subtle Screen Glare */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.03] to-transparent pointer-events-none z-30"></div>
-
-                {/* Screen UI Content */}
-                <div className="relative z-10 w-full h-full flex flex-col pt-14 px-6 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800 via-slate-950 to-black">
-                  
-                  {/* Status Bar */}
-                  <div className="flex justify-between items-center w-full px-2 mb-16 text-white/90">
-                    <span className="text-[11px] font-bold tracking-wide">2:47</span>
-                    <div className="flex gap-1.5 items-center">
-                      <span className="material-symbols-outlined text-[14px]">signal_cellular_4_bar</span>
-                      <span className="material-symbols-outlined text-[14px]">wifi</span>
-                      <span className="material-symbols-outlined text-[14px]">battery_full</span>
-                    </div>
+                {/* Revenue lost card */}
+                <div className="w-[16.5rem] mt-[-22px] ml-6 rounded-2xl px-5 py-4 flex items-center justify-between relative z-30"
+                     style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.30)', borderTop: '1.5px solid rgba(239,68,68,0.45)', backdropFilter: 'blur(12px)', boxShadow: '-4px 12px 20px rgba(0,0,0,0.45), -1px 4px 6px rgba(0,0,0,0.7)', transform: 'translateZ(15px)' }}>
+                  <div>
+                    <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1.5">Est. Revenue Lost</p>
+                    <p className="font-extrabold text-white leading-none" style={{ fontSize: '2rem' }}>$150</p>
+                    <p className="text-[11px] text-white/45 mt-1.5">From this one call alone</p>
                   </div>
-
-                  {/* Caller ID Area */}
-                  <div className="flex-1 flex flex-col items-center">
-                    {/* Glowing Avatar */}
-                    <div className="relative mb-8">
-                       <div className="absolute inset-0 bg-error/20 blur-2xl rounded-full scale-150 animate-pulse"></div>
-                       <div className="w-24 h-24 bg-gradient-to-br from-slate-700 to-slate-800 rounded-full flex items-center justify-center border-2 border-slate-600/50 shadow-2xl relative z-10">
-                          <span className="material-symbols-outlined text-slate-300 text-5xl drop-shadow-lg">person</span>
-                       </div>
+                  <div className="flex flex-col items-center gap-1.5">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(239,68,68,0.14)', border: '1px solid rgba(239,68,68,0.2)' }}>
+                      <span className="material-symbols-outlined text-red-400 text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>trending_down</span>
                     </div>
-                    
-                    <p className="text-2xl font-extrabold text-white mb-1 tracking-tight drop-shadow-md">Unknown Driver</p>
-                    <p className="text-slate-400 text-sm font-medium">Potential Booking</p>
+                    <p className="text-[9px] text-red-400/60 font-semibold uppercase tracking-wide">Tonight</p>
                   </div>
+                </div>
 
-                  {/* Missed Call Banner inside screen */}
-                  <div className="w-full bg-error/10 border border-error/30 p-4 rounded-xl flex items-center gap-4 backdrop-blur-md shadow-2xl mb-8 transform -translate-y-2">
-                    <div className="w-10 h-10 rounded-full bg-error/20 flex items-center justify-center text-error border border-error/20 shadow-inner">
-                      <span className="material-symbols-outlined text-lg">phone_missed</span>
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-bold text-error drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]">Missed Call</p>
-                      <p className="text-[11px] text-error/80 font-medium">Call ended at 2:48 AM</p>
-                    </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </section>
+
+      {/* Comparison Section */}
+      <section className="py-32 px-6 bg-[#f8fbff] dark:bg-slate-950 border-y border-slate-100 dark:border-slate-800" id="how-it-works">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-20 animate-slide-up">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary/5 border border-primary/10 rounded-full text-xs font-bold tracking-widest uppercase text-primary mb-6">
+              <span className="material-symbols-outlined text-xs">compare_arrows</span>
+              Speed of Execution
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black text-primary tracking-tight mb-4 font-headline">
+              From Missed Call to Booked Spot in 30 Seconds
+            </h2>
+            <p className="text-on-surface-variant max-w-2xl mx-auto font-medium text-lg">Two ways to handle a 2 AM call. Only one results in revenue.</p>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-stretch max-w-5xl mx-auto relative">
+            <div className="hidden lg:block absolute left-1/2 top-10 bottom-10 w-px bg-gradient-to-b from-transparent via-slate-200 to-transparent z-0"></div>
+
+            {/* OLD WAY */}
+            <div className="bg-[#fafaf9] border border-[#e8e4e3] rounded-[2.5rem] flex flex-col h-full overflow-hidden transition-all duration-500 hover:shadow-xl relative z-10 font-medium">
+              <div className="px-10 py-8 border-b border-[#e8e4e3] bg-[#f5f4f2] flex items-center gap-5">
+                <div className="w-12 h-12 rounded-2xl bg-red-100/50 flex items-center justify-center border border-red-200">
+                  <span className="material-symbols-outlined text-red-500/70">history</span>
+                </div>
+                <div>
+                  <p className="text-[10px] font-black tracking-widest uppercase text-red-900/40">The Inefficient Path</p>
+                  <p className="text-xl font-black text-red-950/80">The Old Way</p>
+                </div>
+              </div>
+              <div className="p-10 flex-1 space-y-12 relative">
+                <div className="absolute left-[63px] top-[74px] bottom-[74px] w-0 border-l-2 border-dashed border-red-200/50"></div>
+                
+                <div className="flex gap-6 relative">
+                  <div className="w-12 h-12 rounded-full bg-white border border-red-100 flex items-center justify-center shrink-0 z-10 shadow-sm">
+                    <span className="material-symbols-outlined text-red-400 text-xl font-bold">schedule</span>
                   </div>
+                  <div>
+                    <p className="text-[10px] font-black text-red-400 uppercase tracking-widest mb-1">2:47 AM</p>
+                    <p className="font-bold text-red-950/80 leading-tight">Driver calls. No answer.</p>
+                    <p className="text-sm text-red-900/60 mt-1.5 leading-relaxed">You're asleep. Phone goes to voicemail. Driver moves to next lot immediately.</p>
+                  </div>
+                </div>
 
+                <div className="flex gap-6 relative">
+                  <div className="w-12 h-12 rounded-full bg-white border border-red-100 flex items-center justify-center shrink-0 z-10 shadow-sm">
+                    <span className="material-symbols-outlined text-red-400 text-xl font-bold">voicemail</span>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black text-red-400 uppercase tracking-widest mb-1">2:48 AM</p>
+                    <p className="font-bold text-red-950/80 leading-tight">No message left.</p>
+                    <p className="text-sm text-red-900/60 mt-1.5 leading-relaxed">Drivers don't wait. He finds a lot on Google Maps that has a booking button.</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-6 relative">
+                  <div className="w-12 h-12 rounded-full bg-white border border-red-100 flex items-center justify-center shrink-0 z-10 shadow-sm">
+                    <span className="material-symbols-outlined text-red-400 text-xl font-bold">mail</span>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black text-red-400 uppercase tracking-widest mb-1">9:00 AM</p>
+                    <p className="font-bold text-red-950/80 leading-tight">Revenue perverted.</p>
+                    <p className="text-sm text-red-900/60 mt-1.5 leading-relaxed">You wake up to a missed notification, but the driver is long gone.</p>
+                  </div>
+                </div>
+              </div>
+              <div className="p-10 bg-red-50 border-t border-red-100 flex items-center gap-5">
+                <span className="material-symbols-outlined text-3xl text-red-400" style={{ fontVariationSettings: "'FILL' 1" }}>trending_down</span>
+                <p className="text-red-900 font-bold leading-tight">Result: 6+ Hours wait time.<br/><span className="text-[13px] opacity-60">Revenue Lost: $150</span></p>
+              </div>
+            </div>
+
+            {/* THE PARKAI WAY */}
+            <div className="bg-white border-2 border-primary/20 rounded-[2.5rem] flex flex-col h-full overflow-hidden shadow-2xl scale-105 relative z-20 transform hover:-translate-y-2 transition-all duration-500">
+              <div className="absolute top-0 inset-x-0 h-1.5 bg-secondary"></div>
+              <div className="px-10 py-8 border-b border-slate-100 bg-[#f8fbff] flex items-center gap-5">
+                <div className="w-12 h-12 rounded-2xl bg-secondary flex items-center justify-center text-white shadow-lg shadow-secondary/20">
+                  <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>
+                </div>
+                <div>
+                  <p className="text-[10px] font-black tracking-widest uppercase text-secondary">The Winner</p>
+                  <p className="text-xl font-black text-primary uppercase tracking-tight">The ParkAI Way</p>
+                </div>
+              </div>
+              <div className="p-10 flex-1 space-y-12 relative">
+                <div className="absolute left-[63px] top-[74px] bottom-[74px] w-[2.5px] bg-secondary/20"></div>
+                
+                <div className="flex gap-6 relative">
+                  <div className="w-12 h-12 rounded-full bg-white border-2 border-secondary/30 flex items-center justify-center shrink-0 z-10 shadow-md">
+                    <span className="material-symbols-outlined text-secondary text-xl font-black">phone_in_talk</span>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black text-secondary uppercase tracking-widest mb-1 text-on-surface-variant font-headline">2:47:00 AM</p>
+                    <p className="text-lg font-black text-primary leading-tight">AI answers in 2 seconds.</p>
+                    <p className="text-sm text-slate-500 font-bold mt-1.5 leading-relaxed">Driver instantly speaks to your automated lot manager. Professional & reliable.</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-6 relative">
+                  <div className="w-12 h-12 rounded-full bg-white border-2 border-secondary/30 flex items-center justify-center shrink-0 z-10 shadow-md">
+                    <span className="material-symbols-outlined text-secondary text-xl font-black">search_check</span>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black text-secondary uppercase tracking-widest mb-1 text-on-surface-variant font-headline">2:47:15 AM</p>
+                    <p className="text-lg font-black text-primary leading-tight">Spots checked. Price quoted.</p>
+                    <p className="text-sm text-slate-500 font-bold mt-1.5 leading-relaxed">AI checks real-time inventory and confirms the $65 rate. Secures the sale.</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-6 relative">
+                  <div className="w-12 h-12 rounded-full bg-secondary text-white flex items-center justify-center shrink-0 z-10 shadow-xl shadow-secondary/30 ring-4 ring-secondary/10">
+                    <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black text-secondary uppercase tracking-widest mb-1 text-on-surface-variant font-headline">2:47:30 AM</p>
+                    <p className="text-lg font-black text-primary leading-tight">Spot booked. SMS sent.</p>
+                    <p className="text-sm text-slate-500 font-bold mt-1.5 leading-relaxed">Payment link sent via text. Driver parks. You wake up with more money.</p>
+                  </div>
+                </div>
+              </div>
+              <div className="p-10 bg-gradient-to-r from-blue-50 to-indigo-50 border-t border-secondary/10 flex items-center gap-5">
+                <span className="material-symbols-outlined text-3xl text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>
+                <div className="flex-1">
+                  <p className="text-primary font-black text-lg">Result: 30 Seconds Total Time.</p>
+                  <p className="text-[13px] text-secondary font-bold uppercase tracking-widest mt-1">Status: Earning Revenue</p>
                 </div>
               </div>
             </div>
@@ -476,161 +682,57 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* How It Works Section */}
-      <section className="relative py-36 px-6 overflow-hidden bg-white dark:bg-slate-950" id="how-it-works">
-        {/* Immersive Section Background Features */}
-        <div className="absolute top-0 left-[-10%] w-[600px] h-[600px] bg-secondary/5 rounded-full blur-[120px] -z-10 pointer-events-none animate-ambient-drift" style={{animationDelay: '-10s'}}></div>
-        <div className="absolute bottom-[-10%] right-[-5%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] -z-10 pointer-events-none animate-ambient-drift" style={{animationDelay: '-5s'}}></div>
-        
-        <div className="max-w-[1400px] mx-auto relative z-10">
-        <style dangerouslySetInnerHTML={{__html: `
-          @keyframes slideFadeUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          .animate-slide-up {
-            opacity: 0;
-            animation: slideFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-          }
-        `}} />
-        
-        <div className="text-center mb-16 animate-slide-up">
-          <h2 className="text-4xl font-bold text-primary mb-4 font-['Manrope']">From Missed Call to Booked Spot in 30 Seconds</h2>
-          <p className="text-on-surface-variant max-w-2xl mx-auto italic">High-performance booking flow comparison</p>
-        </div>
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
+      {/* Hierarchical Feature Grid */}
+      <section className="relative py-36 px-6 bg-slate-50 dark:bg-slate-900 border-t border-slate-100 overflow-hidden" id="features">
+        <div className="absolute top-[10%] left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none"></div>
+        <div className="max-w-[70rem] mx-auto relative z-10 flex flex-col gap-8">
           
-          {/* Old Way Timeline */}
-          <div className="bg-white p-12 rounded-[3.5rem] border border-slate-200 flex flex-col h-full animate-slide-up shadow-[0_30px_100px_-20px_rgba(0,0,0,0.08)] hover:shadow-[0_40px_120px_-20px_rgba(0,0,0,0.12)] transition-all duration-700 group relative" style={{animationDelay: '100ms'}}>
-            <div className="flex items-center gap-5 mb-12">
-              <span className="w-14 h-14 rounded-2xl bg-[#D04E3A] text-white flex items-center justify-center font-black shadow-lg transition-transform group-hover:scale-110">
-                <span className="material-symbols-outlined font-black">close</span>
-              </span>
-              <h3 className="text-2xl font-black text-[#D04E3A] uppercase tracking-[0.15em] font-['Manrope']">The Old Way</h3>
-            </div>
-            <div className="space-y-8 relative flex-1">
-              {/* Timeline Spine */}
-              <div className="absolute left-[47px] top-12 bottom-16 w-1.5 bg-[#D04E3A]/10 rounded-full z-0"></div>
-              
-              <TimelineStep 
-                time="2:47 AM" 
-                title="Driver calls. You're asleep." 
-                detail="The phone goes to your generic voicemail. The driver is looking for an immediate answer and moves on." 
-                icon="schedule" 
-                isAi={false} 
-                index={0} 
-              />
-              <TimelineStep 
-                time="4:00 AM" 
-                title="Driver books across town instead." 
-                detail="Drivers rarely wait for business hours. They call the next lot on Google Maps and give them the revenue instead." 
-                icon="voicemail" 
-                isAi={false} 
-                index={1} 
-              />
-              <TimelineStep 
-                time="9:00 AM" 
-                title="Booking permanently lost." 
-                detail="You wake up, check your voicemail, and try calling back. It's too late to recover the customer." 
-                icon="mail" 
-                isAi={false} 
-                index={2} 
-              />
-            </div>
-            <div className="mt-12 h-28 flex items-center justify-center p-8 bg-[#D04E3A] shadow-xl rounded-[2rem] transition-all group-hover:shadow-2xl border border-white/10">
-              <p className="text-white font-black text-center uppercase tracking-[0.15em] text-sm">TOTAL TIME: 6+ HOURS (LOST REVENUE)</p>
-            </div>
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-black text-primary mb-5 font-headline tracking-tight">Everything You Need To Automate.</h2>
+            <p className="text-on-surface-variant text-lg font-medium max-w-2xl mx-auto">Enterprise-grade call management and booking logic for high-demand lots.</p>
           </div>
-          
-          {/* New Way Timeline */}
-          <div className="bg-white p-12 rounded-[3.5rem] border border-slate-200 flex flex-col h-full animate-slide-up shadow-[0_30px_100px_-20px_rgba(0,0,0,0.08)] hover:shadow-[0_40px_120px_-20px_rgba(0,0,0,0.12)] transition-all duration-700 relative overflow-hidden group" style={{animationDelay: '300ms'}}>
-            <div className="flex items-center gap-5 mb-12 relative z-10">
-              <span className="w-14 h-14 rounded-2xl bg-secondary text-white flex items-center justify-center font-black shadow-lg transition-transform group-hover:rotate-6">
-                <span className="material-symbols-outlined font-black">check</span>
-              </span>
-              <h3 className="text-2xl font-black text-primary uppercase tracking-[0.15em] font-['Manrope']">The ParkAI Way</h3>
-              <span className="ml-auto px-4 py-1.5 bg-secondary text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-md">The Winner</span>
-            </div>
-            <div className="space-y-8 relative flex-1 z-10">
-              {/* Timeline Spine (Glowing Gradient) */}
-              <div className="absolute left-[47px] top-12 bottom-16 w-1.5 bg-gradient-to-b from-secondary via-secondary/40 to-primary/10 rounded-full shadow-[0_0_15px_rgba(var(--color-secondary),0.1)]"></div>
-              
-              <TimelineStep 
-                time="2:47:00 AM" 
-                title="Driver calls. AI answers instantly." 
-                detail="Within two seconds, ParkAI picks up the phone with a natural voice, fully aware of your lot's current capacity and pricing." 
-                icon="phone_in_talk" 
-                isAi={true} 
-                index={0} 
-              />
-              <TimelineStep 
-                time="2:47:15 AM" 
-                title="AI checks rules & quotes price." 
-                detail="The driver asks about reefer parking. The AI confirms it's permitted, quotes the overnight rate, and secures the booking automatically." 
-                icon="check_circle" 
-                isAi={true} 
-                index={1} 
-              />
-              <TimelineStep 
-                time="2:47:30 AM" 
-                title="Spot confirmed. Dashboard updated." 
-                detail="The spot is logged in your system immediately. You wake up the next morning with another paid reservation already on the books." 
-                icon="notifications_active" 
-                isAi={true} 
-                index={2} 
-              />
-            </div>
-            <div className="mt-12 h-28 flex items-center justify-center p-8 bg-secondary shadow-xl rounded-[2rem] relative overflow-hidden group cursor-pointer border border-white/10 transition-all group-hover:shadow-2xl">
-              <p className="text-white font-black text-center uppercase tracking-[0.15em] text-sm z-10">Total Time: 30 Seconds (Booked!)</p>
-            </div>
-          </div>
-          
-          </div>
-          
-        </div>
-      </section>
 
-      {/* Key Features */}
-      <section className="relative py-36 px-6 bg-slate-50 dark:bg-slate-900/50 overflow-hidden border-t border-slate-200 dark:border-slate-800 shadow-[inset_0_4px_40px_rgba(0,0,0,0.02)]" id="features">
-        {/* Soft framing via pseudo-edge gradients */}
-        <div className="absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-surface to-transparent -z-10"></div>
-        <div className="absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-surface to-transparent -z-10"></div>
-        
-        <div className="max-w-[1400px] mx-auto relative z-10">
-        <div className="text-center mb-20">
-          <h2 className="text-4xl font-bold text-primary mb-4 font-['Manrope'] pr-1.5">Everything You Need to Run Your Lot on Autopilot</h2>
-          <p className="text-on-surface-variant max-w-2xl mx-auto font-medium">Enterprise-grade AI calls management, inventory tracking, and driver support.</p>
-        </div>
-        <div className="grid md:grid-cols-2 gap-8 lg:gap-10">
-          <FeatureCard 
-            icon="family_restroom"
-            title="Answers Every Call—Even During Family Dinner"
-            description="Stop letting work interrupt your life. Our AI maintains a 100% answer rate, ensuring no driver is left hanging while you're focused on what matters."
-            colorClass="bg-red-50 text-[#D04E3A]"
-            delay="100ms"
-          />
-          <FeatureCard 
-            icon="speed"
-            title="Books Spots in 30 Seconds—Not 3 Hours"
-            description="Efficiency is the name of the game. Drivers get answers instantly, prices immediately, and a booking confirmation before they even shift gears."
-            colorClass="bg-blue-50 text-secondary"
-            delay="200ms"
-          />
-          <FeatureCard 
-            icon="dashboard"
-            title="See Every Booking The Second It Happens"
-            description="Stay in total control with a real-time dashboard. No manual data entry, no paper logs. Just clean, accurate records of every truck entering your lot."
-            colorClass="bg-indigo-50 text-indigo-600"
-            delay="300ms"
-          />
-          <FeatureCard 
-            icon="psychology"
-            title="Handles 'Do You Allow Reefers?' And 20 Other Questions"
-            description="Our AI doesn't just book; it knows your rules. Whether it's hazardous materials, reefer units, or height limits, the AI gives accurate answers every time."
-            colorClass="bg-emerald-50 text-emerald-600"
-            delay="400ms"
-          />
-        </div>
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Primary Feature 1 */}
+            <div className="p-12 lg:p-14 bg-white rounded-[2.5rem] border border-slate-200/60 shadow-xl transition-all duration-500 hover:-translate-y-2 group relative overflow-hidden">
+               <div className="w-16 h-16 bg-secondary rounded-2xl flex items-center justify-center text-white mb-10 shadow-lg shadow-secondary/20 group-hover:scale-110 group-hover:rotate-3 transition-transform">
+                  <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>phone_in_talk</span>
+               </div>
+               <div className="flex items-center gap-2 px-3.5 py-1.5 bg-secondary/5 text-secondary border border-secondary/15 rounded-full text-[10px] font-black uppercase tracking-[0.2em] w-fit mb-6">
+                  100% Coverage
+               </div>
+               <h3 className="text-2xl font-black text-primary mb-5 tracking-tight">AI Answers Every Single Call</h3>
+               <p className="text-slate-500 font-bold leading-relaxed">No ring-outs. No waiting. Our AI handles an unlimited number of concurrent calls, so every driver gets help instantly even at peak hours.</p>
+            </div>
+            {/* Primary Feature 2 */}
+            <div className="p-12 lg:p-14 bg-white rounded-[2.5rem] border border-slate-200/60 shadow-xl transition-all duration-500 hover:-translate-y-2 group relative overflow-hidden">
+               <div className="w-16 h-16 bg-secondary rounded-2xl flex items-center justify-center text-white mb-10 shadow-lg shadow-secondary/20 group-hover:scale-110 group-hover:rotate-3 transition-transform">
+                  <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>
+               </div>
+               <div className="flex items-center gap-2 px-3.5 py-1.5 bg-secondary/5 text-secondary border border-secondary/15 rounded-full text-[10px] font-black uppercase tracking-[0.2em] w-fit mb-6 text-on-surface-variant">
+                  Zero Latency
+               </div>
+               <h3 className="text-2xl font-black text-primary mb-5 tracking-tight">30-Second Booking Cycle</h3>
+               <p className="text-slate-500 font-bold leading-relaxed">Minimize driver effort. The AI verifies capacity, takes information, and sends a booking text before the driver can even pull over.</p>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="p-10 bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 hover:border-secondary/20 transition-all group">
+               <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-secondary mb-8 group-hover:bg-secondary/10 transition-colors">
+                  <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>dashboard</span>
+               </div>
+               <h3 className="text-lg font-black text-primary mb-3">Live Fleet Dashboard</h3>
+               <p className="text-sm text-slate-500 font-bold leading-relaxed">Monitor your inventory in real-time. Know exactly who is coming, who is checked in, and how much you've earned today.</p>
+            </div>
+            <div className="p-10 bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 hover:border-secondary/20 transition-all group">
+               <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-secondary mb-8 group-hover:bg-secondary/10 transition-colors">
+                  <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
+               </div>
+               <h3 className="text-lg font-black text-primary mb-3">Custom Lot Knowledge</h3>
+               <p className="text-sm text-slate-500 font-bold leading-relaxed">Train the AI on your specific rules. Recker permissions, hazmat restrictions, and overnight rates are handled flawlessly.</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -721,197 +823,181 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Social Proof */}
-      <section className="relative py-48 px-6 overflow-hidden bg-white antialiased" id="social-proof">
-        {/* Decorative background elements */}
-        <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-slate-50/50 to-transparent pointer-events-none"></div>
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-primary/5 rounded-full blur-[180px] -z-10 pointer-events-none animate-ambient-drift"></div>
-        
-        <div className="max-w-[1400px] mx-auto relative z-10">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl font-black text-primary mb-6 font-['Manrope'] tracking-tight">What Lot Owners Tell Us During Demos</h2>
-            <p className="text-slate-500 max-w-2xl mx-auto font-semibold">Join dozens of lot owners who have recovered their nights and boosted their revenue with ParkAI.</p>
+      {/* Social Proof (High Impact Testimonials) */}
+      <section className="py-32 px-6 bg-white overflow-hidden" id="social-proof">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-24">
+            <h2 className="text-4xl md:text-5xl font-black text-primary mb-6 font-headline tracking-tight">Trusted by Independent Lot Owners.</h2>
+            <div className="flex items-center justify-center gap-2 text-secondary mb-4">
+               {[1,2,3,4,5].map(i => <span key={i} className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>)}
+            </div>
+            <p className="text-on-surface-variant text-lg font-medium leading-relaxed">Hear from those who no longer miss their nights to telephone calls.</p>
           </div>
-          
-          <div className="grid lg:grid-cols-3 gap-8 lg:gap-10 mb-32 items-stretch">
-            <TestimonialCard 
-              quote="I was skeptical about AI... but this is just like having an employee who never sleeps. I can actually enjoy dinner with my family now knowing my lot is still filling up."
-              author="Dave R."
-              title="Logistics Lot Owner"
-              avatar="https://ui-avatars.com/api/?name=Dave+R&background=0c2f75&color=fff"
-              delay="100ms"
-            />
-            <TestimonialCard 
-              quote="I used to find 5-6 missed calls every morning. Now those are 5-6 reservations waiting for me when I log in at 8 AM. It paid for itself in the first two nights."
-              author="Mark S."
-              title="Metro Parking Hub"
-              avatar="https://ui-avatars.com/api/?name=Mark+S&background=0c2f75&color=fff"
-              delay="200ms"
-            />
-            <TestimonialCard 
-              quote="The AI knows all my rules about hazardous materials and reefer units. It's more reliable than my last night-shift hire and costs a fraction of the price."
-              author="Kevin L."
-              title="Interstate Truck Stop"
-              avatar="https://ui-avatars.com/api/?name=Kevin+L&background=0c2f75&color=fff"
-              delay="300ms"
-            />
+
+          <div className="grid md:grid-cols-3 gap-10 mb-24">
+            {[
+              {
+                q: "I was skeptical about AI... but this is just like having an employee who never sleeps. I can actually enjoy dinner with my family now.",
+                a: "Dave R.",
+                t: "Logistics Lot Owner"
+              },
+              {
+                q: "I used to find 5-6 missed calls every morning. Now those are reservations waiting for me when I log in. It paid for itself in two nights.",
+                a: "Mark S.",
+                t: "Metro Parking Hub"
+              },
+              {
+                q: "The AI knows all my reefer and hazmat rules. It's more reliable than my last night-shift hire and costs a fraction of the price.",
+                a: "Kevin L.",
+                t: "Interstate Truck Stop"
+              }
+            ].map((test, idx) => (
+              <div key={idx} className="p-10 bg-slate-50 rounded-[2.5rem] border border-slate-100 flex flex-col justify-between hover:bg-slate-100 transition-colors duration-300">
+                <p className="text-lg font-bold text-primary italic leading-relaxed mb-10">"{test.q}"</p>
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center font-black text-primary">{test.a[0]}</div>
+                  <div>
+                    <p className="font-black text-primary font-headline">{test.a}</p>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{test.t}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-          
-          <div className="py-24 border-t border-slate-200/60 bg-slate-50/50 rounded-[4rem] group">
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-16 lg:gap-24 px-12">
-              <StatItem value="100%" label="Call Answer Rate" delay="400ms" />
-              <StatItem value="30s" label="Avg Booking Time" delay="500ms" />
-              <StatItem value="24/7" label="Reliability" delay="600ms" />
+
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-12 py-16 border-y border-slate-100">
+            <div className="text-center">
+              <p className="text-5xl font-black text-secondary mb-3">100%</p>
+              <p className="text-xs font-black text-primary uppercase tracking-[0.2em]">Call Answer Rate</p>
+            </div>
+            <div className="text-center">
+              <p className="text-5xl font-black text-secondary mb-3">30s</p>
+              <p className="text-xs font-black text-primary uppercase tracking-[0.2em]">Avg Booking Time</p>
+            </div>
+            <div className="text-center col-span-2 lg:col-span-1">
+              <p className="text-5xl font-black text-secondary mb-3">24/7</p>
+              <p className="text-xs font-black text-primary uppercase tracking-[0.2em]">Uptime Guaranteed</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Pricing Section (Clean & Integrated) */}
-      <section className="relative py-36 px-6 bg-slate-50 overflow-hidden border-y border-slate-200/50" id="pricing">
-        <div className="max-w-[1400px] mx-auto relative z-10">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-primary mb-4 font-['Manrope']">Simple Pricing. No Surprises.</h2>
-            <p className="text-on-surface-variant font-medium">One plan. Everything included. Professional scale.</p>
-          </div>
-          
-          <div className="max-w-5xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-stretch">
-            {/* Left Pricing Card (Restored) */}
-            <div className="p-10 bg-white rounded-3xl shadow-xl border-2 border-secondary relative overflow-hidden flex flex-col group transition-all duration-300 hover:shadow-2xl">
-              <div className="absolute top-0 right-0 bg-secondary text-white px-4 py-1.5 text-xs font-bold uppercase tracking-widest rounded-bl-xl">Most Popular</div>
-              <div className="mb-8">
-                <h3 className="text-2xl font-bold text-primary mb-4 font-['Manrope']">ParkAI Standard</h3>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-5xl font-extrabold text-primary tracking-tight">$200</span>
-                  <span className="text-on-surface-variant font-semibold">/month</span>
-                </div>
-              </div>
-              <ul className="space-y-4 mb-10 flex-1">
-                {[
-                  "Unlimited calls & bookings",
-                  "Real-time dashboard access",
-                  "Natural-sounding AI voice",
-                  "Instant setup (under 5 mins)",
-                  "SMS confirmations for drivers"
-                ].map((feature, i) => (
-                  <li key={i} className="flex items-center gap-3 text-slate-700 font-medium">
-                    <span className="material-symbols-outlined text-secondary text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-              <Link to="/onboarding" className="block text-center w-full py-4 bg-primary text-white rounded-xl font-bold hover:bg-secondary transition-all shadow-md active:scale-95">
-                Start Free Trial
-              </Link>
-              <p className="mt-4 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">No credit card required</p>
+      {/* Pricing Section */}
+      <section className="py-32 px-6 bg-slate-50 border-t border-slate-100" id="pricing">
+         <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+               <h2 className="text-4xl md:text-5xl font-black text-primary tracking-tight mb-5 font-headline">Simple Pricing. Professional Power.</h2>
+               <p className="text-on-surface-variant text-lg font-medium">One plan. Everything included. Zero hidden fees.</p>
             </div>
+            <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-stretch">
+               <div className="p-12 bg-white rounded-[3rem] shadow-2xl border-2 border-secondary relative overflow-hidden flex flex-col scale-105 z-10">
+                  <div className="absolute top-0 right-0 bg-secondary text-white px-6 py-2 text-[10px] font-black uppercase tracking-[0.25em] rounded-bl-2xl">Standard</div>
+                  <div className="mb-10">
+                     <p className="text-lg font-black text-primary mb-2">ParkAI Professional</p>
+                     <div className="flex items-baseline gap-3">
+                        <span className="text-6xl font-black text-primary">$200</span>
+                        <span className="text-on-surface-variant font-bold">/ month</span>
+                     </div>
+                  </div>
+                  <ul className="space-y-5 mb-12 flex-1 font-medium text-sm">
+                    {[
+                      "Unlimited calls answering",
+                      "Full lot inventory sync",
+                      "Automated SMS confirmations",
+                      "Natural voice selection",
+                      "Custom lot rules engine",
+                      "Live dashboard access"
+                    ].map((feat, i) => (
+                      <li key={i} className="flex items-center gap-4">
+                        <span className="material-symbols-outlined text-secondary text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                        {feat}
+                      </li>
+                    ))}
+                  </ul>
+                  <Link to="/onboarding" className="w-full py-5 bg-primary text-white rounded-2xl font-black text-xl hover:bg-secondary transition-all text-center shadow-xl shadow-primary/20 active:scale-95">
+                    Start 7-Day Free Trial
+                  </Link>
+               </div>
 
-            {/* Right Cost Comparison (Cleaned up) */}
-            <div className="p-10 bg-white/40 rounded-3xl border border-slate-200/60 flex flex-col justify-center">
-              <div className="flex items-center gap-2 mb-8">
-                <span className="material-symbols-outlined text-primary text-lg">insights</span>
-                <h4 className="text-xl font-bold text-primary font-['Manrope'] tracking-tight">Cost Comparison</h4>
-              </div>
-              <div className="space-y-6">
-                <div className="flex justify-between items-center p-6 bg-white/50 border border-slate-200 rounded-2xl">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Hiring Part-Time Help</span>
-                    <span className="font-semibold text-slate-700 text-sm">Monthly Labor Cost</span>
+               <div className="p-12 bg-surface-container-highest/30 rounded-[3rem] border border-slate-200 flex flex-col justify-center">
+                  <h4 className="text-xl font-black text-primary mb-8 text-center text-on-surface-variant uppercase tracking-widest text-sm">Economic Analysis</h4>
+                  <div className="space-y-6 mb-10">
+                    <div className="flex justify-between items-center p-6 bg-red-100/50 rounded-2xl border border-red-200">
+                      <span className="font-bold text-red-700">Night-Shift Temp Hire</span>
+                      <span className="font-black text-red-900 opacity-60">$1,600/mo</span>
+                    </div>
+                    <div className="flex justify-between items-center p-6 bg-secondary/10 rounded-2xl border-2 border-secondary/20">
+                      <span className="font-black text-secondary">ParkAI Manager</span>
+                      <span className="font-black text-secondary">$200/mo</span>
+                    </div>
                   </div>
-                  <span className="text-xl font-bold text-slate-400">$1,200/mo</span>
-                </div>
-                
-                <div className="flex justify-between items-center p-6 bg-secondary-fixed/20 border-2 border-secondary/20 rounded-2xl relative">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-black text-secondary uppercase tracking-widest mb-1">The ParkAI Way</span>
-                    <span className="font-bold text-slate-900 text-sm">Unlimited AI Management</span>
+                  <div className="text-center relative">
+                     <div className="text-4xl font-black text-primary mb-2">83% Cost Reduction</div>
+                     <p className="text-sm text-slate-500 font-bold leading-relaxed">No taxes, no sick days, no breaks. Just consistent revenue capture while you sleep.</p>
                   </div>
-                  <span className="text-xl font-extrabold text-secondary">$200/mo</span>
-                </div>
-                
-                <div className="pt-8 text-center border-t border-slate-200 mt-2">
-                  <p className="text-3xl font-black text-primary mb-2 font-['Manrope']">83% Monthly Savings</p>
-                  <p className="text-sm font-medium text-on-surface-variant max-w-[280px] mx-auto leading-relaxed">
-                    No training, no sick days, no taxes. <br /> Recover your nights starting tonight.
-                  </p>
-                </div>
-              </div>
+               </div>
             </div>
-          </div>
-        </div>
+         </div>
       </section>
 
       {/* FAQ Section */}
-      <section className="py-36 px-6 max-w-3xl mx-auto" id="faq">
-        <h2 className="text-3xl font-bold text-center mb-12 font-['Manrope']">Frequently Asked Questions</h2>
-        <div className="space-y-6">
-          {[
-            {
-              id: 'ai-voice',
-              q: "Will drivers know it's AI?",
-              a: "Our voice technology is highly natural. Most drivers just appreciate how quickly they get an answer. If they ask, the AI can honestly state it's an automated assistant here to help them book quickly."
-            },
-            {
-              id: 'mistake',
-              q: "What if it makes a mistake?",
-              a: "The AI follows strict logic provided by you. If it encounters a complex situation it can't handle, it politely informs the driver that a manager will call them back and instantly notifies you."
-            },
-            {
-              id: 'number',
-              q: "Do I need a new phone number?",
-              a: "No. You simply set your current phone line to \"Forward on Busy\" or \"Forward on No Answer\" to your unique ParkAI number. It works seamlessly with your existing setup."
-            },
-            {
-              id: 'full-lot',
-              q: "What if my lot is full?",
-              a: "The AI has real-time access to your inventory. If you're full, it will politely inform the driver and offer to put them on a waiting list or suggest they call back later, saving you the time of answering to say \"no.\""
-            }
-          ].map((faq) => (
-            <FaqItem key={faq.id} faq={faq} />
+      <section className="py-32 px-6 max-w-4xl mx-auto" id="faq">
+        <h2 className="text-4xl font-black text-center mb-16 font-headline tracking-tight">Operational Questions?</h2>
+        <div className="space-y-4">
+          {faqs.map((faq, i) => (
+            <FaqItem key={i} faq={faq} />
           ))}
         </div>
       </section>
 
-      {/* Final CTA (Restored Flow) */}
-      <section className="py-36 px-6 relative">
-        <div className="max-w-5xl mx-auto bg-gradient-to-br from-primary via-primary-container to-secondary p-12 rounded-[2.5rem] text-center text-white relative overflow-hidden shadow-2xl">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-          <div className="relative z-10">
-            <h2 className="text-4xl md:text-5xl font-extrabold mb-6 font-['Manrope']">Ready to Answer Every Call?</h2>
-            <p className="text-xl text-on-primary-container mb-10 max-w-2xl mx-auto">
-              Join lot owners who never miss a booking—even at 2 AM, even on Christmas morning.
+      {/* Final CTA */}
+      <section className="py-32 px-6">
+        <div className="max-w-6xl mx-auto bg-[radial-gradient(circle_at_top_right,#0058be,#050f36)] p-16 md:p-24 rounded-[4rem] text-center text-white relative overflow-hidden shadow-2xl">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
+          <div className="relative z-10 max-w-3xl mx-auto">
+            <h2 className="text-4xl md:text-6xl font-black mb-8 font-headline tracking-tight leading-tight">Ready to Capture Every Missed Booking?</h2>
+            <p className="text-xl text-white/60 mb-12 font-medium leading-relaxed">
+              Join dozens of smart lot owners who have stopped leaking revenue during the night shift. Setup takes just 5 minutes.
             </p>
-            <Link to="/onboarding" className="inline-block px-10 py-5 bg-white text-primary rounded-xl font-extrabold text-xl shadow-2xl hover:scale-105 transition-all mb-8">
-              Start Earning in 5 Minutes →
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+              <Link to="/onboarding" className="px-12 py-5 bg-white text-primary rounded-2xl font-black text-2xl shadow-2xl hover:scale-105 transition-all active:scale-95">
+                Get Started Free →
+              </Link>
+              <button className="px-10 py-5 bg-white/10 backdrop-blur-md text-white border border-white/20 rounded-2xl font-black text-xl hover:bg-white/20 transition-all">
+                Talk to Sales
+              </button>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-slate-50 dark:bg-slate-900 py-12 border-t border-slate-100 dark:border-slate-800 relative z-20">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 px-6 max-w-[1400px] mx-auto">
-          <div className="col-span-1">
-            <div className="text-lg font-bold text-slate-900 dark:text-white mb-4 font-['Manrope']">TruckPark AI</div>
-            <p className="text-sm text-slate-500 dark:text-slate-400">Operational Excellence for Fleet Managers and Lot Owners.</p>
+      <footer className="bg-slate-50 dark:bg-slate-900 py-20 border-t border-slate-100 dark:border-slate-800">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-16">
+          <div className="col-span-1 md:col-span-2">
+            <div className="text-2xl font-black text-primary dark:text-white mb-6 font-['Manrope'] tracking-tight">TruckPark AI</div>
+            <p className="text-slate-500 max-w-sm font-medium leading-relaxed">Empowering lot owners to recover their nights and maximize their potential through intelligent, customer-focused automation.</p>
           </div>
           <div>
-            <p className="font-bold text-primary mb-4">Product</p>
-            <ul className="space-y-2 text-sm text-slate-500 dark:text-slate-400">
-              <li><a className="hover:text-slate-900 dark:hover:text-white transition-colors" href="#features">Features</a></li>
-              <li><a className="hover:text-slate-900 dark:hover:text-white transition-colors" href="#pricing">Pricing</a></li>
+            <p className="font-black text-primary mb-6 uppercase tracking-widest text-xs">Product</p>
+            <ul className="space-y-4 text-sm font-bold text-slate-400">
+              <li><a href="#how-it-works" className="hover:text-primary transition-colors">How It Works</a></li>
+              <li><a href="#features" className="hover:text-primary transition-colors">Key Features</a></li>
+              <li><a href="#pricing" className="hover:text-primary transition-colors">Live Pricing</a></li>
             </ul>
           </div>
           <div>
-            <p className="font-bold text-primary mb-4">Legal</p>
-            <ul className="space-y-2 text-sm text-slate-500 dark:text-slate-400">
-              <li><Link className="hover:text-slate-900 dark:hover:text-white transition-colors" to="/privacy">Privacy Policy</Link></li>
-              <li><Link className="hover:text-slate-900 dark:hover:text-white transition-colors" to="/terms">Terms of Service</Link></li>
+            <p className="font-black text-primary mb-6 uppercase tracking-widest text-xs">Support</p>
+            <ul className="space-y-4 text-sm font-bold text-slate-400">
+              <li><a href="#faq" className="hover:text-primary transition-colors">FAQ</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">Contact Us</a></li>
+              <li><a href="#" className="hover:text-primary transition-colors">Terms of Service</a></li>
             </ul>
           </div>
         </div>
-        <div className="mt-12 text-center text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800 pt-8">
-          © 2026 TruckPark AI. Operational Excellence for Fleet Managers.
+        <div className="max-w-7xl mx-auto px-6 mt-20 pt-10 border-t border-slate-200/50 flex justify-between items-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
+           <p>© 2024 TruckPark AI. Operational Excellence.</p>
+           <p>Made for hard-working lot owners</p>
         </div>
       </footer>
     </main>
