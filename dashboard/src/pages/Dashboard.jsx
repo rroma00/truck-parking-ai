@@ -1,1041 +1,346 @@
-import { useState, useRef, useEffect } from 'react';
-
-const WheelColumn = ({ list, value, onChange, throttle = 250 }) => {
-  const [activeIdx, setActiveIdx] = useState(list.indexOf(value));
-  const trackRef = useRef(null);
-  const accumTimer = useRef(null);
-
-  useEffect(() => {
-    const idx = list.indexOf(value);
-    if (idx !== -1) setActiveIdx(idx);
-  }, [value, list]);
-
-  useEffect(() => {
-    const el = trackRef.current;
-    if (!el) return;
-    
-    const handleWheel = (e) => {
-      e.preventDefault();
-      
-      if (accumTimer.current) return;
-      accumTimer.current = setTimeout(() => {
-        accumTimer.current = null;
-      }, throttle);
-
-      const dir = Math.sign(e.deltaY);
-      if (dir === 0) return;
-      
-      setActiveIdx(prev => {
-        const next = Math.max(0, Math.min(list.length - 1, prev + dir));
-        if (next !== prev) onChange(list[next]);
-        return next;
-      });
-    };
-
-    el.addEventListener('wheel', handleWheel, { passive: false });
-    return () => el.removeEventListener('wheel', handleWheel);
-  }, [list, onChange]);
-
-  return (
-    <div className="flex-1 relative z-10 overflow-hidden h-[90px]" ref={trackRef}>
-      <div 
-        className="flex flex-col items-center w-full transition-transform duration-200 ease-out absolute top-0 left-0"
-        style={{ transform: `translateY(calc(30px - ${activeIdx * 30}px))` }}
-      >
-        {list.map(item => (
-          <button 
-            key={item}
-            onClick={() => onChange(item)}
-            className={`w-full h-[30px] flex-shrink-0 flex items-center justify-center rounded-md text-[13px] font-bold transition-colors ${
-              value === item ? 'text-white' : 'text-on-surface/50 hover:text-on-surface'
-            }`}
-          >
-            {item}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const WheelTimePicker = ({ value, onChange, initialTime = '08:00 AM' }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef(null);
-
-  const sourceTime = value || initialTime;
-  const [h, setH] = useState(sourceTime.split(':')[0]);
-  const [m, setM] = useState(sourceTime.split(':')[1].split(' ')[0]);
-  const [p, setP] = useState(sourceTime.split(' ')[1]);
-  const [typed, setTyped] = useState(sourceTime);
-
-  const hours = ['01','02','03','04','05','06','07','08','09','10','11','12'];
-  const minutes = ['00','05','10','15','20','25','30','35','40','45','50','55'];
-  const periods = ['AM', 'PM'];
-
-  useEffect(() => {
-    if (!value) return;
-    const [nextH, nextRest] = value.split(':');
-    const [nextM, nextP] = nextRest.split(' ');
-    setH(nextH);
-    setM(nextM);
-    setP(nextP);
-    setTyped(value);
-  }, [value]);
-
-  useEffect(() => {
-    const nextValue = `${h}:${m} ${p}`;
-    setTyped(nextValue);
-    if (onChange) onChange(nextValue);
-  }, [h, m, p, onChange]);
-
-  const commitInput = (inputStr) => {
-    // Basic catch for formats like "8:00 am", "615pm", "12 00 P"
-    const mch = inputStr.match(/^(\d{1,2})[:\s]*(\d{0,2})\s*(a|p|am|pm)?$/i);
-    if (mch) {
-      let hh = mch[1].padStart(2, '0');
-      let mmRaw = mch[2] || '00';
-      
-      // Round minutes strictly to nearest 5
-      let mmNum = parseInt(mmRaw.padEnd(2, '0'), 10);
-      if (isNaN(mmNum)) mmNum = 0;
-      mmNum = Math.round(mmNum / 5) * 5;
-      if (mmNum === 60) mmNum = 55;
-      const mm = mmNum.toString().padStart(2, '0');
-      
-      let pp = (mch[3] || 'AM').toUpperCase();
-      if (pp.startsWith('A')) pp = 'AM';
-      else if (pp.startsWith('P')) pp = 'PM';
-      else pp = 'AM'; // default fallback
-      
-      // Validate hour against array
-      if (!hours.includes(hh)) hh = '12'; 
-      
-      setH(hh); setM(mm); setP(pp);
-      setTyped(`${hh}:${mm} ${pp}`);
-    } else {
-      // Revert if entirely unparseable
-      setTyped(`${h}:${m} ${p}`);
-    }
-  };
-
-  const handleType = (e) => setTyped(e.target.value);
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      commitInput(typed);
-      setIsOpen(false);
-    }
-  };
-
-  const handleBlur = () => commitInput(typed);
-
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (containerRef.current && !containerRef.current.contains(e.target)) {
-        setIsOpen(false);
-      }
-    };
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen]);
-
-  const dropdownRef = useRef(null);
-  useEffect(() => {
-    const el = dropdownRef.current;
-    if (!el) return;
-    const preventWheel = (e) => e.preventDefault();
-    // Aggressive catch-all to ensure page never scrolls while interacting with the picker body
-    el.addEventListener('wheel', preventWheel, { passive: false });
-    return () => el.removeEventListener('wheel', preventWheel);
-  }, [isOpen]);
-
-  return (
-    <div className="relative w-full" ref={containerRef}>
-      <div className="relative group">
-        <input 
-          type="text" 
-          value={typed}
-          onChange={handleType}
-          onKeyDown={handleKeyDown}
-          onFocus={() => setIsOpen(true)}
-          onBlur={handleBlur}
-          className="w-full border-none bg-surface-container-low hover:bg-surface-container-high rounded-xl p-3 pr-10 focus:ring-2 focus:ring-secondary/20 transition-all font-medium text-[15px] shadow-sm tracking-wide text-on-surface"
-        />
-        <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px] pointer-events-none">schedule</span>
-      </div>
-
-      {isOpen && (
-        <div 
-          ref={dropdownRef}
-          className="time-picker-dropdown absolute top-[105%] left-0 w-[220px] bg-surface-container-lowest border border-white/5 rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.7)] z-50 outline-none overflow-hidden"
-        >
-          <div className="grid grid-cols-3 pt-2 pb-0.5 px-0.5 border-b border-white/5 bg-white/[0.02]">
-            <div className="text-center text-[9px] font-bold text-on-surface-variant/70 tracking-tighter uppercase">Hr</div>
-            <div className="text-center text-[9px] font-bold text-on-surface-variant/70 tracking-tighter uppercase">Min</div>
-            <div className="text-center text-[9px] font-bold text-on-surface-variant/70 tracking-tighter uppercase">Per</div>
-          </div>
-          
-          <div className="flex relative h-[90px] bg-white/[0.01]">
-            {/* Embedded Active Focus Band directly intercepting the center */}
-            <div className="absolute top-[30px] left-1 right-1 h-[30px] bg-[#5468ff] rounded-md pointer-events-none border border-white/10 shadow-inner z-0"></div>
-
-            <WheelColumn list={hours} value={h} onChange={setH} />
-            <div className="w-[1px] bg-white/5 my-2 z-10"></div>
-            <WheelColumn list={minutes} value={m} onChange={setM} throttle={100} />
-            <div className="w-[1px] bg-white/5 my-2 z-10"></div>
-            <WheelColumn list={periods} value={p} onChange={setP} />
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
+import { useState, useEffect } from 'react';
 
 export default function Dashboard() {
-  const [isSurfaceMenuOpen, setIsSurfaceMenuOpen] = useState(false);
-  const [selectedSurface, setSelectedSurface] = useState('Dirt');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [afterHoursPhone, setAfterHoursPhone] = useState('');
-
-  const availableVehicleTypes = ['Tractor-Trailer', 'Trailer Only', 'Bobtail', 'Box Truck', 'Sedan/SUV', 'RV'];
-  const [vehicleTypes, setVehicleTypes] = useState(['Tractor-Trailer', 'Trailer Only']);
-
-  const toggleVehicleType = (type) => {
-    setVehicleTypes(prev => prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]);
-  };
-
-  const [is53ftFriendly, setIs53ftFriendly] = useState(true);
-  const [isDropTrailerAllowed, setIsDropTrailerAllowed] = useState(false);
-
-  const [dailyRate, setDailyRate] = useState('25.00');
-  const [weeklyRate, setWeeklyRate] = useState('140.00');
-  const [monthlyRate, setMonthlyRate] = useState('500.00');
-  const [isOpen24Hours, setIsOpen24Hours] = useState(true);
-  const [officeHoursStart, setOfficeHoursStart] = useState('08:00 AM');
-  const [officeHoursEnd, setOfficeHoursEnd] = useState('06:00 PM');
-  const [afterHoursParkingAllowed, setAfterHoursParkingAllowed] = useState(true);
-  const [afterHoursEntryAllowed, setAfterHoursEntryAllowed] = useState(true);
-  const [afterHoursExitAllowed, setAfterHoursExitAllowed] = useState(true);
-  const [hasAutomaticGate, setHasAutomaticGate] = useState(true);
-  const [hasGatedAccess, setHasGatedAccess] = useState(true);
-  const [hasSecurityCameras, setHasSecurityCameras] = useState(true);
-  const [isWellLit, setIsWellLit] = useState(true);
-  const [hasOnSiteSecurity, setHasOnSiteSecurity] = useState(false);
-
-  const handleCurrencyFormat = (val, setter) => {
-    let clean = val.replace(/[^\d.]/g, '');
-    const parts = clean.split('.');
-    if (parts.length > 2) clean = parts[0] + '.' + parts.slice(1).join('');
-    if (clean.includes('.')) {
-      const [whole, decimal] = clean.split('.');
-      clean = `${whole}.${decimal.slice(0, 2)}`;
-    }
-    setter(clean);
-  };
-
-  const [totalSpaces, setTotalSpaces] = useState('100');
-  const [availableNow, setAvailableNow] = useState('45');
-  const [isRealTimeTrackingEnabled, setIsRealTimeTrackingEnabled] = useState(false);
-
-  const [maxLength, setMaxLength] = useState('75');
-  const [maxStay, setMaxStay] = useState('No Limit');
-  const [isStayMenuOpen, setIsStayMenuOpen] = useState(false);
-  const stayOptions = ['No Limit', '24 Hours', '48 Hours', '1 Week', 'Monthly'];
-  const stayContainerRef = useRef(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (stayContainerRef.current && !stayContainerRef.current.contains(e.target)) setIsStayMenuOpen(false);
-    };
-    if (isStayMenuOpen) document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isStayMenuOpen]);
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000);
+    return () => clearInterval(timer);
+  }, []);
 
-  const handlePhoneFormat = (val, setter) => {
-    let coreVal = val;
-    if (coreVal.startsWith('+1 ')) coreVal = coreVal.substring(3);
-    else if (coreVal.startsWith('+1')) coreVal = coreVal.substring(2);
-    
-    let nums = coreVal.replace(/\D/g, '');
-    
-    if (nums.length === 11 && nums.startsWith('1')) nums = nums.substring(1);
-    nums = nums.substring(0, 10);
-    
-    if (nums.length === 0) {
-      setter('');
-      return;
-    }
-    
-    if (nums.length <= 3) setter(`(${nums}`);
-    else if (nums.length <= 6) setter(`(${nums.slice(0, 3)}) ${nums.slice(3)}`);
-    else setter(`(${nums.slice(0, 3)}) ${nums.slice(3, 6)}-${nums.slice(6, 10)}`);
-  };
-
-  const [locationName, setLocationName] = useState('North Houston Logistics Center');
-  const [address, setAddress] = useState('');
-  const [gateInstructions, setGateInstructions] = useState('');
-  const [defaultGateCode, setDefaultGateCode] = useState('');
-  const [securityNotes, setSecurityNotes] = useState('');
-  const [arrivalDirections, setArrivalDirections] = useState('');
-  const [whereToPark, setWhereToPark] = useState('');
-  const [lateArrivalInfo, setLateArrivalInfo] = useState('');
-  const [isPublishing, setIsPublishing] = useState(false);
-
-  const formatCurrency = (value) => {
-    if (!value) return '$0.00';
-    const numericValue = Number.parseFloat(value);
-    if (Number.isNaN(numericValue)) return '$0.00';
-    return `$${numericValue.toFixed(2)}`;
-  };
-
-  const quickSummaryHours = isOpen24Hours
-    ? 'Open 24/7'
-    : `${officeHoursStart || 'Not set'} - ${officeHoursEnd || 'Not set'}`;
-  const quickSummaryAfterHours = afterHoursParkingAllowed ? 'Allowed' : 'Not Allowed';
-  const quickSummarySurface = selectedSurface || 'Not set';
-  const quickSummary53ft = is53ftFriendly ? 'Supported' : 'Not Supported';
-  const quickSummaryPrice = formatCurrency(dailyRate);
-  const quickSummaryOpenSpaces = availableNow || 'Not set';
-  const securityBadges = [
-    hasGatedAccess ? 'Gated' : null,
-    hasSecurityCameras ? 'Cameras' : null
-  ].filter(Boolean);
-
-  const handlePublish = async (e) => {
-    if (e && e.preventDefault) e.preventDefault();
-
-    if (!locationName.trim() || !address.trim() || !phoneNumber.trim()) {
-      alert('Please fill out the Location Name, Address, and Phone Number before publishing.');
-      return;
-    }
-
-    setIsPublishing(true);
-    const dataToSave = {
-      location_name: locationName.trim(),
-      address: address.trim(),
-      phone_number: phoneNumber.trim(),
-      after_hours_phone: afterHoursPhone.trim(),
-      booking_type: 'Reservation Required', 
-      is_24_7: isOpen24Hours,
-      office_hours_start: officeHoursStart,
-      office_hours_end: officeHoursEnd,
-      after_hours_parking_allowed: afterHoursParkingAllowed,
-      after_hours_entry_allowed: afterHoursEntryAllowed,
-      after_hours_exit_allowed: afterHoursExitAllowed,
-      automatic_gate: hasAutomaticGate,
-      default_gate_code: defaultGateCode.trim(),
-      gate_instructions: gateInstructions.trim(),
-      permitted_vehicle_types: vehicleTypes,
-      is_53ft_friendly: is53ftFriendly,
-      is_drop_trailer_allowed: isDropTrailerAllowed,
-      max_vehicle_length: parseInt(maxLength) || null,
-      max_stay_duration: maxStay,
-      surface_type: selectedSurface,
-      security_gated_fenced: hasGatedAccess,
-      security_cameras: hasSecurityCameras,
-      security_well_lit: isWellLit,
-      security_notes: securityNotes.trim(),
-      daily_rate: parseFloat(dailyRate) || 0,
-      weekly_rate: parseFloat(weeklyRate) || 0,
-      monthly_rate: parseFloat(monthlyRate) || 0,
-      total_spaces: parseInt(totalSpaces) || 0,
-      available_spaces: parseInt(availableNow) || 0,
-      is_real_time_tracking_enabled: isRealTimeTrackingEnabled,
-      arrival_directions: arrivalDirections.trim(),
-      where_to_park: whereToPark.trim(),
-      late_arrival_contact_info: lateArrivalInfo.trim(),
-      security_on_site: hasOnSiteSecurity
-    };
-
-    try {
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
-      const apiUrl = `${baseUrl}/api/locations`;
-      
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dataToSave)
-      });
-      
-      const result = await response.json();
-      if (response.ok && result.success) {
-        alert('Data successfully pushed to Supabase!');
-        // Optional reset:
-        // setAddress(''); 
-        // setLocationName(''); 
-        // ...
-      } else {
-        alert('Failed to push data: ' + (result.error || response.statusText));
-      }
-    } catch (err) {
-      alert('Error publishing location: ' + err.message);
-    } finally {
-      setIsPublishing(false);
-    }
-  };
-  
   return (
-    <>
-
-
-<header className="flex flex-col md:flex-row justify-between items-end mb-12 gap-8">
-<div className="flex-1">
-<h1 className="text-5xl font-extrabold text-primary font-manrope tracking-tight mb-2">Location Setup</h1>
-<p className="text-on-surface-variant text-lg">Enter the key details to train your parking assistant for this yard.</p>
-</div>
-<div className="flex gap-3">
-<button className="px-6 py-3 rounded-xl font-semibold bg-surface-container-low text-primary hover:bg-surface-container-high transition-all active:scale-95">Save Draft</button>
-<button onClick={handlePublish} disabled={isPublishing} className="px-8 py-3 rounded-xl font-semibold bg-gradient-to-r from-primary to-primary-container text-white shadow-lg shadow-primary/10 hover:shadow-primary/20 transition-all active:scale-95 disabled:opacity-50">
-  {isPublishing ? 'Publishing...' : 'Publish Location'}
-</button>
-</div>
-</header>
-<div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-{/* Left Column: Main Form */}
-<div className="lg:col-span-8 space-y-10">
-{/* AI Quick Setup Card */}
-<section className="bg-primary-container text-white p-8 rounded-xl relative overflow-hidden">
-<div className="relative z-10">
-<div className="flex items-center gap-2 mb-6">
-<span className="material-symbols-outlined text-secondary-fixed">psychology</span>
-<h2 className="text-xl font-bold font-manrope">Most Asked Driver Questions</h2>
-</div>
-<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-<div className="space-y-4">
-{[
-  'After-hours parking?',
-  'Gated Access?',
-  'Security Cameras?',
-  '53ft Trailer Friendly?'
-].map((question, idx) => (
-  <label key={idx} className="flex items-center justify-between p-3.5 bg-white/[0.06] rounded-[14px] cursor-pointer hover:bg-white/[0.12] transition-colors border border-transparent hover:border-white/5 group shadow-sm">
-    <span className="text-sm text-slate-200 group-hover:text-white transition-colors font-medium">{question}</span>
-    <div className="relative flex items-center justify-center w-[22px] h-[22px] rounded-full bg-white/10 group-hover:bg-white/20 transition-all">
-      <input defaultChecked={idx === 0} className="peer absolute inset-0 opacity-0 cursor-pointer" type="checkbox"/>
-      <div className="absolute inset-0 rounded-full bg-[#2563eb] scale-0 peer-checked:scale-100 transition-transform duration-200 ease-out flex items-center justify-center shadow-[0_2px_8px_rgba(37,99,235,0.5)]">
-        <span className="material-symbols-outlined text-white text-[14px] font-bold">check</span>
-      </div>
-    </div>
-  </label>
-))}
-</div>
-<div className="grid grid-cols-2 gap-4">
-<div className="space-y-1.5 relative z-50">
-<label className="text-[10px] uppercase tracking-wider text-on-primary-container font-bold px-1">Surface Type</label>
-<div className="relative">
-<div 
-  onClick={() => setIsSurfaceMenuOpen(!isSurfaceMenuOpen)}
-  className="w-full bg-white/10 border border-transparent rounded-[14px] text-sm flex items-center justify-between px-3.5 py-2.5 cursor-pointer text-slate-200 hover:bg-white/[0.12] transition-colors shadow-sm relative z-50"
->
-<span>{selectedSurface}</span>
-<span className="material-symbols-outlined text-[18px] text-white/50">
-  {isSurfaceMenuOpen ? 'expand_less' : 'expand_more'}
-</span>
-</div>
-
-{isSurfaceMenuOpen && (
-  <>
-    <div className="fixed inset-0 z-40" onClick={() => setIsSurfaceMenuOpen(false)}></div>
-    <div className="absolute top-[calc(100%+6px)] left-0 w-full bg-[#0a1020]/40 backdrop-blur-2xl border border-white/10 rounded-[16px] shadow-[0_12px_40px_rgba(0,0,0,0.6)] overflow-hidden p-1.5 z-[60]">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[60%] h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-      <div className="flex flex-col gap-0.5 mt-1 relative z-10">
-        {['Asphalt', 'Concrete', 'Gravel', 'Dirt'].map((option) => (
-          <div 
-            key={option}
-            onClick={() => {
-              setSelectedSurface(option);
-              setIsSurfaceMenuOpen(false);
-            }}
-            className={`px-3 py-2 text-sm rounded-[10px] cursor-pointer transition-colors ${
-              selectedSurface === option 
-                ? 'bg-[#2563eb] text-white font-medium shadow-md' 
-                : 'text-slate-300 hover:bg-white/10 hover:text-white'
-            }`}
-          >
-            {option}
+    <div className="w-full">
+      {/* Page Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
+        <div>
+          <span className="inline-block px-3 py-1 bg-[#050f36] text-white text-[10px] font-black tracking-widest rounded-full mb-3 uppercase">LOT OPERATIONS</span>
+          <h1 className="text-4xl md:text-5xl font-black text-[#050f36] leading-tight flex items-center cursor-pointer group font-manrope">
+            Dashboard - Jacksonville Lot
+            <span className="material-symbols-outlined ml-2 transition-transform group-hover:translate-y-1">expand_more</span>
+          </h1>
+          <p className="text-[#45464e] font-medium mt-1">Real-time overview of your parking operations</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="bg-green-100 text-green-800 px-3 py-2 rounded-lg flex items-center gap-2 font-bold text-xs uppercase tracking-wide">
+            <span className="w-2 h-2 bg-green-600 rounded-full animate-pulse"></span>
+            Live
           </div>
-        ))}
+          <div className="bg-[#f1f4fb] px-4 py-2 rounded-lg flex items-center gap-3 border border-transparent">
+            <span className="material-symbols-outlined text-[#0058be]">calendar_today</span>
+            <span className="font-semibold text-sm">Today</span>
+            <span className="material-symbols-outlined text-sm">expand_more</span>
+          </div>
+          <button className="bg-white hover:bg-[#e5e8ef] transition-colors px-5 py-2 rounded-lg flex items-center gap-2 font-bold text-sm shadow-sm border border-[#c6c5cf]/20">
+            <span className="material-symbols-outlined text-sm">download</span>
+            Export Report
+          </button>
+        </div>
       </div>
-    </div>
-  </>
-)}
-</div>
-</div>
-<div className="space-y-1">
-<label className="text-[10px] uppercase tracking-wider text-on-primary-container font-bold">Overnight Price</label>
-<div className="relative flex items-center">
-<span className="absolute left-3.5 text-white/50 text-sm pointer-events-none">$</span>
-<input
-  className="w-full bg-white/10 border-transparent rounded-lg text-sm pl-7 focus:ring-secondary focus:border-secondary placeholder:text-white/40"
-  placeholder="25.00"
-  type="text"
-  inputMode="decimal"
-  value={dailyRate}
-  onChange={(e) => handleCurrencyFormat(e.target.value, setDailyRate)}
-/>
-</div>
-</div>
-<div className="space-y-1">
-<label className="text-[10px] uppercase tracking-wider text-on-primary-container font-bold">Available Spaces</label>
-<input
-  className="w-full bg-white/10 border-transparent rounded-lg text-sm focus:ring-secondary focus:border-secondary placeholder:text-white/40"
-  placeholder="45"
-  type="text"
-  inputMode="numeric"
-  pattern="[0-9]*"
-  value={availableNow}
-  onChange={(e) => setAvailableNow(e.target.value.replace(/\D/g, ''))}
-/>
-</div>
-<div className="space-y-1">
-<label className="text-[10px] uppercase tracking-wider text-on-primary-container font-bold">Late Arrival Info</label>
-<input
-  className="w-full bg-white/10 border-transparent rounded-lg text-sm focus:ring-secondary focus:border-secondary"
-  placeholder="Gate Code: 1234"
-  type="text"
-  value={lateArrivalInfo}
-  onChange={(e) => setLateArrivalInfo(e.target.value)}
-/>
-</div>
-</div>
-</div>
-</div>
-<div className="absolute top-0 right-0 w-64 h-64 bg-secondary/10 rounded-full -mr-20 -mt-20 blur-3xl"></div>
-</section>
-{/* Section 1: BASIC INFO */}
-<div className="bg-surface-container-lowest p-8 rounded-xl shadow-[0_12px_40px_rgba(24,28,33,0.04)]">
-<h3 className="text-lg font-bold font-manrope text-primary mb-6 flex items-center gap-2">
-<span className="w-8 h-8 rounded-lg bg-surface-container-low flex items-center justify-center text-secondary font-bold text-sm">01</span>
-                        BASIC INFO
-                    </h3>
-<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-<div className="space-y-2 col-span-2">
-<label className="text-xs font-bold text-on-surface-variant uppercase tracking-wide">Location Name <span className="text-red-500">*</span></label>
-<input value={locationName} onChange={(e) => setLocationName(e.target.value)} className="w-full border-none bg-surface-container-low rounded-lg p-3 focus:ring-2 focus:ring-secondary/20 transition-all" placeholder="North Houston Logistics Center" type="text"/>
-</div>
-<div className="space-y-2 col-span-2">
-<label className="text-xs font-bold text-on-surface-variant uppercase tracking-wide">Address <span className="text-red-500">*</span></label>
-<div className="relative">
-<input value={address} onChange={(e) => setAddress(e.target.value)} className="w-full border-none bg-surface-container-low rounded-lg p-3 pl-10 focus:ring-2 focus:ring-secondary/20 transition-all" placeholder="Search for address..." type="text"/>
-<span className="material-symbols-outlined absolute left-3 top-3 text-outline text-sm">location_on</span>
-</div>
-</div>
-<div className="space-y-2">
-<label className="text-xs font-bold text-on-surface-variant uppercase tracking-wide">Phone Number</label>
-<div className="relative flex items-center">
-<span className="absolute left-3 text-on-surface text-[15px] pointer-events-none">+1</span>
-<input 
-  value={phoneNumber}
-  onChange={(e) => handlePhoneFormat(e.target.value, setPhoneNumber)}
-  className="w-full border-none bg-surface-container-low rounded-lg py-3 pr-3 pl-[34px] focus:ring-2 focus:ring-secondary/20" 
-  placeholder="(555) 000-0000" 
-  type="tel"
-/>
-</div>
-</div>
-<div className="space-y-2">
-<label className="text-xs font-bold text-on-surface-variant uppercase tracking-wide">After-Hours Support</label>
-<div className="relative flex items-center">
-<span className="absolute left-3 text-on-surface text-[15px] pointer-events-none">+1</span>
-<input 
-  value={afterHoursPhone}
-  onChange={(e) => handlePhoneFormat(e.target.value, setAfterHoursPhone)}
-  className="w-full border-none bg-surface-container-low rounded-lg py-3 pr-3 pl-[34px] focus:ring-2 focus:ring-secondary/20" 
-  placeholder="(555) 000-0000" 
-  type="tel"
-/>
-</div>
-</div>
-<div className="col-span-2 flex flex-wrap items-center gap-6 p-4 bg-surface-container-low rounded-xl">
-<span className="text-sm font-medium text-primary">Booking Type:</span>
-<label className="flex items-center gap-2.5 cursor-pointer group">
-<div className="relative flex items-center justify-center w-5 h-5">
-<input defaultChecked={true} className="peer absolute inset-0 opacity-0 cursor-pointer z-10" name="booking" type="radio"/>
-<div className="absolute inset-0 rounded-full border-2 border-on-surface-variant/30 peer-checked:border-secondary peer-checked:bg-secondary/10 transition-colors group-hover:border-secondary/60"></div>
-<div className="absolute inset-[4px] rounded-full bg-secondary scale-0 peer-checked:scale-100 transition-transform duration-200"></div>
-</div>
-<span className="text-sm font-medium text-on-surface-variant group-hover:text-primary transition-colors">Reservation Required</span>
-</label>
-<label className="flex items-center gap-2.5 cursor-pointer group">
-<div className="relative flex items-center justify-center w-5 h-5">
-<input className="peer absolute inset-0 opacity-0 cursor-pointer z-10" name="booking" type="radio"/>
-<div className="absolute inset-0 rounded-full border-2 border-on-surface-variant/30 peer-checked:border-secondary peer-checked:bg-secondary/10 transition-colors group-hover:border-secondary/60"></div>
-<div className="absolute inset-[4px] rounded-full bg-secondary scale-0 peer-checked:scale-100 transition-transform duration-200"></div>
-</div>
-<span className="text-sm font-medium text-on-surface-variant group-hover:text-primary transition-colors">First Come, First Served (FCFS)</span>
-</label>
-</div>
-</div>
-</div>
-{/* Section 2: HOURS & ACCESS */}
-<div className="bg-surface-container-lowest p-8 rounded-xl shadow-[0_12px_40px_rgba(24,28,33,0.04)]">
-<div className="flex justify-between items-center mb-6">
-<h3 className="text-lg font-bold font-manrope text-primary flex items-center gap-2">
-<span className="w-8 h-8 rounded-lg bg-surface-container-low flex items-center justify-center text-secondary font-bold text-sm">02</span>
-                            HOURS &amp; ACCESS
-                        </h3>
-<label className="flex items-center gap-3 cursor-pointer group">
-<span className="text-sm font-semibold text-primary">Open 24/7</span>
-<div className="relative inline-flex items-center">
-<input checked={isOpen24Hours} onChange={() => setIsOpen24Hours(!isOpen24Hours)} className="sr-only peer" type="checkbox"/>
-<div className="w-11 h-6 bg-surface-container-high border border-outline-variant/30 rounded-full peer peer-checked:bg-secondary peer-checked:border-secondary transition-all duration-200 ease-in-out"></div>
-<div className="absolute left-[2px] top-[2px] bg-white border border-gray-300 rounded-full h-[20px] w-[20px] transition-transform duration-200 ease-in-out peer-checked:translate-x-full peer-checked:border-transparent shadow-sm"></div>
-</div>
-</label>
-</div>
-<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-<div className="space-y-4">
-<label className="text-xs font-bold text-on-surface-variant uppercase tracking-wide">Office Hours</label>
-<div className="grid grid-cols-2 gap-3 relative z-40">
-<WheelTimePicker value={officeHoursStart} onChange={setOfficeHoursStart} initialTime="08:00 AM" />
-<WheelTimePicker value={officeHoursEnd} onChange={setOfficeHoursEnd} initialTime="06:00 PM" />
-</div>
-<div className="pt-4 space-y-3">
-<p className="text-sm font-semibold text-primary">After-hours capabilities:</p>
-<label className="flex items-center gap-3 text-sm text-on-surface-variant cursor-pointer group w-fit transition-colors hover:text-on-surface">
-  <div className="relative flex items-center justify-center w-5 h-5 rounded-full bg-surface-container-low border border-outline-variant/50 group-hover:border-secondary/70 transition-colors">
-    <input checked={afterHoursParkingAllowed} onChange={() => setAfterHoursParkingAllowed(!afterHoursParkingAllowed)} className="peer absolute inset-0 opacity-0 cursor-pointer" type="checkbox"/>
-    <div className="absolute inset-0 rounded-full bg-secondary scale-0 peer-checked:scale-100 transition-transform"></div>
-    <span className="material-symbols-outlined absolute text-[12px] text-white opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
-  </div>
-  <span className="font-medium">After-hours Parking Allowed</span>
-</label>
-<label className="flex items-center gap-3 text-sm text-on-surface-variant cursor-pointer group w-fit transition-colors hover:text-on-surface">
-  <div className="relative flex items-center justify-center w-5 h-5 rounded-full bg-surface-container-low border border-outline-variant/50 group-hover:border-secondary/70 transition-colors">
-    <input checked={afterHoursEntryAllowed} onChange={() => setAfterHoursEntryAllowed(!afterHoursEntryAllowed)} className="peer absolute inset-0 opacity-0 cursor-pointer" type="checkbox"/>
-    <div className="absolute inset-0 rounded-full bg-secondary scale-0 peer-checked:scale-100 transition-transform"></div>
-    <span className="material-symbols-outlined absolute text-[12px] text-white opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
-  </div>
-  <span className="font-medium">After-hours Entry</span>
-</label>
-<label className="flex items-center gap-3 text-sm text-on-surface-variant cursor-pointer group w-fit transition-colors hover:text-on-surface">
-  <div className="relative flex items-center justify-center w-5 h-5 rounded-full bg-surface-container-low border border-outline-variant/50 group-hover:border-secondary/70 transition-colors">
-    <input checked={afterHoursExitAllowed} onChange={() => setAfterHoursExitAllowed(!afterHoursExitAllowed)} className="peer absolute inset-0 opacity-0 cursor-pointer" type="checkbox"/>
-    <div className="absolute inset-0 rounded-full bg-secondary scale-0 peer-checked:scale-100 transition-transform"></div>
-    <span className="material-symbols-outlined absolute text-[12px] text-white opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
-  </div>
-  <span className="font-medium">After-hours Exit</span>
-</label>
-</div>
-</div>
-<div className="space-y-4 p-6 bg-surface-container-low rounded-xl">
-<div className="flex items-center gap-2 mb-2">
-<span className="material-symbols-outlined text-secondary text-lg">door_front</span>
-<span className="text-sm font-bold text-primary">Gate Controls</span>
-</div>
-<label className="flex items-center gap-3 text-sm text-on-surface-variant font-medium cursor-pointer group w-fit">
-<div className="relative flex items-center justify-center w-5 h-5 rounded bg-surface-container-low border border-outline-variant/50 group-hover:border-secondary/70 transition-colors">
-<input checked={hasAutomaticGate} onChange={() => setHasAutomaticGate(!hasAutomaticGate)} className="peer absolute inset-0 opacity-0 cursor-pointer" type="checkbox"/>
-<div className="absolute inset-0 rounded bg-secondary scale-0 peer-checked:scale-100 transition-transform duration-200 flex items-center justify-center shadow-[0_2px_8px_rgba(37,99,235,0.4)]">
-<span className="material-symbols-outlined text-white text-[14px] font-bold">check</span>
-</div>
-</div>
-<span className="group-hover:text-primary transition-colors">Automatic Gate</span>
-</label>
-<div className="space-y-2">
-<label className="text-[10px] font-bold text-on-surface-variant uppercase">Default Gate Code</label>
-<input value={defaultGateCode} onChange={(e) => setDefaultGateCode(e.target.value)} className="w-full border-none bg-white rounded-lg p-3 focus:ring-2 focus:ring-secondary/20" placeholder="1234#" type="text"/>
-</div>
-<div className="space-y-2">
-<label className="text-[10px] font-bold text-on-surface-variant uppercase">Gate Instructions</label>
-<textarea value={gateInstructions} onChange={(e) => setGateInstructions(e.target.value)} className="w-full border-none bg-white rounded-lg p-3 text-sm focus:ring-2 focus:ring-secondary/20" placeholder="Pull up close to the sensor..." rows="2"></textarea>
-</div>
-</div>
-</div>
-</div>
-{/* Section 3: PARKING FIT */}
-<div className="bg-surface-container-lowest p-8 rounded-xl shadow-[0_12px_40px_rgba(24,28,33,0.04)]">
-<h3 className="text-lg font-bold font-manrope text-primary mb-6 flex items-center gap-2">
-<span className="w-8 h-8 rounded-lg bg-surface-container-low flex items-center justify-center text-secondary font-bold text-sm">03</span>
-                        PARKING FIT
-                    </h3>
-<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-<div className="space-y-4">
-<label className="text-xs font-bold text-on-surface-variant uppercase tracking-wide">Permitted Vehicle Types</label>
-<div className="flex flex-wrap gap-2">
-  {availableVehicleTypes.map(type => (
-    <button
-      key={type}
-      onClick={() => toggleVehicleType(type)}
-      className={`px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 ${
-        vehicleTypes.includes(type)
-          ? 'bg-secondary text-white shadow-md scale-100 hover:bg-secondary/90'
-          : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'
-      }`}
-    >
-      {type}
-    </button>
-  ))}
-</div>
-<div className="pt-4 flex flex-col gap-3">
-  <label className="flex items-center justify-between cursor-pointer group p-2 -mx-2 rounded-lg hover:bg-surface-container-low transition-colors">
-    <span className="text-sm font-medium text-primary group-hover:text-on-surface transition-colors">53ft Trailer Friendly?</span>
-    <div className="relative flex items-center justify-center w-5 h-5 rounded-full bg-surface-container-low border border-outline-variant/50 group-hover:border-secondary/70 transition-colors flex-shrink-0">
-      <input checked={is53ftFriendly} onChange={() => setIs53ftFriendly(!is53ftFriendly)} className="peer absolute inset-0 opacity-0 cursor-pointer" type="checkbox"/>
-      <div className="absolute inset-0 rounded-full bg-secondary scale-0 peer-checked:scale-100 transition-transform"></div>
-      <span className="material-symbols-outlined absolute text-[12px] text-white opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
-    </div>
-  </label>
-  <label className="flex items-center justify-between cursor-pointer group p-2 -mx-2 rounded-lg hover:bg-surface-container-low transition-colors">
-    <span className="text-sm font-medium text-primary group-hover:text-on-surface transition-colors">Drop Trailer Allowed?</span>
-    <div className="relative flex items-center justify-center w-5 h-5 rounded-full bg-surface-container-low border border-outline-variant/50 group-hover:border-secondary/70 transition-colors flex-shrink-0">
-      <input checked={isDropTrailerAllowed} onChange={() => setIsDropTrailerAllowed(!isDropTrailerAllowed)} className="peer absolute inset-0 opacity-0 cursor-pointer" type="checkbox"/>
-      <div className="absolute inset-0 rounded-full bg-secondary scale-0 peer-checked:scale-100 transition-transform"></div>
-      <span className="material-symbols-outlined absolute text-[12px] text-white opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
-    </div>
-  </label>
-</div>
-</div>
-<div className="grid grid-cols-1 gap-4">
-<div className="space-y-2">
-<label className="text-[10px] font-bold text-on-surface-variant uppercase">Max Vehicle Length</label>
-<div className="relative group">
-  <input 
-    type="text" 
-    value={maxLength}
-    onChange={(e) => setMaxLength(e.target.value.replace(/\D/g, ''))}
-    className="w-full border-none bg-surface-container-low hover:bg-surface-container-high rounded-xl p-3 pr-8 focus:ring-2 focus:ring-secondary/20 transition-all font-medium text-[15px] shadow-sm tracking-wide text-on-surface"
-  />
-  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant/70 font-medium text-sm pointer-events-none">ft</span>
-</div>
-</div>
-<div className="space-y-2" ref={stayContainerRef}>
-<label className="text-[10px] font-bold text-on-surface-variant uppercase">Max Stay Duration</label>
-<div className="relative w-full">
-  <button 
-    type="button" 
-    onClick={() => setIsStayMenuOpen(!isStayMenuOpen)}
-    className="w-full flex items-center justify-between border-none bg-surface-container-low hover:bg-surface-container-high rounded-xl p-3 focus:ring-2 focus:ring-secondary/20 transition-all font-medium text-[15px] shadow-sm tracking-wide text-on-surface"
-  >
-    <span>{maxStay}</span>
-    <span className={`material-symbols-outlined text-on-surface-variant text-[18px] transition-transform duration-200 ${isStayMenuOpen ? 'rotate-180' : ''}`}>expand_more</span>
-  </button>
-  {isStayMenuOpen && (
-    <div className="absolute top-[105%] left-0 w-full bg-surface-container-lowest border border-white/5 rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.7)] z-50 overflow-hidden transform transition-all duration-200 p-1">
-      {stayOptions.map(opt => (
-        <button
-          key={opt}
-          onClick={() => { setMaxStay(opt); setIsStayMenuOpen(false); }}
-          className={`w-full flex items-center px-4 py-2.5 rounded-lg text-[14px] font-medium transition-colors ${
-            maxStay === opt 
-              ? 'bg-[#5468ff]/10 text-[#5468ff]' 
-              : 'text-on-surface hover:bg-surface-container-low'
-          }`}
-        >
-          {opt}
-        </button>
-      ))}
-    </div>
-  )}
-</div>
-</div>
-</div>
-</div>
-</div>
-{/* Section 4: LOT & SAFETY */}
-<div className="bg-surface-container-lowest p-8 rounded-xl shadow-[0_12px_40px_rgba(24,28,33,0.04)]">
-<h3 className="text-lg font-bold font-manrope text-primary mb-6 flex items-center gap-2">
-<span className="w-8 h-8 rounded-lg bg-surface-container-low flex items-center justify-center text-secondary font-bold text-sm">04</span>
-                        LOT &amp; SAFETY
-                    </h3>
-<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-<div className="space-y-4 col-span-1">
-<label className="text-xs font-bold text-on-surface-variant uppercase tracking-wide">Surface Type</label>
-<div className="space-y-2">
-{['Asphalt', 'Concrete', 'Gravel', 'Dirt'].map(surface => (
-<label key={surface} className="flex items-center gap-3 p-3 bg-surface-container-low rounded-lg cursor-pointer hover:bg-surface-container-high transition-colors">
-<input 
-  checked={selectedSurface === surface}
-  onChange={() => setSelectedSurface(surface)}
-  className="text-secondary cursor-pointer" 
-  name="surface" 
-  type="radio"
-/>
-<span className="text-sm">{surface}</span>
-</label>
-))}
-</div>
-</div>
-<div className="md:col-span-2 grid grid-cols-2 gap-4">
-<div className="p-4 border-2 border-surface-container-high rounded-xl space-y-4">
-<p className="text-xs font-bold text-primary uppercase">Security Features</p>
-<label className="flex items-center justify-between text-sm">
-<span>Gated &amp; Fenced</span>
-<input checked={hasGatedAccess} onChange={() => setHasGatedAccess(!hasGatedAccess)} className="rounded text-secondary" type="checkbox"/>
-</label>
-<label className="flex items-center justify-between text-sm">
-<span>Security Cameras</span>
-<input checked={hasSecurityCameras} onChange={() => setHasSecurityCameras(!hasSecurityCameras)} className="rounded text-secondary" type="checkbox"/>
-</label>
-<label className="flex items-center justify-between text-sm">
-<span>Well-Lit Lot</span>
-<input checked={isWellLit} onChange={() => setIsWellLit(!isWellLit)} className="rounded text-secondary" type="checkbox"/>
-</label>
-<label className="flex items-center justify-between text-sm">
-<span>On-site Security</span>
-<input checked={hasOnSiteSecurity} onChange={() => setHasOnSiteSecurity(!hasOnSiteSecurity)} className="rounded text-secondary" type="checkbox"/>
-</label>
-</div>
-<div className="space-y-2">
-<label className="text-xs font-bold text-on-surface-variant uppercase">Security Notes</label>
-<textarea value={securityNotes} onChange={(e) => setSecurityNotes(e.target.value)} className="w-full border-none bg-surface-container-low rounded-lg p-3 text-sm focus:ring-2 focus:ring-secondary/20" placeholder="Mention roving patrols or keycard access details..." rows="6"></textarea>
-</div>
-</div>
-</div>
-</div>
-{/* Section 5: PRICING & AVAILABILITY */}
-<div className="bg-surface-container-lowest p-8 rounded-xl shadow-[0_12px_40px_rgba(24,28,33,0.04)]">
-<h3 className="text-lg font-bold font-manrope text-primary mb-6 flex items-center gap-2">
-<span className="w-8 h-8 rounded-lg bg-surface-container-low flex items-center justify-center text-secondary font-bold text-sm">05</span>
-                        PRICING &amp; AVAILABILITY
-                    </h3>
-<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-<div className="space-y-4">
-<div className="space-y-2">
-<label className="text-[10px] font-bold text-on-surface-variant uppercase">Daily Rate</label>
-<div className="relative">
-<span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant font-medium pointer-events-none">$</span>
-<input 
-  className="w-full border-none bg-surface-container-low rounded-lg p-3 pl-7 font-medium text-on-surface focus:ring-2 focus:ring-secondary/20 transition-all" 
-  type="text" 
-  value={dailyRate}
-  onChange={(e) => handleCurrencyFormat(e.target.value, setDailyRate)}
-  placeholder="0.00"
-/>
-</div>
-</div>
-<div className="space-y-2">
-<label className="text-[10px] font-bold text-on-surface-variant uppercase">Weekly Rate</label>
-<div className="relative">
-<span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant font-medium pointer-events-none">$</span>
-<input 
-  className="w-full border-none bg-surface-container-low rounded-lg p-3 pl-7 font-medium text-on-surface focus:ring-2 focus:ring-secondary/20 transition-all" 
-  type="text" 
-  value={weeklyRate}
-  onChange={(e) => handleCurrencyFormat(e.target.value, setWeeklyRate)}
-  placeholder="0.00"
-/>
-</div>
-</div>
-<div className="space-y-2">
-<label className="text-[10px] font-bold text-on-surface-variant uppercase">Monthly Rate</label>
-<div className="relative">
-<span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant font-medium pointer-events-none">$</span>
-<input 
-  className="w-full border-none bg-surface-container-low rounded-lg p-3 pl-7 font-medium text-on-surface focus:ring-2 focus:ring-secondary/20 transition-all" 
-  type="text" 
-  value={monthlyRate}
-  onChange={(e) => handleCurrencyFormat(e.target.value, setMonthlyRate)}
-  placeholder="0.00"
-/>
-</div>
-</div>
-</div>
-<div className="md:col-span-2 space-y-6">
-<div className="grid grid-cols-2 gap-4">
-<div className="p-6 bg-secondary-container/5 rounded-xl border border-secondary/10 hover:border-secondary/20 transition-colors">
-<label className="text-[10px] font-bold text-secondary uppercase block mb-1">Total Spaces</label>
-<input
-  className="w-full bg-transparent border-none text-2xl font-bold text-primary p-0 focus:ring-0 appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-  type="text"
-  inputMode="numeric"
-  value={totalSpaces}
-  onChange={(e) => setTotalSpaces(e.target.value.replace(/\D/g, ''))}
-/>
-</div>
-<div className="p-6 bg-secondary/5 rounded-xl border border-secondary/10 hover:border-secondary/20 transition-colors">
-<label className="text-[10px] font-bold text-secondary uppercase block mb-1">Available Now</label>
-<input
-  className="w-full bg-transparent border-none text-2xl font-bold text-primary p-0 focus:ring-0 appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-  type="text"
-  inputMode="numeric"
-  value={availableNow}
-  onChange={(e) => setAvailableNow(e.target.value.replace(/\D/g, ''))}
-/>
-</div>
-</div>
-<div onClick={() => setIsRealTimeTrackingEnabled(!isRealTimeTrackingEnabled)} className="flex items-center justify-between p-4 bg-surface-container-low rounded-xl transition-colors hover:bg-surface-container-high cursor-pointer">
-  <div>
-    <p className="text-sm font-bold text-primary">Enable Real-time Tracking</p>
-    <p className="text-xs text-on-surface-variant">Update availability automatically via AI logs.</p>
-  </div>
-  <div className="relative inline-flex items-center justify-center cursor-pointer group">
-    <input checked={isRealTimeTrackingEnabled} readOnly className="sr-only peer" type="checkbox"/>
-    <div className="w-11 h-6 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
-    {/* Tooltip Disclaimer */}
-    <div className="absolute bottom-[calc(100%+16px)] left-1/2 -translate-x-1/2 w-[280px] p-3.5 bg-surface-container-highest border border-white/5 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.4)] z-50 opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 translate-y-2 group-hover:translate-y-0 cursor-default">
-      <div className="flex gap-2.5">
-        <span className="material-symbols-outlined text-secondary text-[18px] shrink-0">info</span>
-        <p className="text-[11px] leading-[1.6] text-on-surface font-medium text-left">
-          Enabling live tracking requires all lot management activities to be handled within the system.
-        </p>
-      </div>
-      {/* Tooltip Arrow */}
-      <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-surface-container-highest rotate-45 border-r border-b border-white/5"></div>
-    </div>
-  </div>
-</div>
-</div>
-</div>
-</div>
-{/* Section 6: ARRIVAL INSTRUCTIONS */}
-<div className="bg-surface-container-lowest p-8 rounded-xl shadow-[0_12px_40px_rgba(24,28,33,0.04)]">
-<h3 className="text-lg font-bold font-manrope text-primary mb-6 flex items-center gap-2">
-<span className="w-8 h-8 rounded-lg bg-surface-container-low flex items-center justify-center text-secondary font-bold text-sm">06</span>
-                        ARRIVAL INSTRUCTIONS
-                    </h3>
-<div className="space-y-6">
-<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-<div className="space-y-2">
-<label className="text-xs font-bold text-on-surface-variant uppercase">Arrival Directions</label>
-<textarea value={arrivalDirections} onChange={(e) => setArrivalDirections(e.target.value)} className="w-full border-none bg-surface-container-low rounded-lg p-3 text-sm focus:ring-2 focus:ring-secondary/20" placeholder="Take Exit 45, turn right at the Texaco..." rows="4"></textarea>
-</div>
-<div className="space-y-2">
-<label className="text-xs font-bold text-on-surface-variant uppercase">Where to Park</label>
-<textarea value={whereToPark} onChange={(e) => setWhereToPark(e.target.value)} className="w-full border-none bg-surface-container-low rounded-lg p-3 text-sm focus:ring-2 focus:ring-secondary/20" placeholder="Park in rows 5-10 against the back fence..." rows="4"></textarea>
-</div>
-</div>
-<div className="p-6 bg-tertiary-container/5 border border-tertiary/10 rounded-xl flex items-start gap-4">
-<span className="material-symbols-outlined text-on-tertiary-container">info</span>
-<div className="space-y-2 flex-1">
-<label className="text-xs font-bold text-on-tertiary-container uppercase">Late Arrival/After-Hours Contact</label>
-<p className="text-xs text-on-surface-variant mb-2">Instructions for drivers arriving when the office is closed.</p>
-<input value={lateArrivalInfo} onChange={(e) => setLateArrivalInfo(e.target.value)} className="w-full border-none bg-white rounded-lg p-3 text-sm focus:ring-2 focus:ring-secondary/20" placeholder="Call (555) 123-4567 for gate override or use the AI chat." type="text"/>
-</div>
-</div>
-</div>
-</div>
-</div>
-{/* Right Column: Sticky Sidebar */}
-<div className="lg:col-span-4 space-y-6 sticky top-28">
-{/* Sidebar Component Implementation */}
-<div className="flex flex-col gap-6 shrink-0">
-{/* Card 1: QUICK SUMMARY */}
-<div className="bg-surface-container-low dark:bg-slate-900 rounded-xl p-6 shadow-sm">
-<div className="flex items-center gap-2 mb-6">
-<span className="material-symbols-outlined text-secondary">dashboard_customize</span>
-<h2 className="text-lg font-bold font-manrope text-primary">Quick Summary</h2>
-</div>
-<div className="space-y-4">
-<div className="flex items-center justify-between pb-3 border-b border-outline-variant/20">
-<span className="text-xs font-medium text-on-surface-variant">Hours</span>
-<span key={quickSummaryHours} className="text-xs font-bold text-primary transition-all duration-200 ease-out animate-[fadeIn_.18s_ease-out]">{quickSummaryHours}</span>
-</div>
-<div className="flex items-center justify-between pb-3 border-b border-outline-variant/20">
-<span className="text-xs font-medium text-on-surface-variant">After-hours</span>
-<span key={quickSummaryAfterHours} className="text-xs font-bold text-secondary transition-all duration-200 ease-out animate-[fadeIn_.18s_ease-out]">{quickSummaryAfterHours}</span>
-</div>
-<div className="flex items-center justify-between pb-3 border-b border-outline-variant/20">
-<span className="text-xs font-medium text-on-surface-variant">Surface</span>
-<span key={quickSummarySurface} className="text-xs font-bold text-primary transition-all duration-200 ease-out animate-[fadeIn_.18s_ease-out]">{quickSummarySurface}</span>
-</div>
-<div className="flex items-center justify-between pb-3 border-b border-outline-variant/20">
-<span className="text-xs font-medium text-on-surface-variant">53ft Trailer</span>
-<span key={quickSummary53ft} className="text-xs font-bold text-secondary transition-all duration-200 ease-out animate-[fadeIn_.18s_ease-out]">{quickSummary53ft}</span>
-</div>
-<div className="flex items-center justify-between pb-3 border-b border-outline-variant/20">
-<span className="text-xs font-medium text-on-surface-variant">Security</span>
-<span className="flex gap-2">
-{securityBadges.length > 0 ? securityBadges.map((badge) => (
-  <span key={badge} className="text-[10px] bg-white px-2 py-0.5 rounded font-bold transition-all duration-200 ease-out animate-[fadeIn_.18s_ease-out]">{badge}</span>
-)) : <span className="text-[10px] bg-surface-container-high px-2 py-0.5 rounded font-bold text-on-surface-variant transition-all duration-200 ease-out animate-[fadeIn_.18s_ease-out]">Not set</span>}
-</span>
-</div>
-<div className="flex items-center justify-between pt-2">
-<div className="flex flex-col">
-<span className="text-[10px] text-on-surface-variant font-bold uppercase">Price</span>
-<span key={quickSummaryPrice} className="text-xl font-extrabold text-primary font-manrope transition-all duration-200 ease-out animate-[fadeIn_.18s_ease-out]">{quickSummaryPrice}</span>
-</div>
-<div className="flex flex-col items-end">
-<span className="text-[10px] text-on-surface-variant font-bold uppercase">Open Spaces</span>
-<span key={quickSummaryOpenSpaces} className="text-xl font-extrabold text-secondary font-manrope transition-all duration-200 ease-out animate-[fadeIn_.18s_ease-out]">{quickSummaryOpenSpaces}</span>
-</div>
-</div>
-</div>
-</div>
-{/* Card 2: AI RESPONSE PREVIEW */}
-<div className="bg-surface-container-low dark:bg-slate-900 rounded-xl p-6 shadow-sm overflow-hidden relative">
-<div className="flex items-center gap-2 mb-6">
-<span className="material-symbols-outlined text-secondary">psychology</span>
-<h2 className="text-lg font-bold font-manrope text-primary">AI Response Preview</h2>
-</div>
-<div className="space-y-6 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-{/* Question 1 */}
-<div className="space-y-2">
-<div className="flex items-center gap-2">
-<span className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
-<span className="material-symbols-outlined text-[14px] text-on-surface-variant">person</span>
-</span>
-<p className="text-[11px] font-bold text-on-surface-variant uppercase">Driver Question</p>
-</div>
-<div className="bg-white p-3 rounded-lg rounded-tl-none shadow-sm">
-<p className="text-xs italic text-on-surface">"Can I park after 11 PM? My load is running late."</p>
-</div>
-<div className="flex items-center gap-2 justify-end">
-<p className="text-[11px] font-bold text-secondary uppercase text-right">ParkLog AI</p>
-<span className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-<span className="material-symbols-outlined text-[14px] text-white">smart_toy</span>
-</span>
-</div>
-<div className="bg-secondary text-white p-3 rounded-lg rounded-tr-none shadow-sm ml-6">
-<p className="text-xs">"Yes, you can park after hours. Just use the gate code 1234# and proceed to rows 5-10. Safe travels!"</p>
-</div>
-</div>
-{/* Question 2 */}
-<div className="space-y-2">
-<div className="flex items-center gap-2">
-<span className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
-<span className="material-symbols-outlined text-[14px] text-on-surface-variant">person</span>
-</span>
-<p className="text-[11px] font-bold text-on-surface-variant uppercase">Driver Question</p>
-</div>
-<div className="bg-white p-3 rounded-lg rounded-tl-none shadow-sm">
-<p className="text-xs italic text-on-surface">"Is the lot safe for high-value loads?"</p>
-</div>
-<div className="flex items-center gap-2 justify-end">
-<p className="text-[11px] font-bold text-secondary uppercase text-right">ParkLog AI</p>
-<span className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-<span className="material-symbols-outlined text-[14px] text-white">smart_toy</span>
-</span>
-</div>
-<div className="bg-secondary text-white p-3 rounded-lg rounded-tr-none shadow-sm ml-6">
-<p className="text-xs">"Definitely. We have 24/7 camera surveillance and a fully fenced/gated perimeter. Your cargo will be secure here."</p>
-</div>
-</div>
-{/* Question 3 */}
-<div className="space-y-2">
-<div className="flex items-center gap-2">
-<span className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
-<span className="material-symbols-outlined text-[14px] text-on-surface-variant">person</span>
-</span>
-<p className="text-[11px] font-bold text-on-surface-variant uppercase">Driver Question</p>
-</div>
-<div className="bg-white p-3 rounded-lg rounded-tl-none shadow-sm">
-<p className="text-xs italic text-on-surface">"What's the surface type? Worried about mud."</p>
-</div>
-<div className="flex items-center gap-2 justify-end">
-<p className="text-[11px] font-bold text-secondary uppercase text-right">ParkLog AI</p>
-<span className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-<span className="material-symbols-outlined text-[14px] text-white">smart_toy</span>
-</span>
-</div>
-<div className="bg-secondary text-white p-3 rounded-lg rounded-tr-none shadow-sm ml-6">
-<p className="text-xs">"No need to worry! Our lot is paved with high-quality asphalt, so you'll have a clean and stable surface for your rig."</p>
-</div>
-</div>
-</div>
-<div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-surface-container-low to-transparent pointer-events-none"></div>
-</div>
-<button className="w-full py-4 bg-primary text-white font-bold rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2">
-<span className="material-symbols-outlined">save</span>
-                        Save &amp; Publish
-                    </button>
-</div>
-</div>
-</div>
 
-    </>
+      {/* Metric Cards */}
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+        {/* Occupancy */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-[#c6c5cf]/10">
+          <div className="flex justify-between items-start mb-4">
+            <span className="text-[#45464e] text-xs font-black uppercase tracking-widest">Occupancy</span>
+            <div className="bg-[#0058be]/10 p-2 rounded-lg">
+              <span className="material-symbols-outlined text-[#0058be]">pie_chart</span>
+            </div>
+          </div>
+          <div className="flex items-baseline gap-3">
+            <span className="text-4xl font-black text-[#050f36]">42 / 60</span>
+            <span className="text-lg font-bold text-[#0058be]">70%</span>
+          </div>
+          <div className="mt-4 flex items-center gap-1 text-green-600 font-bold text-sm">
+            <span className="material-symbols-outlined text-sm">trending_up</span>
+            ↑ 12% vs yesterday
+          </div>
+        </div>
+
+        {/* Arriving Today */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-[#c6c5cf]/10">
+          <div className="flex justify-between items-start mb-4">
+            <span className="text-[#45464e] text-xs font-black uppercase tracking-widest">Arriving Today</span>
+            <div className="bg-blue-100 p-2 rounded-lg">
+              <span className="material-symbols-outlined text-blue-700">login</span>
+            </div>
+          </div>
+          <div className="text-4xl font-black text-[#050f36]">8</div>
+          <div className="mt-4 text-[#45464e] text-sm leading-tight">
+            <div className="font-bold text-[#050f36]">Next: 2:30 PM</div>
+            <div className="text-xs">Space 23 - Global Logistics</div>
+          </div>
+        </div>
+
+        {/* Departing Today */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-[#c6c5cf]/10">
+          <div className="flex justify-between items-start mb-4">
+            <span className="text-[#45464e] text-xs font-black uppercase tracking-widest">Departing Today</span>
+            <div className="bg-slate-100 p-2 rounded-lg">
+              <span className="material-symbols-outlined text-slate-700">logout</span>
+            </div>
+          </div>
+          <div className="text-4xl font-black text-[#050f36]">5</div>
+          <div className="mt-4 text-[#45464e] text-sm leading-tight">
+            <div className="font-bold text-[#050f36]">Next: 11:00 AM</div>
+            <div className="text-xs">Space 15 - Road-Ready Transit</div>
+          </div>
+        </div>
+
+        {/* Revenue Card */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-[#c6c5cf]/10">
+          <div className="flex justify-between items-start mb-4">
+            <span className="text-[#45464e] text-xs font-black uppercase tracking-widest">Revenue</span>
+            <div className="bg-green-100 p-2 rounded-lg">
+              <span className="material-symbols-outlined text-green-700">payments</span>
+            </div>
+          </div>
+          <div className="text-4xl font-black text-[#050f36]">$2,480</div>
+          <div className="mt-2 text-[#45464e] text-xs font-medium">Confirmed payments today</div>
+          <div className="mt-1 flex items-center gap-1 text-green-600 font-bold text-sm">
+            <span className="material-symbols-outlined text-sm">arrow_upward</span>
+            ↑ $340 vs 30-day average
+          </div>
+        </div>
+
+        {/* Pending Actions */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-[#c6c5cf]/10 ring-1 ring-[#3c2100]/10 transition-all hover:shadow-md hover:bg-[#f1f4fb] cursor-pointer group">
+          <div className="flex justify-between items-start mb-4">
+            <span className="text-[#45464e] text-xs font-black uppercase tracking-widest">Pending Actions</span>
+            <div className="bg-[#ffdcbc] p-2 rounded-lg">
+              <span className="material-symbols-outlined text-[#61401a]">priority_high</span>
+            </div>
+          </div>
+          <div className="text-4xl font-black text-[#3c2100]">3</div>
+          <div className="mt-4 flex justify-between items-end">
+            <span className="text-[#45464e] text-sm font-medium">2 check-ins, 1 support request</span>
+            <span className="text-[#0058be] text-sm font-bold group-hover:translate-x-1 transition-transform">View Details →</span>
+          </div>
+        </div>
+
+        {/* Available */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-[#c6c5cf]/10">
+          <div className="flex justify-between items-start mb-4">
+            <span className="text-[#45464e] text-xs font-black uppercase tracking-widest">Available</span>
+            <div className="bg-[#ebeef5] p-2 rounded-lg">
+              <span className="material-symbols-outlined text-[#050f36]">local_parking</span>
+            </div>
+          </div>
+          <div className="text-4xl font-black text-[#050f36]">18</div>
+          <div className="mt-4 text-[#45464e] text-sm font-medium">
+            30% availability
+          </div>
+        </div>
+      </section>
+
+      {/* Quick Actions */}
+      <section className="bg-[#050f36] p-4 rounded-xl flex flex-wrap gap-4 items-center mb-10 shadow-lg">
+        <span className="text-white/60 text-[10px] font-black uppercase tracking-widest px-4 mr-2 border-r border-white/20 font-label">Quick Actions</span>
+        <button className="bg-[#0058be] hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2 font-label">
+          <span className="material-symbols-outlined text-sm">add_circle</span>
+          Manual Check-In
+        </button>
+        <button className="bg-[#1b254b] text-[#838db9] hover:text-white px-6 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2 border border-white/10 font-label">
+          <span className="material-symbols-outlined text-sm">calendar_month</span>
+          New Reservation
+        </button>
+        <button className="bg-transparent hover:bg-white/10 text-white/80 px-6 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2 font-label">
+          <span className="material-symbols-outlined text-sm">block</span>
+          Mark Space Unavailable
+        </button>
+      </section>
+
+      {/* Arriving Table */}
+      <section className="bg-white rounded-xl shadow-sm mb-10 overflow-hidden border border-[#c6c5cf]/10">
+        <div className="px-8 py-6 border-b border-[#ebeef5]">
+          <h2 className="text-xl font-black text-[#050f36] font-manrope">Arriving in Next 4 Hours</h2>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left min-w-[800px]">
+            <thead>
+              <tr className="bg-[#f1f4fb] text-[#45464e] text-[10px] font-black uppercase tracking-widest font-label">
+                <th className="px-8 py-4">Time</th>
+                <th className="px-8 py-4">Customer</th>
+                <th className="px-8 py-4">Vehicle</th>
+                <th className="px-8 py-4">Space</th>
+                <th className="px-8 py-4">Status</th>
+                <th className="px-8 py-4 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#ebeef5]">
+              <tr className="hover:bg-[#f1f4fb]/50 transition-colors">
+                <td className="px-8 py-4 font-bold text-[#050f36]">11:15 AM</td>
+                <td className="px-8 py-4 text-sm font-medium">Global Logistics S.A.</td>
+                <td className="px-8 py-4 text-sm text-[#45464e] flex items-center gap-2">
+                  <span className="material-symbols-outlined text-slate-400 text-lg">local_shipping</span>
+                  Freightliner Cascadia #902
+                </td>
+                <td className="px-8 py-4 text-sm font-bold text-[#0058be]">A-12</td>
+                <td className="px-8 py-4">
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full">
+                    <span className="w-1.5 h-1.5 bg-green-600 rounded-full"></span>
+                    ON TIME
+                  </span>
+                </td>
+                <td className="px-8 py-4 text-right">
+                  <button className="bg-[#0058be] text-white text-xs font-black px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors font-label">CHECK IN</button>
+                </td>
+              </tr>
+              <tr className="hover:bg-[#f1f4fb]/50 transition-colors">
+                <td className="px-8 py-4 font-bold text-[#050f36]">11:45 AM</td>
+                <td className="px-8 py-4 text-sm font-medium">Inter-State Carriers</td>
+                <td className="px-8 py-4 text-sm text-[#45464e] flex items-center gap-2">
+                  <span className="material-symbols-outlined text-slate-400 text-lg">local_shipping</span>
+                  Kenworth T680 #44
+                </td>
+                <td className="px-8 py-4 text-sm font-bold text-[#0058be]">B-05</td>
+                <td className="px-8 py-4">
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 text-[10px] font-black rounded-full">
+                    <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                    EARLY
+                  </span>
+                </td>
+                <td className="px-8 py-4 text-right">
+                  <button className="bg-[#0058be] text-white text-xs font-black px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors font-label">CHECK IN</button>
+                </td>
+              </tr>
+              <tr className="hover:bg-[#f1f4fb]/50 transition-colors">
+                <td className="px-8 py-4 font-bold text-[#050f36]">12:30 PM</td>
+                <td className="px-8 py-4 text-sm font-medium">Road-Ready Transit</td>
+                <td className="px-8 py-4 text-sm text-[#45464e] flex items-center gap-2">
+                  <span className="material-symbols-outlined text-slate-400 text-lg">local_shipping</span>
+                  Volvo VNL 860 #211
+                </td>
+                <td className="px-8 py-4 text-sm font-bold text-[#0058be]">C-09</td>
+                <td className="px-8 py-4">
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-red-100 text-red-700 text-[10px] font-black rounded-full">
+                    <span className="w-1.5 h-1.5 bg-red-600 rounded-full"></span>
+                    LATE (15m)
+                  </span>
+                </td>
+                <td className="px-8 py-4 text-right">
+                  <button className="bg-[#e5e8ef] text-[#45464e] text-xs font-black px-4 py-2 rounded-lg cursor-not-allowed font-label">WAITING</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Activity & Alerts */}
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+        {/* Recent Activity Feed */}
+        <div className="bg-white p-8 rounded-xl shadow-sm border border-[#c6c5cf]/10">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-black text-[#050f36] font-manrope">Recent Activity</h2>
+            <a className="text-[#0058be] text-sm font-bold hover:underline" href="#">View History →</a>
+          </div>
+          <div className="space-y-6">
+            {[
+              { type: 'check_circle', color: 'green', title: 'Check-in Complete: Space A-10', time: '2m ago', desc: 'Driver: Thomas Muller • Truck: DE-TR-902' },
+              { type: 'payments', color: 'blue', title: 'Payment Received: $125.00', time: '15m ago', desc: 'Invoice #88291 • Credit Card Transaction' },
+              { type: 'logout', color: 'slate', title: 'Check-out Complete: Space B-22', time: '45m ago', desc: 'Driver: Sarah Jones • Empty space reported' },
+            ].map((activity, idx) => (
+              <div key={idx} className="flex gap-4 group">
+                <div className={`flex-shrink-0 w-10 h-10 bg-${activity.color}-50 rounded-full flex items-center justify-center text-${activity.color}-600 group-hover:scale-110 transition-transform`}>
+                  <span className="material-symbols-outlined text-lg">{activity.type}</span>
+                </div>
+                <div className="flex-1 border-b border-[#ebeef5] pb-4">
+                  <div className="flex justify-between">
+                    <p className="text-sm font-bold text-[#050f36]">{activity.title}</p>
+                    <span className="text-[10px] font-bold text-[#45464e]">{activity.time}</span>
+                  </div>
+                  <p className="text-xs text-[#45464e] mt-1">{activity.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Alerts List */}
+        <div className="bg-white p-8 rounded-xl shadow-sm border border-[#c6c5cf]/10">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-black text-[#050f36] font-manrope">System Alerts</h2>
+            <span className="bg-[#ba1a1a] text-white text-[10px] font-black px-2 py-0.5 rounded">3 NEW</span>
+          </div>
+          <div className="space-y-4">
+            <div className="p-4 bg-red-50 border-l-4 border-[#ba1a1a] rounded-r-lg flex items-start justify-between gap-4">
+              <div className="flex items-start gap-4">
+                <span className="material-symbols-outlined text-[#ba1a1a] mt-0.5">report</span>
+                <div>
+                  <h4 className="text-sm font-black text-[#93000a]">Maintenance Required</h4>
+                  <p className="text-xs text-[#93000a]/80 mt-1">Space D-04 light sensor failure.</p>
+                </div>
+              </div>
+              <button className="text-xs font-bold text-[#ba1a1a] border border-[#ba1a1a]/20 px-3 py-1.5 rounded-lg hover:bg-[#ba1a1a]/10 whitespace-nowrap hidden sm:block font-label">Schedule</button>
+            </div>
+            <div className="p-4 bg-[#ffdcbc]/20 border-l-4 border-[#eebe8d] rounded-r-lg flex items-start justify-between gap-4">
+              <div className="flex items-start gap-4">
+                <span className="material-symbols-outlined text-[#61401a] mt-0.5">warning</span>
+                <div>
+                  <h4 className="text-sm font-black text-[#61401a]">Payment Overdue</h4>
+                  <p className="text-xs text-[#61401a]/80 mt-1">Atlas Freight (Space B-12) overstay fee.</p>
+                </div>
+              </div>
+              <button className="text-xs font-bold text-[#61401a] border border-[#eebe8d]/20 px-3 py-1.5 rounded-lg hover:bg-[#ffdcbc]/30 whitespace-nowrap hidden sm:block font-label">Send Reminder</button>
+            </div>
+            <div className="p-4 bg-blue-50 border-l-4 border-[#0058be] rounded-r-lg flex items-start justify-between gap-4">
+              <div className="flex items-start gap-4">
+                <span className="material-symbols-outlined text-[#0058be] mt-0.5">info</span>
+                <div>
+                  <h4 className="text-sm font-black text-[#004395]">Reservations Surge</h4>
+                  <p className="text-xs text-[#004395]/80 mt-1">High demand forecast for Friday.</p>
+                </div>
+              </div>
+              <button className="text-xs font-bold text-[#0058be] border border-[#0058be]/20 px-3 py-1.5 rounded-lg hover:bg-[#0058be]/10 whitespace-nowrap hidden sm:block font-label">View Details</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Occupancy Trend */}
+      <section className="bg-white p-8 rounded-xl shadow-sm mb-12 border border-[#c6c5cf]/10">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+          <div>
+            <h2 className="text-xl font-black text-[#050f36] font-manrope">7-Day Occupancy Trend</h2>
+            <p className="text-sm text-[#45464e] font-medium">Historical data based on total lot capacity</p>
+          </div>
+          <div className="flex gap-4">
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 bg-[#0058be] rounded-full"></span>
+              <span className="text-xs font-bold text-[#45464e]">Occupancy %</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 bg-[#e5e8ef] rounded-full"></span>
+              <span className="text-xs font-bold text-[#45464e]">Avg Daily</span>
+            </div>
+          </div>
+        </div>
+        {/* Mock Chart Visualization */}
+        <div className="relative h-64 w-full flex items-end gap-2 px-2">
+          <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
+            <div className="border-t border-[#e5e8ef] w-full h-0"></div>
+            <div className="border-t border-[#e5e8ef] w-full h-0"></div>
+            <div className="border-t border-[#e5e8ef] w-full h-0"></div>
+            <div className="border-t border-[#e5e8ef] w-full h-0"></div>
+          </div>
+          {/* Days */}
+          {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, idx) => {
+            const heights = ['65%', '72%', '85%', '92%', '78%', '60%', '55%'];
+            return (
+              <div key={day} className="flex-1 flex flex-col items-center gap-2">
+                <div 
+                  className="w-full bg-[#0058be] rounded-t-lg transition-all duration-500 hover:bg-[#050f36]" 
+                  style={{ height: heights[idx] }}
+                ></div>
+                <span className="text-[10px] font-bold text-[#45464e] uppercase font-label">{day}</span>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+    </div>
   );
 }

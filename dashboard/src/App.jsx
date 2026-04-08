@@ -4,19 +4,14 @@ import { LotProvider } from './context/LotContext';
 
 // Pages
 import Dashboard from './pages/Dashboard';
-import CallLogs from './pages/CallLogs';
-import Reservations from './pages/Reservations';
-import ParkingAvailability from './pages/ParkingAvailability';
-import Pricing from './pages/Pricing';
-import AiSettings from './pages/AiSettings';
-import Messages from './pages/Messages';
-import Analytics from './pages/Analytics';
-import Settings from './pages/Settings';
+import Location from './pages/Location';
 import Landing from './pages/Landing';
 import Onboarding from './pages/Onboarding';
 import CustomerManagement from './pages/CustomerManagement';
 import Legal from './pages/Legal';
 import SignIn from './pages/SignIn';
+import Settings from './pages/Settings';
+
 
 import './App.css';
 
@@ -51,22 +46,7 @@ function App() {
         <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/terms" element={<Legal type="terms" />} />
         <Route path="/privacy" element={<Legal type="privacy" />} />
-        <Route
-          path="/customer-management"
-          element={(
-            <LotProvider>
-              <CustomerManagement />
-            </LotProvider>
-          )}
-        />
-        <Route
-          path="/drivers"
-          element={(
-            <LotProvider>
-              <CustomerManagement />
-            </LotProvider>
-          )}
-        />
+
         <Route
           element={(
             <OnboardingGuard>
@@ -77,15 +57,12 @@ function App() {
           )}
         >
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/call-logs" element={<CallLogs />} />
-          <Route path="/reservations" element={<Reservations />} />
-          <Route path="/parking-availability" element={<ParkingAvailability />} />
-          <Route path="/pricing" element={<Pricing />} />
-          <Route path="/ai-settings" element={<AiSettings />} />
-          <Route path="/messages" element={<Messages />} />
-          <Route path="/analytics" element={<Analytics />} />
-          <Route path="/settings" element={<Settings />} />
+          <Route path="/location" element={<Location />} />
+          <Route path="/customers" element={<CustomerManagement />} />
+          <Route path="/spaces" element={<Settings title="Spaces" />} />
+          <Route path="/settings" element={<Settings title="Settings" />} />
         </Route>
+
         {/* Auth Routes */}
         <Route path="/signin" element={<SignIn />} />
         <Route path="/login" element={<Navigate to="/signin" replace />} />

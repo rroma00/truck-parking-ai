@@ -425,7 +425,7 @@ export default function Onboarding() {
     safeStorage.setItem('parklog-owner-onboarding', JSON.stringify(onboardingProfile));
     safeStorage.removeItem(ONBOARDING_STORAGE_KEY);
 
-    navigate('/dashboard');
+    navigate('/location');
   };
 
   const getFieldMessage = (field, fallback) => {

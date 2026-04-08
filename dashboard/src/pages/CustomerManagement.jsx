@@ -2264,57 +2264,23 @@ export default function CustomerManagement() {
   if (loading) return <div className="p-8 text-center">Loading reservations...</div>;
 
   return (
-    <div className="bg-surface text-on-surface min-h-screen">
-      <header className="bg-[#F7F9FF] backdrop-blur-xl sticky top-0 z-50">
-        <div className="flex justify-between items-center w-full px-6 md:px-8 xl:px-10 h-[72px] max-w-[1480px] mx-auto relative">
-          <div className="flex items-center gap-10">
-            <span className="text-[30px] font-extrabold tracking-tight text-primary font-manrope">ParkLog AI</span>
-            <nav className="hidden md:flex items-center gap-7 text-[14px]">
-              <Link className="text-on-surface-variant hover:text-primary transition-colors" to="/dashboard">Locations</Link>
-              <Link className="text-secondary border-b-2 border-secondary pb-1 font-bold" to="/customer-management">Customers</Link>
-              <Link className="text-on-surface-variant hover:text-primary transition-colors" to="/parking-availability">Inventory</Link>
-              <Link className="text-on-surface-variant hover:text-primary transition-colors" to="/settings">Settings</Link>
-            </nav>
-          </div>
-          <div className="flex items-center gap-3">
-            <button className="p-2 text-on-surface-variant hover:bg-[#F1F4FB] rounded-md transition-all" aria-label="Notifications">
-              <span className="material-symbols-outlined">notifications</span>
-            </button>
-            <button className="p-2 text-on-surface-variant hover:bg-[#F1F4FB] rounded-md transition-all" aria-label="Help">
-              <span className="material-symbols-outlined">help</span>
-            </button>
-            <div className="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden ml-2">
-              <img
-                alt="User profile"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZa2E-WnDbOiXrPBQIKxAEmSnYnGbDE352CNAzt7TOkNzjg-7D551POEDUKfWc-8GpwZ-4uCB0sF2omP-CdiqCdoM3Ll1mIMhPIRIThHY8jBYa4vz3h8Ydul4WlKW1nbhob7oGDe-U93PgvWA_TqymkNOkwoGOBiLa6IGX8L6i79H5lwVgN__DSd6uAcfwtD_OsAIym2BOuN68m2vz5cd3nOLmDb4opQxYfnwuR4UD8gI8Ze0WhC_-udGBEBEP7uTNxfyquMWEAt0"
-              />
-            </div>
-          </div>
-          <div className="bg-[#F1F4FB] h-px w-full absolute bottom-0 left-0" />
+    <div className="w-full">
+      <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 mb-10">
+        <div>
+          <span className="inline-block px-3 py-1 bg-[#050f36] text-white text-[10px] font-black tracking-widest rounded-full mb-3 uppercase font-label">LOT OPERATIONS</span>
+          <h1 className="text-4xl md:text-5xl font-black text-[#050f36] leading-tight font-manrope">Customers</h1>
+          <p className="text-[#45464e] font-medium mt-1">Manage arrivals, check-ins, and support states</p>
         </div>
-      </header>
+        <button
+          className="px-6 py-3 bg-[#0058be] text-white text-sm font-bold rounded-xl hover:bg-blue-600 shadow-sm transition-all flex items-center gap-2 w-fit font-label"
+          onClick={openBookingModal}
+          type="button"
+        >
+          <span className="material-symbols-outlined text-lg">person_add</span>
+          New Customer Booking
+        </button>
+      </div>
 
-      <main className="max-w-[1480px] mx-auto px-6 md:px-8 xl:px-10 py-6">
-        <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-4 mb-6">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed text-[11px] font-bold tracking-wider uppercase mb-3">
-              <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>hub</span>
-              Lot Operations
-            </div>
-            <h1 className="text-[44px] leading-[1.05] font-extrabold text-primary mb-1.5">Customers</h1>
-            <p className="text-[14px] text-on-surface-variant max-w-xl">
-              Manage arrivals, check-ins, departures, support issues, and manual follow-up for this location.
-            </p>
-          </div>
-          <button
-            className="px-5 py-2.5 bg-primary text-white text-[14px] font-semibold rounded-2xl hover:opacity-95 transition-all flex items-center gap-2 w-fit"
-            onClick={openBookingModal}
-            type="button"
-          >
-            <span className="material-symbols-outlined text-lg">person_add</span>
-            New Customer Booking
-          </button>
-        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-3 mb-5">
           {[
@@ -2444,7 +2410,7 @@ export default function CustomerManagement() {
             </div>
           </aside>
         </div>
-      </main>
+
 
       <ActionModal
         actionLabel="assign spot"
