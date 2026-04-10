@@ -11,6 +11,7 @@ import CustomerManagement from './pages/CustomerManagement';
 import Legal from './pages/Legal';
 import SignIn from './pages/SignIn';
 import Settings from './pages/Settings';
+import Spaces from './pages/Spaces';
 
 
 import './App.css';
@@ -59,7 +60,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/location" element={<Location />} />
           <Route path="/customers" element={<CustomerManagement />} />
-          <Route path="/spaces" element={<Settings title="Spaces" />} />
+          <Route path="/spaces" element={<Spaces />} />
           <Route path="/settings" element={<Settings title="Settings" />} />
         </Route>
 

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TruckPark AI | Map Editor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary": "#050f36",
+                      "secondary": "#0058be",
+                      "surface-variant": "#dfe2e9",
+                      "on-surface": "#181c21",
+                      "outline-variant": "#c6c5cf",
+                      "background": "#f7f9ff",
+                      "error": "#EF4444",
+                      "available": "#22C55E",
+                      "reserved": "#F97316",
+                      "unavailable": "#94A3B8"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.5rem",
+                      "lg": "0.75rem",
+                      "xl": "1rem",
+                      "2xl": "1.5rem",
+                      "3xl": "2rem",
+                      "full": "9999px"
+              },
+              "fontFamily": {
+                      "headline": ["Manrope"],
+                      "body": ["Inter"],
+                      "label": ["Inter"]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Manrope', sans-serif; }
+        .canvas-grid {
+            background-image: radial-gradient(#dfe2e9 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased overflow-hidden">
+<!-- Top Navigation Branding Only -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 h-16 bg-white/85 backdrop-blur-xl border-b border-surface-variant/30 shadow-sm">
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-sm">local_shipping</span>
+</div>
+<div class="flex flex-col">
+<span class="text-lg font-extrabold tracking-tight text-primary leading-none">TruckPark AI</span>
+<span class="text-[10px] font-bold text-secondary uppercase tracking-tighter">Pro Management</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-slate-500 hover:bg-slate-50 p-2 rounded-full transition-all">notifications</button>
+<div class="flex items-center gap-3 ml-2 pl-4 border-l border-outline-variant/30">
+<div class="text-right hidden sm:block">
+<p class="text-xs font-bold text-primary">Alex Sterling</p>
+<p class="text-[10px] text-slate-500">Fleet Manager</p>
+</div>
+<img alt="User Profile" class="w-8 h-8 rounded-full object-cover border border-outline-variant/30" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkBNHYjXOUfhIIYEsTkkAk5-4cIaiMQaiitbH1bfxYt1b2yY9R0cYLv3hXlOU39LyB7xqzSj4HSBrdFMYmJfvpT3GYX9RsPT7gEixClWEZotYJwQ2W1Rg4SEIlmQqQQ1hThgWokZtlBtOyvpNDfvhdfLZC4s9TYZeqMTu_JV9mLIOBFiZd9HWKgMEgvMWurqJrZTanyD0KZuX8nVu2KnnVvak89tvxEuPnHBMV0z2D8sVecyFLHey1f7cBHr2mtsP9TT1esp75GX4"/>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="pt-16 h-screen flex flex-col max-w-[1440px] mx-auto w-full">
+<!-- Header Toolbar -->
+<div class="px-8 py-6 flex items-center justify-between">
+<div>
+<nav class="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+<span class="hover:text-primary cursor-pointer">Dashboard</span>
+<span class="material-symbols-outlined text-[12px]">chevron_right</span>
+<span class="text-primary">Spaces</span>
+</nav>
+<div class="flex flex-col">
+<h1 class="text-2xl font-extrabold text-primary flex items-center gap-3">
+                        Downtown Zone A
+                        <button class="material-symbols-outlined text-secondary text-base hover:scale-110 transition-transform">edit</button>
+</h1>
+<p class="text-sm font-medium text-slate-500 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                        Dallas, TX
+                    </p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="bg-slate-100 flex p-1 rounded-xl">
+<button class="px-5 py-2 bg-white text-primary text-sm font-bold rounded-lg shadow-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">grid_view</span> Canvas
+                    </button>
+<button class="px-5 py-2 text-slate-500 text-sm font-semibold hover:text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">list</span> List
+                    </button>
+</div>
+<button class="bg-secondary hover:bg-primary text-white px-8 py-2.5 rounded-xl font-bold text-sm transition-all active:scale-95 shadow-lg shadow-secondary/20">
+                    Save Layout
+                </button>
+</div>
+</div>
+<!-- 70/30 Split Layout -->
+<div class="flex-1 flex overflow-hidden px-8 pb-8 gap-8">
+<!-- LEFT SIDE (70%): The Canvas -->
+<section class="flex-1 relative bg-white rounded-3xl overflow-hidden shadow-xl shadow-primary/5 flex flex-col border border-outline-variant/10">
+<!-- Rulers -->
+<div class="absolute top-0 left-10 right-0 h-10 border-b border-surface-variant/30 flex items-end px-4 gap-20 text-[10px] text-slate-400 font-bold select-none bg-white/80 backdrop-blur z-10">
+<span>0m</span><span>20m</span><span>40m</span><span>60m</span><span>80m</span><span>100m</span><span>120m</span><span>140m</span>
+</div>
+<div class="absolute top-10 left-0 bottom-0 w-10 border-r border-surface-variant/30 flex flex-col pt-4 gap-20 text-[10px] text-slate-400 font-bold items-center select-none bg-white/80 backdrop-blur z-10">
+<span>0m</span><span>10m</span><span>20m</span><span>30m</span><span>40m</span><span>50m</span>
+</div>
+<!-- Canvas Core -->
+<div class="flex-1 canvas-grid relative overflow-auto scrollbar-hide p-20 flex justify-center items-center bg-slate-50/30">
+<!-- Background Map Overlay -->
+<div class="relative w-[1100px] h-[700px] rounded-2xl shadow-inner overflow-hidden border border-outline-variant/30 bg-white">
+<img alt="Parking Lot Aerial" class="absolute inset-0 w-full h-full object-cover opacity-30" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUBjH_rcE8FbuIDBMx3iG3hDp8YcrJOF5epXLVITSc-d_n1tpgdNlMlMFpFQ1Qb-pLyGHHCA5I_O39BbQErfUyqkdkmeakBLjD0EeHbvS-IUvnpo8R-ChPjRpVTbT8Y6OWBNTsYDFlx_E4a1NRqC_nym0sWgi8mszhkNVu-0T9K2Mj1oelAypVDMwXsNip79HdXhFpq_Q7dfKsCkP0LY69EUTQX0tvG-QgW5Jg8oRRpphroWhmg0Cr9Q53kP8PLrhkZq0FFK9GTFI"/>
+<!-- Grid Layout -->
+<div class="absolute inset-0 p-12 grid grid-cols-6 grid-rows-4 gap-6">
+<!-- Spot Available -->
+<div class="w-[80px] h-[160px] bg-white/95 border-[4px] border-available rounded-xl flex flex-col items-center justify-between py-4 shadow-sm group/spot cursor-move relative transition-all hover:scale-105">
+<span class="material-symbols-outlined text-slate-300 text-sm absolute top-1 right-1 opacity-0 group-hover/spot:opacity-100 transition-opacity">drag_indicator</span>
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">A-01</span>
+<div class="w-8 h-12 bg-available/10 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-available text-[20px] fill-1">check_circle</span>
+</div>
+<span class="text-[9px] font-extrabold uppercase text-available tracking-tighter">Available</span>
+</div>
+<div class="w-[80px] h-[160px] bg-white/95 border-[4px] border-available rounded-xl flex flex-col items-center justify-between py-4 shadow-sm group/spot cursor-move relative transition-all hover:scale-105">
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">A-02</span>
+<div class="w-8 h-12 bg-available/10 rounded-lg flex items-center justify-center"><span class="material-symbols-outlined text-available text-[20px] fill-1">check_circle</span></div>
+<span class="text-[9px] font-extrabold uppercase text-available tracking-tighter">Available</span>
+</div>
+<!-- Spot Occupied -->
+<div class="w-[80px] h-[160px] bg-white/95 border-[4px] border-error rounded-xl flex flex-col items-center justify-between py-4 shadow-sm ring-8 ring-error/5">
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">A-03</span>
+<div class="relative w-12 h-20 flex items-center justify-center">
+<img class="w-16 h-10 object-contain rotate-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4zMZ_xu8SZEipjs8tHD1xha4f9OWoFVlMEw_LaKDEWvwKiZC6g16_46-c411Fl4zpNNuGEnVG2TGX6Pylm9ZqUUJ8g--ucgkmB00g4RjQWC0_2ohC_pV5Lo6-MYnsUd6zmkYyF5rBeXxH_3n_qW_f8DNf_joFqMOT-m3HHpl-jCiWqSf6GbJtISJJgOsijHRQuBEeW3z6dPlbL-eFCfu6Fk_2YnsSmh8zC6q6PGsDV1tkWhGqBlR4yyCm8zu6m5nNQQXUcNihqfc"/>
+</div>
+<span class="text-[9px] font-extrabold uppercase text-error tracking-tighter">Occupied</span>
+</div>
+<div class="w-[80px] h-[160px] bg-white/95 border-[4px] border-available rounded-xl flex flex-col items-center justify-between py-4 shadow-sm">
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">A-04</span>
+<div class="w-8 h-12 bg-available/10 rounded-lg flex items-center justify-center"><span class="material-symbols-outlined text-available text-[20px] fill-1">check_circle</span></div>
+<span class="text-[9px] font-extrabold uppercase text-available tracking-tighter">Available</span>
+</div>
+<!-- Spot Reserved -->
+<div class="w-[80px] h-[160px] bg-white/95 border-[4px] border-reserved rounded-xl flex flex-col items-center justify-between py-4 shadow-sm ring-8 ring-reserved/5">
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">A-05</span>
+<div class="w-8 h-12 bg-reserved/10 rounded-lg flex items-center justify-center"><span class="material-symbols-outlined text-reserved text-[20px]">event_busy</span></div>
+<span class="text-[9px] font-extrabold uppercase text-reserved tracking-tighter">Reserved</span>
+</div>
+<div class="w-[80px] h-[160px] bg-white/95 border-[4px] border-available rounded-xl flex flex-col items-center justify-between py-4 shadow-sm">
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">A-06</span>
+<div class="w-8 h-12 bg-available/10 rounded-lg flex items-center justify-center"><span class="material-symbols-outlined text-available text-[20px] fill-1">check_circle</span></div>
+<span class="text-[9px] font-extrabold uppercase text-available tracking-tighter">Available</span>
+</div>
+<!-- Spot Unavailable (Example of the 4th state) -->
+<div class="w-[80px] h-[160px] bg-slate-50/80 border-[4px] border-unavailable rounded-xl flex flex-col items-center justify-between py-4 shadow-sm opacity-60">
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">B-01</span>
+<div class="w-8 h-12 bg-slate-200 rounded-lg flex items-center justify-center"><span class="material-symbols-outlined text-slate-400 text-[20px]">block</span></div>
+<span class="text-[9px] font-extrabold uppercase text-slate-500 tracking-tighter">Unavailable</span>
+</div>
+<div class="w-[80px] h-[160px] border-2 border-dashed border-outline-variant/40 rounded-xl flex items-center justify-center group/add cursor-pointer hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-slate-300 group-hover/add:text-secondary transition-colors">add_circle</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Canvas Controls -->
+<div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-primary/95 backdrop-blur-md p-1.5 rounded-2xl shadow-2xl border border-white/10 z-20">
+<button class="w-10 h-10 rounded-xl flex items-center justify-center text-white hover:bg-white/10"><span class="material-symbols-outlined">zoom_in</span></button>
+<div class="w-px h-6 bg-white/10 mx-1"></div>
+<span class="text-xs font-bold text-white px-2">85%</span>
+<div class="w-px h-6 bg-white/10 mx-1"></div>
+<button class="w-10 h-10 rounded-xl flex items-center justify-center text-white hover:bg-white/10"><span class="material-symbols-outlined">zoom_out</span></button>
+<button class="w-10 h-10 rounded-xl flex items-center justify-center text-white hover:bg-white/10 ml-2"><span class="material-symbols-outlined">center_focus_strong</span></button>
+</div>
+</section>
+<!-- RIGHT SIDEBAR (30%): Tools & Settings -->
+<aside class="w-[380px] flex flex-col gap-6 overflow-y-auto scrollbar-hide">
+<!-- Quick Setup Wizard -->
+<div class="bg-white p-6 rounded-3xl shadow-sm border border-outline-variant/10">
+<h3 class="text-sm font-extrabold text-primary mb-5 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-lg">auto_fix_high</span>
+                        Quick Setup Wizard
+                    </h3>
+<div class="space-y-4">
+<div>
+<label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1.5">Total Spaces</label>
+<input class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-secondary/20" type="number" value="24"/>
+</div>
+<div>
+<label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1.5">Layout Pattern</label>
+<div class="grid grid-cols-2 gap-2">
+<button class="py-2.5 px-3 border-2 border-secondary bg-secondary/5 rounded-xl text-xs font-bold text-secondary">4 x 6 Grid</button>
+<button class="py-2.5 px-3 border-2 border-slate-100 rounded-xl text-xs font-bold text-slate-500 hover:border-slate-300">Angled 45°</button>
+</div>
+</div>
+<button class="w-full py-3.5 bg-primary text-white rounded-xl font-bold text-sm shadow-lg shadow-primary/10 transition-all active:scale-95 hover:bg-secondary">
+                            Generate Template
+                        </button>
+</div>
+</div>
+<!-- Background Image Layer -->
+<div class="bg-white p-6 rounded-3xl shadow-sm border border-outline-variant/10">
+<h3 class="text-sm font-extrabold text-primary mb-5 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-lg">layers</span>
+                        Background Image
+                    </h3>
+<div class="space-y-5">
+<div class="flex items-center gap-4">
+<div class="flex-1">
+<button class="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-slate-200 rounded-xl hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-slate-400 text-lg">cloud_upload</span>
+<span class="text-xs font-bold text-slate-500">Upload Map</span>
+</button>
+</div>
+<button class="text-[11px] font-bold text-error hover:underline px-2">Remove</button>
+</div>
+<div>
+<div class="flex justify-between mb-2">
+<label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Map Opacity</label>
+<span class="text-[10px] font-bold text-primary">30%</span>
+</div>
+<input class="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-secondary" max="100" min="0" type="range" value="30"/>
+</div>
+</div>
+</div>
+<!-- Tools Panel -->
+<div class="bg-white p-6 rounded-3xl shadow-sm border border-outline-variant/10">
+<h3 class="text-sm font-extrabold text-primary mb-5">Editing Tools</h3>
+<div class="grid grid-cols-4 gap-3">
+<button class="aspect-square flex flex-col items-center justify-center gap-1 bg-slate-50 hover:bg-secondary/10 hover:text-secondary rounded-2xl transition-all group">
+<span class="material-symbols-outlined text-[20px]">add_box</span>
+<span class="text-[10px] font-bold">Add</span>
+</button>
+<button class="aspect-square flex flex-col items-center justify-center gap-1 bg-slate-50 hover:bg-error/10 hover:text-error rounded-2xl transition-all">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+<span class="text-[10px] font-bold">Delete</span>
+</button>
+<button class="aspect-square flex flex-col items-center justify-center gap-1 bg-slate-50 hover:bg-secondary/10 hover:text-secondary rounded-2xl transition-all">
+<span class="material-symbols-outlined text-[20px]">content_copy</span>
+<span class="text-[10px] font-bold">Clone</span>
+</button>
+<button class="aspect-square flex flex-col items-center justify-center gap-1 bg-slate-50 hover:bg-secondary/10 hover:text-secondary rounded-2xl transition-all">
+<span class="material-symbols-outlined text-[20px]">format_list_numbered</span>
+<span class="text-[10px] font-bold">Re-No</span>
+</button>
+</div>
+<div class="mt-5 flex items-center justify-between p-3.5 bg-slate-50 rounded-xl border border-slate-100">
+<span class="text-xs font-bold text-slate-600">Snap to Grid</span>
+<div class="w-9 h-5 bg-secondary rounded-full relative cursor-pointer">
+<div class="absolute right-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow-sm"></div>
+</div>
+</div>
+</div>
+<!-- Spot Details -->
+<div class="bg-white p-6 rounded-3xl shadow-sm border-2 border-secondary/10">
+<div class="flex items-center justify-between mb-5">
+<h3 class="text-sm font-extrabold text-primary">Spot Details</h3>
+<span class="px-2.5 py-1 bg-secondary text-white text-[9px] font-black rounded-lg uppercase tracking-wider">Selected</span>
+</div>
+<div class="space-y-5">
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1.5">Spot ID</label>
+<input class="w-full bg-slate-50 border-none rounded-xl px-4 py-2.5 text-sm font-bold text-primary" type="text" value="A-03"/>
+</div>
+<div>
+<label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1.5">Status</label>
+<select class="w-full bg-slate-50 border-none rounded-xl px-2 py-2.5 text-xs font-bold text-error">
+<option selected="">Occupied</option>
+<option>Available</option>
+<option>Reserved</option>
+<option>Unavailable</option>
+</select>
+</div>
+</div>
+<div>
+<label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1.5">Operational Notes</label>
+<textarea class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm min-h-[100px] leading-relaxed" placeholder="Internal notes...">Spot restricted to compact EVs only. Contact security for key bypass if vehicle remains beyond 24h.</textarea>
+</div>
+<button class="w-full py-3 border-2 border-secondary/20 text-secondary rounded-xl font-bold text-xs hover:bg-secondary/5 transition-colors">
+                            View Vehicle Telematics
+                        </button>
+</div>
+</div>
+</aside>
+</div>
+</main>
+</body></html>
