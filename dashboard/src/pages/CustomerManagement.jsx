@@ -155,7 +155,7 @@ const initialDrivers = [
   }
 ];
 
-function createInitialBookingForm() {
+export function createInitialBookingForm() {
   return {
     fullName: '',
     phoneNumber: '',
@@ -1067,7 +1067,7 @@ function ConfirmationModal({
   );
 }
 
-function BookingModal({
+export function BookingModal({
   bookingForm,
   draftRestoredMessage,
   estimatedTotal,
@@ -1300,9 +1300,9 @@ function BookingModal({
           </div>
         </div>
 
-        <div className="min-h-0 overflow-y-auto px-4 py-4 md:px-5">
-          <div className="grid gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(260px,0.72fr)]">
-            <div className="space-y-3.5">
+        <div className="flex flex-1 min-h-0 overflow-hidden">
+          <div className="grid w-full h-full xl:grid-cols-[1fr_380px] overflow-hidden">
+            <div className="overflow-y-auto h-full px-4 py-6 md:px-8 space-y-6 custom-scrollbar border-r border-outline-variant/10 scroll-smooth">
               {draftRestoredMessage && (
                 <div className="rounded-2xl border border-outline-variant/10 bg-surface-container-low px-3.5 py-2.5 text-[12px] text-on-surface-variant">
                   {draftRestoredMessage}
@@ -1674,7 +1674,7 @@ function BookingModal({
               </section>
             </div>
 
-            <aside className="space-y-3 xl:sticky xl:top-0 self-start">
+            <aside className="overflow-y-auto h-full px-4 py-6 md:px-8 space-y-5 bg-surface-container-low/20 custom-scrollbar scroll-smooth">
               <div className="rounded-[22px] border border-outline-variant/10 bg-[#F8FAFF] p-3.5 shadow-sm md:p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
@@ -1713,7 +1713,8 @@ function BookingModal({
                     <p className="mt-1.5 text-[14px] font-semibold text-primary">{durationLabel}</p>
                   </div>
                 </div>
-                <div className="mt-3.5 rounded-[22px] bg-primary p-3.5 text-white shadow-sm">
+                <div className="sticky bottom-0 mt-5 rounded-[22px] bg-primary p-4 text-white shadow-lg overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
                   <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/70">Total Due</p>
                   <p className="mt-1.5 text-[30px] font-extrabold leading-none">{formatCurrency(totalDue)}</p>
                   <p className="mt-1.5 text-[12px] text-white/75">{bookingForm.manualOverride ? 'Manual override applied to this booking total.' : 'Auto-calculated from the configured pricing inputs.'}</p>
@@ -1723,6 +1724,41 @@ function BookingModal({
             </aside>
           </div>
         </div>
+
+        <style>{`
+          .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background-clip: content-box;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+            border: 2px solid transparent;
+            background-clip: content-box;
+          }
+          @media (max-width: 1279px) {
+            .grid {
+              display: flex;
+              flex-direction: column;
+            }
+            .overflow-y-auto {
+              height: auto;
+              max-height: 50vh;
+              border-right: none;
+              border-bottom: 1px solid #E2E8F0;
+            }
+            aside {
+              max-height: calc(100vh - 50vh - 120px);
+            }
+          }
+        `}</style>
       </div>
     </div>
   );
