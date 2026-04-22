@@ -31,6 +31,15 @@ This document tracks the visual and structural improvements made to the ParkAI l
   - Scaled down the "Savings" message to a more realistic size within the component flow.
   - Standardized the comparison rows with identical structural scaling (padding, radius, and alignment).
 
+## 5. Dashboard Settings Page
+- **Standardization:** Unified all input fields to a consistent 44px height, `#E5E7EB` border, and `#1E3A8A` focus state.
+- **Custom Time Picker:** Replaced native browser inputs with a premium, pill-shaped `CustomTimePicker` featuring:
+  - 5-minute interval selection.
+  - Scroll-lock behavior to isolate popover interactions.
+  - `#E8E9F3` lavender-gray background for a softer operational feel.
+- **Cohesive Controls:** Created a `CustomDropdown` for the Timezone to ensure exact visual alignment with the time pickers.
+- **UX Best Practices:** Implemented password visibility toggles, proper empty-state placeholders, and a high-contrast success toast.
+
 ---
-*Date: 2026-04-01*
+*Date: 2026-04-21*
 *Developer: Antigravity AI*

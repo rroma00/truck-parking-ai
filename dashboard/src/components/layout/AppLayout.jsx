@@ -35,7 +35,7 @@ export default function AppLayout() {
             }`}
           >
             <span className="material-symbols-outlined">location_on</span>
-            <span>Location</span>
+            <span>Locations</span>
           </Link>
 
           <Link

@@ -61,7 +61,7 @@ function App() {
           <Route path="/location" element={<Location />} />
           <Route path="/customers" element={<CustomerManagement />} />
           <Route path="/spaces" element={<Spaces />} />
-          <Route path="/settings" element={<Settings title="Settings" />} />
+          <Route path="/settings" element={<Settings />} />
         </Route>
 
         {/* Auth Routes */}
